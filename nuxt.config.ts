@@ -19,7 +19,10 @@ export default defineNuxtConfig({
       meta: [
         { name: 'description', content: 'Transforma tu colonia. Cuida el agua. Planta vida. Cambia tu barrio.' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' },
-        { name: 'theme-color', content: '#2d6a4f' },
+        { name: 'theme-color', content: '#1b5e3b' },
+        { property: 'og:title', content: 'Guardianes del Barrio Verde' },
+        { property: 'og:description', content: 'Transforma tu colonia. Cuida el agua. Planta vida. Cambia tu barrio.' },
+        { property: 'og:type', content: 'website' },
       ],
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -29,5 +32,6 @@ export default defineNuxtConfig({
     },
   },
 
+  // SPA mode
   ssr: false,
 })
