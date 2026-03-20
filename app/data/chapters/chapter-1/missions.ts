@@ -1,0 +1,76 @@
+import type { MissionConfig } from '~/shared/types/mission'
+
+export const chapter1Missions: MissionConfig[] = [
+  {
+    id: 'mission-1-clean',
+    chapterId: 'chapter-1',
+    title: 'Limpiar la banqueta',
+    description: 'Arrastra cada residuo al contenedor correcto',
+    type: 'drag-drop',
+    objectives: [
+      { id: 'sort-trash', description: 'Clasificar residuos correctamente', target: 8, current: 0 },
+    ],
+    timeLimit: 60,
+    reward: { points: 15, seeds: 2, badge: 'first-rescue', badgeTitle: 'Primer Rescate' },
+    introDialogueId: 'mission-1-intro',
+    successDialogueId: 'mission-1-success',
+    failureDialogueId: 'mission-1-failure',
+  },
+  {
+    id: 'mission-2-heat',
+    chapterId: 'chapter-1',
+    title: 'Detectar puntos de calor',
+    description: 'Toca las superficies y encuentra las más calientes',
+    type: 'tap-detect',
+    objectives: [
+      { id: 'find-heat', description: 'Encontrar los 3 puntos más calientes', target: 3, current: 0 },
+    ],
+    reward: { points: 20, badge: 'heat-detector', badgeTitle: 'Detector de Calor' },
+    introDialogueId: 'mission-2-intro',
+    successDialogueId: 'mission-2-success',
+    failureDialogueId: 'mission-2-failure',
+  },
+  {
+    id: 'mission-3-plant',
+    chapterId: 'chapter-1',
+    title: 'Plantar sombra',
+    description: 'Coloca árboles y plantas en los lugares estratégicos',
+    type: 'placement',
+    objectives: [
+      { id: 'plant-trees', description: 'Plantar árboles en puntos estratégicos', target: 4, current: 0 },
+    ],
+    reward: { points: 25, seeds: 3, badge: 'shade-planter', badgeTitle: 'Sembrador de Sombra', visualUnlock: 'jacaranda-tree' },
+    introDialogueId: 'mission-3-intro',
+    successDialogueId: 'mission-3-success',
+    failureDialogueId: 'mission-3-failure',
+  },
+  {
+    id: 'mission-4-leak',
+    chapterId: 'chapter-1',
+    title: 'Reparar la fuga',
+    description: 'Encuentra la fuga y séllala con las piezas correctas',
+    type: 'pipe-fit',
+    objectives: [
+      { id: 'fix-leak', description: 'Reparar la tubería', target: 5, current: 0 },
+    ],
+    timeLimit: 45,
+    reward: { points: 20, badge: 'water-guardian', badgeTitle: 'Cuidador del Agua' },
+    introDialogueId: 'mission-4-intro',
+    successDialogueId: 'mission-4-success',
+    failureDialogueId: 'mission-4-failure',
+  },
+  {
+    id: 'mission-5-restore',
+    chapterId: 'chapter-1',
+    title: 'Recuperar el espacio',
+    description: 'Decora y recupera la calle para la comunidad',
+    type: 'placement',
+    objectives: [
+      { id: 'place-items', description: 'Colocar elementos de recuperación', target: 5, current: 0 },
+    ],
+    reward: { points: 30, seeds: 2, badge: 'space-restorer', badgeTitle: 'Restaurador del Espacio', visualUnlock: 'restored-street' },
+    introDialogueId: 'mission-5-intro',
+    successDialogueId: 'mission-5-success',
+    failureDialogueId: 'mission-5-failure',
+  },
+]
