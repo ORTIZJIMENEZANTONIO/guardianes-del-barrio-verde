@@ -215,15 +215,18 @@ export const chapter1Dialogues: Record<string, DialoguePool> = {
     ],
   },
 
-  // Mission 5
+  // Mission 5 — Recuperar el espacio (urbanismo táctico)
   'mission-5-intro': {
     id: 'mission-5-intro',
     context: 'Intro misión 5',
     lines: [
       { id: 'm5i-1', speaker: 'lila', emotion: 'happy', text: '{nombre}, ya limpiamos, detectamos el calor, plantamos y arreglamos la fuga.' },
-      { id: 'm5i-2', speaker: 'timo', emotion: 'excited', text: 'Ahora falta que esta calle vuelva a sentirse querida.', optional: true },
-      { id: 'm5i-3', speaker: 'xani', emotion: 'neutral', text: 'Los espacios cuidados invitan a quedarse.' },
-      { id: 'm5i-4', speaker: 'don-tono', emotion: 'happy', text: 'Yo traje unas macetas. No me vean así, sí ayudan.' },
+      { id: 'm5i-2', speaker: 'don-tono', emotion: 'thinking', text: 'Pero la calle todavía se siente vacía. Nadie quiere estar aquí.' },
+      { id: 'm5i-3', speaker: 'xani', emotion: 'neutral', text: 'Cada punto de esta calle tiene un problema diferente. Oscuridad, basura, falta de sombra…' },
+      { id: 'm5i-4', speaker: 'timo', emotion: 'excited', text: '¡Y para cada problema hay una solución! Pero hay que pensar cuál va dónde.' },
+      { id: 'm5i-5', speaker: 'lila', emotion: 'excited', text: '{nombre}, observa cada lugar y elige la solución correcta. ¡Ojo con las que no sirven!' },
+      { id: 'm5i-6', speaker: 'nube-gris', emotion: 'mischievous', text: '¿Una banca? ¿Un mural? Eso no cambia nada.', optional: true },
+      { id: 'm5i-7', speaker: 'vale', emotion: 'happy', text: 'Te sorprendería lo que un buen cambio puede hacer en una cuadra, Nube.', optional: true },
     ],
   },
   'mission-5-success': {
@@ -231,16 +234,52 @@ export const chapter1Dialogues: Record<string, DialoguePool> = {
     context: 'Éxito misión 5',
     lines: [
       { id: 'm5s-1', speaker: 'nico', emotion: 'excited', text: '¡Ahora sí me quedo a jugar!' },
-      { id: 'm5s-2', speaker: 'vale', emotion: 'happy', text: 'Así hasta dan ganas de caminar más por aquí, {nombre}.', optional: true },
-      { id: 'm5s-3', speaker: 'don-tono', emotion: 'happy', text: 'Pues sí cambió bastante…' },
-      { id: 'm5s-4', speaker: 'nube-gris', emotion: 'angry', text: 'Esto ya no se siente nada cómodo para mí.' },
+      { id: 'm5s-2', speaker: 'don-tono', emotion: 'surprised', text: 'Cada solución resolvió algo real. No fue poner cosas por poner.' },
+      { id: 'm5s-3', speaker: 'xani', emotion: 'happy', text: 'Luz donde estaba oscuro, sombra donde quemaba, un lugar para sentarse, para tirar basura…', optional: true },
+      { id: 'm5s-4', speaker: 'vale', emotion: 'happy', text: 'Así hasta dan ganas de caminar más por aquí, {nombre}.' },
+      { id: 'm5s-5', speaker: 'nube-gris', emotion: 'angry', text: 'Esto ya no se siente nada cómodo para mí.' },
+      { id: 'm5s-6', speaker: 'lila', emotion: 'proud', text: 'Un espacio cuidado cambia cómo la gente se siente en su barrio.', optional: true },
     ],
   },
   'mission-5-failure': {
     id: 'mission-5-failure',
     context: 'Fallo misión 5',
     lines: [
-      { id: 'm5f-1', speaker: 'lila', emotion: 'happy', text: '¡Todavía podemos, {nombre}! ¡Vamos otra vez!' },
+      { id: 'm5f-1', speaker: 'timo', emotion: 'thinking', text: 'Piensa en el problema de cada lugar, {nombre}. ¡La solución correcta existe!' },
+    ],
+  },
+
+  // Mission 6 — Techo verde (referencia CIIEMAD/IPN)
+  'mission-6-intro': {
+    id: 'mission-6-intro',
+    context: 'Intro misión 6 — techo verde',
+    lines: [
+      { id: 'm6i-1', speaker: 'timo', emotion: 'thinking', text: '{nombre}, ya mejoramos la calle… pero los techos siguen hirviendo. ¡Absorben todo el calor!' },
+      { id: 'm6i-2', speaker: 'xani', emotion: 'excited', text: '¿Saben qué? En el Instituto Politécnico Nacional, en un centro que se llama CIIEMAD, estudian algo increíble: techos verdes.' },
+      { id: 'm6i-3', speaker: 'don-tono', emotion: 'surprised', text: '¿Plantas en el techo? ¿Y no se cae todo?', optional: true },
+      { id: 'm6i-4', speaker: 'timo', emotion: 'excited', text: '¡No! Es como un sándwich: primero va una capa que no deja pasar el agua, luego una que drena, después un filtro, tierra especial, y al final las plantas.' },
+      { id: 'm6i-5', speaker: 'xani', emotion: 'happy', text: 'Un techo verde puede bajar la temperatura del edificio hasta 15%. Y absorbe el agua de lluvia como esponja.' },
+      { id: 'm6i-6', speaker: 'lila', emotion: 'excited', text: '¡{nombre}, vamos a armar un techo verde! Hay que poner cada capa en su lugar.' },
+      { id: 'm6i-7', speaker: 'nube-gris', emotion: 'mischievous', text: '¿Plantas en un techo? Eso no va a funcionar.', optional: true },
+    ],
+  },
+  'mission-6-success': {
+    id: 'mission-6-success',
+    context: 'Éxito misión 6 — techo verde',
+    lines: [
+      { id: 'm6s-1', speaker: 'timo', emotion: 'proud', text: '¡{nombre}, lo armaste perfecto! Cada capa en su lugar.' },
+      { id: 'm6s-2', speaker: 'xani', emotion: 'happy', text: 'Las plantas del techo van a dar sombra, limpiar el aire y darle casa a mariposas y abejas.' },
+      { id: 'm6s-3', speaker: 'don-tono', emotion: 'surprised', text: 'Si me hubieran dicho que un techo podía tener jardín… no lo creo.', optional: true },
+      { id: 'm6s-4', speaker: 'nico', emotion: 'excited', text: '¡Hasta se siente más fresco aquí abajo!' },
+      { id: 'm6s-5', speaker: 'lila', emotion: 'proud', text: 'En el CIIEMAD del Instituto Politécnico Nacional ya lo hacen. Imagina si todo el barrio tuviera techos verdes, {nombre}.' },
+      { id: 'm6s-6', speaker: 'nube-gris', emotion: 'angry', text: '¿Plantas arriba Y abajo? Esto ya no me gusta nada.' },
+    ],
+  },
+  'mission-6-failure': {
+    id: 'mission-6-failure',
+    context: 'Fallo misión 6',
+    lines: [
+      { id: 'm6f-1', speaker: 'timo', emotion: 'thinking', text: 'El orden de las capas importa, {nombre}. ¡Inténtalo otra vez!' },
     ],
   },
 

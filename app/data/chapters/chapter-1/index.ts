@@ -17,11 +17,12 @@ export const chapter1: ChapterConfig = {
     { id: 'mission-3', type: 'mission', missionId: 'mission-3-plant' },
     { id: 'mission-4', type: 'mission', missionId: 'mission-4-leak' },
     { id: 'mission-5', type: 'mission', missionId: 'mission-5-restore' },
+    { id: 'mission-6', type: 'mission', missionId: 'mission-6-greenroof' },
     { id: 'transformation', type: 'transformation', dialoguePoolId: 'chapter-1-ending' },
     { id: 'summary', type: 'summary' },
     { id: 'hook', type: 'hook', dialoguePoolId: 'chapter-2-hook' },
   ],
-  missionIds: ['mission-1-clean', 'mission-2-heat', 'mission-3-plant', 'mission-4-leak', 'mission-5-restore'],
+  missionIds: ['mission-1-clean', 'mission-2-heat', 'mission-3-plant', 'mission-4-leak', 'mission-5-restore', 'mission-6-greenroof'],
   completionReward: {
     points: 50,
     badge: 'hot-street-guardian',

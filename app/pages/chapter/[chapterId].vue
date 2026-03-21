@@ -264,6 +264,7 @@ import HeatDetector from '~/components/chapter/chapter-1/HeatDetector.vue'
 import ShadePlanter from '~/components/chapter/chapter-1/ShadePlanter.vue'
 import LeakFixer from '~/components/chapter/chapter-1/LeakFixer.vue'
 import SpaceRestorer from '~/components/chapter/chapter-1/SpaceRestorer.vue'
+import GreenRoofBuilder from '~/components/chapter/chapter-1/GreenRoofBuilder.vue'
 
 import PathClear from '~/components/chapter/chapter-2/PathClear.vue'
 import SoilMemory from '~/components/chapter/chapter-2/SoilMemory.vue'
@@ -352,6 +353,7 @@ const missionComponentMap: Record<string, any> = {
   'mission-3-plant': USE_PHASER ? ShadePlanterPhaser : ShadePlanter,
   'mission-4-leak': USE_PHASER ? LeakFixerPhaser : LeakFixer,
   'mission-5-restore': USE_PHASER ? SpaceRestorerPhaser : SpaceRestorer,
+  'mission-6-greenroof': GreenRoofBuilder,
   // Chapter 2
   'mission-1-paths': USE_PHASER ? PathClearPhaser : PathClear,
   'mission-2-soil': USE_PHASER ? SoilMemoryPhaser : SoilMemory,
@@ -590,6 +592,7 @@ const missionIconMap: Record<string, string> = {
   'mission-3-plant': '🌳',
   'mission-4-leak': '🔧',
   'mission-5-restore': '🎨',
+  'mission-6-greenroof': '🌿',
   // Chapter 2
   'mission-1-paths': '🧹',
   'mission-2-soil': '🌱',
@@ -660,8 +663,9 @@ const summaryData = computed(() => {
       'Se plantó sombra',
       'Se arregló una fuga',
       'Se recuperó el espacio',
+      'Se construyó un techo verde que enfría el edificio',
     ],
-    message: 'Más sombra, menos basura y mejor cuidado pueden cambiar cómo se vive una calle.',
+    message: 'Más sombra, menos basura, techos verdes y mejor cuidado pueden cambiar cómo se vive una calle.',
     unlockLabel: 'Zona 2: El Parque Dormido',
   }
 })

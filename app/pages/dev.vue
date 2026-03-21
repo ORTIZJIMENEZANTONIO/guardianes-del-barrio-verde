@@ -115,9 +115,25 @@
             <span class="mission-title">{{ m.title }}</span>
             <span class="mission-pts">{{ m.reward.points }}pts</span>
             <span v-if="m.reward.badgeTitle" class="mission-badge">🏅 {{ m.reward.badgeTitle }}</span>
+            <button v-if="missionComponentMap[m.id]" class="play-btn" @click="playMission(m.id, m.title)">
+              ▶ Jugar
+            </button>
           </div>
         </div>
       </div>
+
+      <!-- Mission player overlay -->
+      <Teleport to="body">
+        <div v-if="playingMissionId" class="mission-player-overlay">
+          <div class="mission-player-header">
+            <span class="mission-player-title">{{ playingMissionTitle }}</span>
+            <button class="mission-player-close" @click="stopPlaying">✕ Cerrar</button>
+          </div>
+          <div class="mission-player-area">
+            <component :is="missionComponentMap[playingMissionId]" @complete="stopPlaying" />
+          </div>
+        </div>
+      </Teleport>
     </section>
 
     <!-- ===== MECÁNICAS ===== -->
@@ -154,6 +170,22 @@ import { chapter3 } from '~/data/chapters/chapter-3'
 import { chapter3Missions } from '~/data/chapters/chapter-3/missions'
 import { useGameStore } from '~/stores/useGameStore'
 import type { Emotion } from '~/shared/types/character'
+
+// Minigame components for individual play
+import SidewalkCleanup from '~/components/chapter/chapter-1/SidewalkCleanup.vue'
+import HeatDetector from '~/components/chapter/chapter-1/HeatDetector.vue'
+import ShadePlanter from '~/components/chapter/chapter-1/ShadePlanter.vue'
+import LeakFixer from '~/components/chapter/chapter-1/LeakFixer.vue'
+import SpaceRestorer from '~/components/chapter/chapter-1/SpaceRestorer.vue'
+import GreenRoofBuilder from '~/components/chapter/chapter-1/GreenRoofBuilder.vue'
+import PathClear from '~/components/chapter/chapter-2/PathClear.vue'
+import SoilMemory from '~/components/chapter/chapter-2/SoilMemory.vue'
+import WaterDragDrop from '~/components/chapter/chapter-2/WaterDragDrop.vue'
+import WildlifeMemory from '~/components/chapter/chapter-2/WildlifeMemory.vue'
+import ParkDragRestore from '~/components/chapter/chapter-2/ParkDragRestore.vue'
+import FloodDragClear from '~/components/chapter/chapter-3/FloodDragClear.vue'
+import WetlandMemory from '~/components/chapter/chapter-3/WetlandMemory.vue'
+import PipeDragFit from '~/components/chapter/chapter-3/PipeDragFit.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -197,6 +229,37 @@ const mechanics = [
   { type: 'placement', icon: '📌', desc: 'Seleccionar ítem + tocar zona para colocar', chapters: 'Cap. 1' },
   { type: 'pipe-fit', icon: '🔧', desc: 'Colocar piezas de tubería en huecos', chapters: 'Cap. 1' },
 ]
+
+// Mission component map for individual play
+const missionComponentMap: Record<string, any> = {
+  'mission-1-clean': SidewalkCleanup,
+  'mission-2-heat': HeatDetector,
+  'mission-3-plant': ShadePlanter,
+  'mission-4-leak': LeakFixer,
+  'mission-5-restore': SpaceRestorer,
+  'mission-6-greenroof': GreenRoofBuilder,
+  'mission-1-paths': PathClear,
+  'mission-2-soil': SoilMemory,
+  'mission-3-water': WaterDragDrop,
+  'mission-4-life': WildlifeMemory,
+  'mission-5-reactivate': ParkDragRestore,
+  'mission-1-waste': FloodDragClear,
+  'mission-2-wetland': WetlandMemory,
+  'mission-3-repair': PipeDragFit,
+}
+
+const playingMissionId = ref<string | null>(null)
+const playingMissionTitle = ref('')
+
+function playMission(missionId: string, title: string) {
+  playingMissionId.value = missionId
+  playingMissionTitle.value = title
+}
+
+function stopPlaying() {
+  playingMissionId.value = null
+  playingMissionTitle.value = ''
+}
 
 function goToChapter(chapterId: string) {
   gameStore.setPhase('playing')
@@ -452,6 +515,64 @@ function goToChapter(chapterId: string) {
 .mission-title { font-size: 13px; font-weight: 700; color: #1e293b; flex: 1; }
 .mission-pts { font-size: 12px; font-weight: 800; color: var(--color-green-dark); }
 .mission-badge { font-size: 11px; color: #64748b; }
+
+.play-btn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 2px solid var(--color-green-mid);
+  background: var(--color-green-bg);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--color-green-dark);
+  cursor: pointer;
+  transition: all 150ms;
+  white-space: nowrap;
+}
+.play-btn:hover { background: var(--color-green-mid); color: white; }
+
+/* Mission player overlay */
+.mission-player-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #111;
+  display: flex;
+  flex-direction: column;
+}
+
+.mission-player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: rgba(0,0,0,0.8);
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.mission-player-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: white;
+}
+
+.mission-player-close {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mission-player-close:hover { background: rgba(255,255,255,0.2); }
+
+.mission-player-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
 
 /* Mechanics */
 .mechanics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
