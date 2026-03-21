@@ -3,7 +3,6 @@
     class="game-btn"
     :class="[`game-btn--${variant}`, `game-btn--${size}`, { 'game-btn--disabled': disabled }]"
     :disabled="disabled"
-    @click="$emit('click')"
   >
     <span class="game-btn__bg" />
     <span class="game-btn__content">
@@ -22,10 +21,6 @@ withDefaults(defineProps<{
   size: 'md',
   disabled: false,
 })
-
-defineEmits<{
-  click: []
-}>()
 </script>
 
 <style scoped>

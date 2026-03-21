@@ -11,6 +11,8 @@
     @retry="resetGame"
   >
     <div class="heat-game">
+      <SceneSky variant="hot" />
+      <SceneStreet variant="dirty" />
       <div class="street-scene">
         <div
           v-for="spot in spots"
@@ -52,9 +54,13 @@
 </template>
 
 <script setup lang="ts">
+import { useGameAnimations } from '~/composables/useGameAnimations'
+
 const emit = defineEmits<{
   complete: []
 }>()
+
+const { shakeWrong, celebrateSuccess, confettiBurst } = useGameAnimations()
 
 interface HeatSpot {
   id: string
@@ -112,11 +118,16 @@ function tapSpot(spot: HeatSpot) {
   if (spot.isHot) {
     hotSpotsFound.value++
     showFeedback(spot.message, 'hot')
+    // Shake screen for heat effect
+    const gameEl = document.querySelector('.heat-game')
+    if (gameEl) shakeWrong(gameEl)
   } else {
     showFeedback(spot.message, 'cool')
   }
 
   if (isComplete.value) {
+    const gameEl = document.querySelector('.heat-game')
+    if (gameEl) confettiBurst(gameEl, 16)
     setTimeout(() => { showResult.value = true }, 1000)
   }
 }
@@ -140,13 +151,14 @@ function resetGame() {
   width: 100%;
   height: 100%;
   display: flex;
-  background: linear-gradient(180deg, #ffd166 0%, #e8c547 30%, #d4a437 100%);
+  background: transparent;
   position: relative;
 }
 
 .street-scene {
   flex: 1;
   position: relative;
+  z-index: 5;
 }
 
 .heat-spot {
@@ -196,8 +208,10 @@ function resetGame() {
   flex-direction: column;
   align-items: center;
   padding: 12px 8px;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.9);
   gap: 6px;
+  z-index: 5;
+  position: relative;
 }
 
 .gauge-label { font-size: 10px; font-weight: 800; color: var(--color-text); }

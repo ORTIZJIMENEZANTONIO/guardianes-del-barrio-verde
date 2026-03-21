@@ -23,7 +23,7 @@
       <line x1="34" :y1="browY(37)" x2="44" :y2="browY(35)" stroke="#3d2314" stroke-width="2" stroke-linecap="round" />
       <line x1="56" :y1="browY(35)" x2="66" :y2="browY(37)" stroke="#3d2314" stroke-width="2" stroke-linecap="round" />
       <!-- Mouth -->
-      <path :d="mouthPath" fill="none" :stroke="mouthColor" stroke-width="2.5" stroke-linecap="round" />
+      <path :d="mouthPath" :fill="mouthFill" :stroke="mouthColor" stroke-width="2.5" stroke-linecap="round" />
       <!-- Blush -->
       <ellipse cx="33" cy="54" rx="5" ry="3" fill="rgba(255,100,100,0.2)" />
       <ellipse cx="67" cy="54" rx="5" ry="3" fill="rgba(255,100,100,0.2)" />
@@ -57,7 +57,7 @@
       <line x1="34" :y1="browY(38)" x2="44" :y2="browY(37)" stroke="#4a2c0a" stroke-width="2" stroke-linecap="round" />
       <line x1="56" :y1="browY(37)" x2="66" :y2="browY(38)" stroke="#4a2c0a" stroke-width="2" stroke-linecap="round" />
       <!-- Mouth -->
-      <path :d="mouthPath" fill="none" :stroke="mouthColor" stroke-width="2.5" stroke-linecap="round" />
+      <path :d="mouthPath" :fill="mouthFill" :stroke="mouthColor" stroke-width="2.5" stroke-linecap="round" />
       <!-- Freckles -->
       <circle cx="35" cy="52" r="1" fill="rgba(139,94,52,0.4)" />
       <circle cx="38" cy="54" r="1" fill="rgba(139,94,52,0.4)" />
@@ -89,7 +89,7 @@
       <path :d="`M36 ${browY(40)} Q40 ${browY(38)} 44 ${browY(40)}`" fill="none" stroke="#1a1a2e" stroke-width="1.5" />
       <path :d="`M56 ${browY(40)} Q60 ${browY(38)} 64 ${browY(40)}`" fill="none" stroke="#1a1a2e" stroke-width="1.5" />
       <!-- Mouth -->
-      <path :d="mouthPath" fill="none" :stroke="mouthColor" stroke-width="2" stroke-linecap="round" />
+      <path :d="mouthPath" :fill="mouthFill" :stroke="mouthColor" stroke-width="2" stroke-linecap="round" />
     </template>
 
     <!-- DON TOÑO -->
@@ -115,7 +115,7 @@
       <!-- Mustache -->
       <path d="M38 56 Q44 60 50 56 Q56 60 62 56" fill="none" stroke="#6b5b3e" stroke-width="2.5" stroke-linecap="round" />
       <!-- Mouth (under mustache) -->
-      <path :d="mouthPathDonTono" fill="none" :stroke="mouthColor" stroke-width="2" stroke-linecap="round" />
+      <path :d="mouthPathDonTono" :fill="mouthFillDonTono" :stroke="mouthColor" stroke-width="2" stroke-linecap="round" />
     </template>
 
     <!-- NUBE GRIS -->
@@ -141,7 +141,7 @@
       <line x1="33" :y1="browY(40)" x2="43" :y2="browY(43)" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" />
       <line x1="57" :y1="browY(43)" x2="67" :y2="browY(40)" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" />
       <!-- Mouth -->
-      <path :d="mouthPath" fill="none" :stroke="mouthColor" stroke-width="2.5" stroke-linecap="round" />
+      <path :d="mouthPath" :fill="mouthFill" :stroke="mouthColor" stroke-width="2.5" stroke-linecap="round" />
     </template>
 
     <!-- NICO -->
@@ -163,7 +163,7 @@
       <line x1="35" :y1="browY(38)" x2="44" :y2="browY(37)" stroke="#2d1810" stroke-width="2" stroke-linecap="round" />
       <line x1="56" :y1="browY(37)" x2="65" :y2="browY(38)" stroke="#2d1810" stroke-width="2" stroke-linecap="round" />
       <!-- Mouth -->
-      <path :d="mouthPath" fill="none" :stroke="mouthColor" stroke-width="2.5" stroke-linecap="round" />
+      <path :d="mouthPath" :fill="mouthFill" :stroke="mouthColor" stroke-width="2.5" stroke-linecap="round" />
     </template>
 
     <!-- VALE -->
@@ -184,7 +184,7 @@
       <path :d="`M35 ${browY(39)} Q40 ${browY(37)} 44 ${browY(39)}`" fill="none" stroke="#5c3a1e" stroke-width="1.5" />
       <path :d="`M56 ${browY(39)} Q60 ${browY(37)} 65 ${browY(39)}`" fill="none" stroke="#5c3a1e" stroke-width="1.5" />
       <!-- Mouth -->
-      <path :d="mouthPath" fill="none" :stroke="mouthColor" stroke-width="2" stroke-linecap="round" />
+      <path :d="mouthPath" :fill="mouthFill" :stroke="mouthColor" stroke-width="2" stroke-linecap="round" />
       <!-- Earrings -->
       <circle cx="24" cy="52" r="2.5" fill="#fbbf24" />
       <circle cx="76" cy="52" r="2.5" fill="#fbbf24" />
@@ -197,7 +197,7 @@
       <circle v-if="!isBlinking" cx="60" cy="42" r="4" fill="white" />
       <circle v-if="!isBlinking" cx="40" cy="42" r="2" fill="#333" />
       <circle v-if="!isBlinking" cx="60" cy="42" r="2" fill="#333" />
-      <path d="M40 55 Q50 62 60 55" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
+      <path :d="mouthPath" :fill="mouthFill" stroke="#333" stroke-width="2" stroke-linecap="round" />
     </template>
   </svg>
 </template>
@@ -217,7 +217,9 @@ const props = withDefaults(defineProps<{
 const viewBox = '0 0 100 80'
 
 const isBlinking = ref(false)
+const mouthOpen = ref(false)
 let blinkInterval: ReturnType<typeof setInterval> | null = null
+let talkInterval: ReturnType<typeof setInterval> | null = null
 
 onMounted(() => {
   blinkInterval = setInterval(() => {
@@ -226,8 +228,22 @@ onMounted(() => {
   }, 3000 + Math.random() * 2000)
 })
 
+// Mouth open/close while speaking
+watch(() => props.isSpeaking, (speaking) => {
+  if (speaking) {
+    mouthOpen.value = true
+    talkInterval = setInterval(() => {
+      mouthOpen.value = !mouthOpen.value
+    }, 180)
+  } else {
+    if (talkInterval) { clearInterval(talkInterval); talkInterval = null }
+    mouthOpen.value = false
+  }
+}, { immediate: true })
+
 onUnmounted(() => {
   if (blinkInterval) clearInterval(blinkInterval)
+  if (talkInterval) clearInterval(talkInterval)
 })
 
 // Eye direction based on emotion
@@ -252,8 +268,10 @@ function browY(baseY: number) {
   return baseY
 }
 
-// Mouth shape based on emotion
+// Mouth shape based on emotion + talking
 const mouthPath = computed(() => {
+  // Open mouth when talking
+  if (mouthOpen.value) return 'M40 57 Q50 68 60 57 Q50 62 40 57'
   const e = props.emotion
   if (e === 'happy' || e === 'excited' || e === 'proud') return 'M38 58 Q50 68 62 58'
   if (e === 'sad') return 'M40 62 Q50 56 60 62'
@@ -262,15 +280,26 @@ const mouthPath = computed(() => {
   if (e === 'surprised') return 'M44 58 Q50 65 56 58'
   if (e === 'mischievous') return 'M38 58 Q45 64 55 60 Q58 58 62 60'
   if (e === 'thinking') return 'M42 60 Q48 58 54 60'
-  return 'M40 59 Q50 64 60 59' // neutral - slight smile
+  return 'M40 59 Q50 64 60 59'
+})
+
+const mouthFill = computed(() => {
+  if (mouthOpen.value) return '#8b2020'
+  return 'none'
 })
 
 const mouthPathDonTono = computed(() => {
+  if (mouthOpen.value) return 'M43 62 Q50 70 57 62 Q50 65 43 62'
   const e = props.emotion
   if (e === 'happy' || e === 'proud') return 'M42 62 Q50 68 58 62'
   if (e === 'sad') return 'M42 66 Q50 62 58 66'
   if (e === 'surprised') return 'M46 63 Q50 68 54 63'
   return 'M43 64 Q50 67 57 64'
+})
+
+const mouthFillDonTono = computed(() => {
+  if (mouthOpen.value) return '#8b2020'
+  return 'none'
 })
 
 const mouthColor = computed(() => {

@@ -11,6 +11,8 @@
     @retry="resetGame"
   >
     <div class="planter-game">
+      <SceneSky variant="nice" />
+      <SceneStreet variant="normal" />
       <!-- Street grid -->
       <div class="street-grid">
         <div
@@ -23,6 +25,7 @@
             'plant-slot--wrong': slot.wrongAttempt,
           }"
           :style="{ left: slot.x + '%', top: slot.y + '%' }"
+          :data-slot="slot.id"
           @click="tryPlant(slot)"
         >
           <template v-if="slot.planted">
@@ -56,9 +59,13 @@
 </template>
 
 <script setup lang="ts">
+import { useGameAnimations } from '~/composables/useGameAnimations'
+
 const emit = defineEmits<{
   complete: []
 }>()
+
+const { shakeWrong, celebrateSuccess, confettiBurst } = useGameAnimations()
 
 interface PlantSlot {
   id: string
@@ -104,13 +111,25 @@ function tryPlant(slot: PlantSlot) {
     treesPlanted.value++
     seedsRemaining.value--
     showFB(slot.reason, true)
+    // Bounce the planted tree
+    nextTick(() => {
+      const planted = document.querySelector(`[data-slot="${slot.id}"] .planted-tree`)
+      if (planted) celebrateSuccess(planted)
+    })
     if (isComplete.value) {
+      const gameEl = document.querySelector('.planter-game')
+      if (gameEl) confettiBurst(gameEl, 20)
       setTimeout(() => { showResult.value = true }, 800)
     }
   } else {
     slot.wrongAttempt = true
     seedsRemaining.value--
     showFB(slot.reason, false)
+    // Shake the wrong slot
+    nextTick(() => {
+      const slotEl = document.querySelector(`[data-slot="${slot.id}"]`)
+      if (slotEl) shakeWrong(slotEl)
+    })
     setTimeout(() => { slot.wrongAttempt = false }, 1000)
     if (seedsRemaining.value <= 0 && !isComplete.value) {
       setTimeout(() => { showResult.value = true }, 1000)
@@ -138,13 +157,14 @@ function resetGame() {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #87ceeb 0%, #e8e0d0 40%, #c9b896 100%);
+  background: transparent;
   position: relative;
 }
 
 .street-grid {
   flex: 1;
   position: relative;
+  z-index: 5;
 }
 
 .plant-slot {
@@ -204,6 +224,8 @@ function resetGame() {
   align-items: center;
   padding: 10px 16px;
   background: rgba(255,255,255,0.95);
+  position: relative;
+  z-index: 5;
 }
 
 .seed-info {

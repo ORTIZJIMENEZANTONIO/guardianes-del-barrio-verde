@@ -1,21 +1,8 @@
 <template>
   <div class="home-screen">
     <!-- Animated background -->
-    <div class="home-bg">
-      <div class="bg-gradient" />
-      <div class="bg-orbs">
-        <div class="orb orb-1" />
-        <div class="orb orb-2" />
-        <div class="orb orb-3" />
-      </div>
-      <div class="cloud cloud-1">☁️</div>
-      <div class="cloud cloud-2">☁️</div>
-      <div class="cloud cloud-3">☁️</div>
-      <div class="sun">☀️</div>
-      <div class="bg-trees">
-        <span>🌳</span><span>🌲</span><span>🌳</span><span>🏘️</span><span>🌳</span><span>🌲</span><span>🌳</span>
-      </div>
-    </div>
+    <SceneSky variant="nice" />
+    <SceneStreet variant="clean" />
 
     <!-- Main content -->
     <div class="home-content">
@@ -84,8 +71,7 @@ onMounted(() => {
 
 function startNewGame() {
   playerStore.resetProgress()
-  gameStore.startGame()
-  router.push('/chapter/chapter-1')
+  router.push('/registro')
 }
 
 function continueGame() {
@@ -107,85 +93,6 @@ function continueGame() {
   justify-content: center;
   position: relative;
   overflow: hidden;
-}
-
-/* ===== BACKGROUND ===== */
-.home-bg {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.bg-gradient {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 30% 20%, rgba(125, 211, 252, 0.5) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 80%, rgba(52, 211, 153, 0.4) 0%, transparent 50%),
-    linear-gradient(175deg, #0ea5e9 0%, #34d399 40%, #059669 70%, #047857 100%);
-}
-
-.bg-orbs {
-  position: absolute;
-  inset: 0;
-}
-
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.3;
-  animation: float 8s ease-in-out infinite;
-}
-.orb-1 {
-  width: 200px; height: 200px;
-  background: #a78bfa;
-  top: 10%; left: 5%;
-}
-.orb-2 {
-  width: 250px; height: 250px;
-  background: #34d399;
-  bottom: 20%; right: -5%;
-  animation-delay: 3s;
-}
-.orb-3 {
-  width: 150px; height: 150px;
-  background: #fbbf24;
-  top: 50%; left: 40%;
-  animation-delay: 5s;
-}
-
-.cloud {
-  position: absolute;
-  font-size: 36px;
-  opacity: 0.5;
-  animation: float 7s ease-in-out infinite;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-}
-.cloud-1 { top: 8%; left: 10%; }
-.cloud-2 { top: 15%; right: 12%; animation-delay: 2.5s; font-size: 28px; }
-.cloud-3 { top: 22%; left: 45%; animation-delay: 4s; font-size: 22px; }
-
-.sun {
-  position: absolute;
-  top: 4%;
-  right: 8%;
-  font-size: 52px;
-  animation: pulse 4s ease-in-out infinite;
-  filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.5));
-}
-
-.bg-trees {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  font-size: 48px;
-  opacity: 0.2;
-  filter: blur(1px);
 }
 
 /* ===== CONTENT ===== */

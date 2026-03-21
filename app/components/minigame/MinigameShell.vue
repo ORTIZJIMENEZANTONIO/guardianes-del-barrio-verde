@@ -4,8 +4,8 @@
     <div class="minigame-header">
       <div class="minigame-title">{{ title }}</div>
       <div class="minigame-stats">
-        <div v-if="timeLimit" class="minigame-timer" :class="{ 'timer--warning': timeRemaining <= 10 }">
-          ⏱ {{ timeRemaining }}s
+        <div v-if="timeLimit" ref="timerRef" class="minigame-timer" :class="{ 'timer--warning': timeRemaining <= 10 }">
+          ⏱ {{ timerDisplay }}
         </div>
         <div class="minigame-score">
           ✅ {{ completed }}/{{ total }}
@@ -19,7 +19,7 @@
         <div class="instructions-card animate-scale-in">
           <h3>{{ title }}</h3>
           <p>{{ description }}</p>
-          <GameButton variant="primary" size="lg" @click.stop="startGame">
+          <GameButton variant="primary" size="lg" @click="startGame">
             ¡Empezar!
           </GameButton>
         </div>
@@ -41,7 +41,7 @@
           <GameButton
             :variant="isSuccess ? 'primary' : 'secondary'"
             size="lg"
-            @click="isSuccess ? $emit('complete') : $emit('retry')"
+            @click="onResultClick"
           >
             {{ isSuccess ? 'Continuar' : 'Reintentar' }}
           </GameButton>
@@ -52,6 +52,15 @@
 </template>
 
 <script setup lang="ts">
+import { useGameAnimations } from '~/composables/useGameAnimations'
+import { usePlayerStore } from '~/stores/usePlayerStore'
+
+const { popIn, slideUpBounce, heartbeat, killAll } = useGameAnimations()
+const playerStore = usePlayerStore()
+
+const timerRef = ref<HTMLElement | null>(null)
+let heartbeatAnim: ReturnType<typeof heartbeat> | null = null
+
 const props = defineProps<{
   title: string
   description: string
@@ -71,17 +80,44 @@ const emit = defineEmits<{
 
 const showInstructions = ref(true)
 const timeRemaining = ref(props.timeLimit ?? 0)
+
+const timerDisplay = computed(() => {
+  const m = Math.floor(timeRemaining.value / 60)
+  const s = timeRemaining.value % 60
+  return m > 0 ? `${m}:${s.toString().padStart(2, '0')}` : `${s}s`
+})
 let timer: ReturnType<typeof setInterval> | null = null
+
+function onResultClick() {
+  if (props.isSuccess) {
+    emit('complete')
+  } else {
+    emit('retry')
+  }
+}
 
 function startGame() {
   showInstructions.value = false
   emit('start')
+  startTimer()
+}
+
+function startTimer() {
+  // Always stop any existing timer first
+  stopTimer()
   if (props.timeLimit) {
-    timeRemaining.value = props.timeLimit
+    heartbeatAnim = null
+    // Adjust time by player age: younger = more time, older = less
+    const adjusted = Math.round(props.timeLimit * playerStore.timerMultiplier)
+    timeRemaining.value = adjusted
     timer = setInterval(() => {
       timeRemaining.value--
+      if (timeRemaining.value <= 10 && !heartbeatAnim && timerRef.value) {
+        heartbeatAnim = heartbeat(timerRef.value)
+      }
       if (timeRemaining.value <= 0) {
         if (timer) clearInterval(timer)
+        if (timerRef.value) { killAll(timerRef.value); heartbeatAnim = null }
         emit('timeout')
       }
     }, 1000)
@@ -93,21 +129,20 @@ function stopTimer() {
     clearInterval(timer)
     timer = null
   }
+  if (timerRef.value) { killAll(timerRef.value); heartbeatAnim = null }
 }
 
 function restartTimer() {
   stopTimer()
-  if (props.timeLimit) {
-    timeRemaining.value = props.timeLimit
-    timer = setInterval(() => {
-      timeRemaining.value--
-      if (timeRemaining.value <= 0) {
-        if (timer) clearInterval(timer)
-        emit('timeout')
-      }
-    }, 1000)
-  }
+  startTimer()
 }
+
+// Stop timer when objective is complete
+watch(() => props.completed, (val) => {
+  if (val >= props.total) {
+    stopTimer()
+  }
+})
 
 watch(() => props.showResult, (v, oldV) => {
   if (v) {

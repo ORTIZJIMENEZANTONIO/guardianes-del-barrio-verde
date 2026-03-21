@@ -7,15 +7,15 @@
       </div>
     </div>
     <div class="hud-right">
-      <div class="hud-stat">
+      <div ref="scoreRef" class="hud-stat">
         <span class="hud-stat__icon">🌿</span>
         <span class="hud-stat__value">{{ playerStore.score }}</span>
       </div>
-      <div class="hud-stat">
+      <div ref="seedRef" class="hud-stat">
         <span class="hud-stat__icon">🌱</span>
         <span class="hud-stat__value">{{ playerStore.seeds }}</span>
       </div>
-      <div class="hud-stat">
+      <div ref="badgeRef" class="hud-stat">
         <span class="hud-stat__icon">🏅</span>
         <span class="hud-stat__value">{{ playerStore.totalBadges }}</span>
       </div>
@@ -25,6 +25,7 @@
 
 <script setup lang="ts">
 import { usePlayerStore } from '~/stores/usePlayerStore'
+import { useGameAnimations } from '~/composables/useGameAnimations'
 
 defineProps<{
   chapterTitle?: string
@@ -35,6 +36,21 @@ defineEmits<{
 }>()
 
 const playerStore = usePlayerStore()
+
+const { animateScore } = useGameAnimations()
+const scoreRef = ref<HTMLElement | null>(null)
+const seedRef = ref<HTMLElement | null>(null)
+const badgeRef = ref<HTMLElement | null>(null)
+
+watch(() => playerStore.score, () => {
+  if (scoreRef.value) animateScore(scoreRef.value)
+})
+watch(() => playerStore.seeds, () => {
+  if (seedRef.value) animateScore(seedRef.value)
+})
+watch(() => playerStore.totalBadges, () => {
+  if (badgeRef.value) animateScore(badgeRef.value)
+})
 </script>
 
 <style scoped>

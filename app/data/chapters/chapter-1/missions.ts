@@ -10,7 +10,7 @@ export const chapter1Missions: MissionConfig[] = [
     objectives: [
       { id: 'sort-trash', description: 'Clasificar residuos correctamente', target: 8, current: 0 },
     ],
-    timeLimit: 60,
+    timeLimit: 90,
     reward: { points: 15, seeds: 2, badge: 'first-rescue', badgeTitle: 'Primer Rescate' },
     introDialogueId: 'mission-1-intro',
     successDialogueId: 'mission-1-success',
@@ -53,7 +53,7 @@ export const chapter1Missions: MissionConfig[] = [
     objectives: [
       { id: 'fix-leak', description: 'Reparar la tubería', target: 5, current: 0 },
     ],
-    timeLimit: 45,
+    timeLimit: 90,
     reward: { points: 20, badge: 'water-guardian', badgeTitle: 'Cuidador del Agua' },
     introDialogueId: 'mission-4-intro',
     successDialogueId: 'mission-4-success',

@@ -4,6 +4,8 @@ const SAVE_KEY = 'guardianes-save-v1'
 
 export const usePlayerStore = defineStore('player', {
   state: () => ({
+    playerName: '',
+    playerAge: 10,
     score: 0,
     seeds: 3,
     waterDrops: 0,
@@ -19,9 +21,25 @@ export const usePlayerStore = defineStore('player', {
     isMissionComplete: (state) => (missionId: string) => state.completedMissions.includes(missionId),
     isChapterComplete: (state) => (chapterId: string) => state.completedChapters.includes(chapterId),
     totalBadges: (state) => state.badges.length,
+    isRegistered: (state) => state.playerName.length > 0,
+    /** Timer multiplier: younger kids get more time, older kids less */
+    timerMultiplier: (state) => {
+      if (state.playerAge <= 8) return 1.3
+      if (state.playerAge <= 9) return 1.15
+      if (state.playerAge <= 10) return 1.0
+      if (state.playerAge <= 11) return 0.85
+      return 0.75 // 12+
+    },
+    /** Older kids see fewer dialogue lines */
+    isCompactDialogue: (state) => state.playerAge >= 11,
   },
 
   actions: {
+    setProfile(name: string, age: number) {
+      this.playerName = name
+      this.playerAge = age
+    },
+
     addScore(points: number) {
       this.score += points
     },
@@ -55,6 +73,8 @@ export const usePlayerStore = defineStore('player', {
 
     saveProgress() {
       const data = {
+        playerName: this.playerName,
+        playerAge: this.playerAge,
         score: this.score,
         seeds: this.seeds,
         waterDrops: this.waterDrops,
@@ -72,6 +92,8 @@ export const usePlayerStore = defineStore('player', {
       const raw = localStorage.getItem(SAVE_KEY)
       if (raw) {
         const data = JSON.parse(raw)
+        this.playerName = data.playerName ?? ''
+        this.playerAge = data.playerAge ?? 10
         this.score = data.score ?? 0
         this.seeds = data.seeds ?? 3
         this.waterDrops = data.waterDrops ?? 0
@@ -86,6 +108,8 @@ export const usePlayerStore = defineStore('player', {
     },
 
     resetProgress() {
+      this.playerName = ''
+      this.playerAge = 10
       this.score = 0
       this.seeds = 3
       this.waterDrops = 0

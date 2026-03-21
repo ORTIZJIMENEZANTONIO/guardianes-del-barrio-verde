@@ -13,6 +13,8 @@
     @timeout="showResult = true"
   >
     <div class="leak-game">
+      <SceneSky variant="nice" />
+      <SceneStreet variant="dirty" />
       <!-- Pipe grid -->
       <div class="pipe-grid">
         <div
@@ -25,6 +27,7 @@
             'pipe-cell--placed': cell.type === 'placed',
             'pipe-cell--leak': cell.type === 'leak',
           }"
+          :data-cell="cell.id"
           @click="placepiece(cell)"
         >
           <span v-if="cell.pipeEmoji" class="pipe-emoji">{{ cell.pipeEmoji }}</span>
@@ -64,9 +67,13 @@
 </template>
 
 <script setup lang="ts">
+import { useGameAnimations } from '~/composables/useGameAnimations'
+
 const emit = defineEmits<{
   complete: []
 }>()
+
+const { shakeWrong, celebrateSuccess, confettiBurst } = useGameAnimations()
 
 interface GridCell {
   id: string
@@ -139,11 +146,21 @@ function placepiece(cell: GridCell) {
     piecesPlaced.value++
     selectedPiece.value = null
     showFB('¡Pieza correcta!', true)
+    nextTick(() => {
+      const placed = document.querySelector(`[data-cell="${cell.id}"]`)
+      if (placed) celebrateSuccess(placed)
+    })
     if (isComplete.value) {
+      const gameEl = document.querySelector('.leak-game')
+      if (gameEl) confettiBurst(gameEl, 20)
       setTimeout(() => { showResult.value = true }, 800)
     }
   } else {
     showFB('Esa pieza no encaja aquí.', false)
+    nextTick(() => {
+      const cellEl = document.querySelector(`[data-cell="${cell.id}"]`)
+      if (cellEl) shakeWrong(cellEl)
+    })
   }
 }
 
@@ -168,13 +185,15 @@ function resetGame() {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #8ecae6 0%, #a8dadc 50%, #457b9d 100%);
+  background: transparent;
   position: relative;
 }
 
 .pipe-grid {
   flex: 1;
   display: grid;
+  position: relative;
+  z-index: 5;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(3, 1fr);
   gap: 6px;
@@ -233,6 +252,8 @@ function resetGame() {
 .pieces-tray {
   padding: 12px 16px;
   background: rgba(255,255,255,0.95);
+  position: relative;
+  z-index: 5;
 }
 
 .tray-label {

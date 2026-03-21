@@ -11,70 +11,48 @@
     <div class="scene-container">
       <!-- CINEMATIC SCENE -->
       <div v-if="currentSceneType === 'cinematic'" class="scene cinematic-scene">
-        <!-- Sky -->
-        <div class="scene-sky scene-sky--hot" />
-        <!-- City silhouette layers -->
-        <div class="city-layer city-far">
-          <span>🏢</span><span>🏗️</span><span>🏢</span><span>🏨</span>
-        </div>
-        <div class="city-layer city-mid">
-          <span>🏚️</span><span>🏠</span><span>🏚️</span><span>🏠</span><span>🏚️</span>
-        </div>
-        <!-- Street level -->
-        <div class="street-ground street-ground--dirty" />
+        <SceneSky variant="hot" />
+        <SceneStreet variant="dirty" />
         <!-- Floating problems -->
-        <div class="floating-element" style="top: 18%; left: 15%; animation-delay: 0s;">
+        <div class="floating-element" style="top: 12%; left: 15%; animation-delay: 0s;">
           <span class="float-icon heat-wave">🌡️</span>
         </div>
-        <div class="floating-element" style="top: 35%; right: 12%; animation-delay: 1.2s;">
+        <div class="floating-element" style="top: 25%; right: 12%; animation-delay: 1.2s;">
           <span class="float-icon">🛍️</span>
         </div>
-        <div class="floating-element" style="bottom: 38%; left: 30%; animation-delay: 0.6s;">
+        <div class="floating-element" style="top: 35%; left: 30%; animation-delay: 0.6s;">
           <span class="float-icon">💧</span>
         </div>
-        <div class="floating-element" style="top: 28%; left: 55%; animation-delay: 1.8s;">
+        <div class="floating-element" style="top: 20%; left: 55%; animation-delay: 1.8s;">
           <span class="float-icon">📄</span>
         </div>
-        <div class="floating-element" style="bottom: 42%; right: 25%; animation-delay: 2.4s;">
+        <div class="floating-element" style="top: 30%; right: 25%; animation-delay: 2.4s;">
           <span class="float-icon">💨</span>
         </div>
         <DialogueScene />
-        <div v-if="!dialogueStore.isDialogueActive && sceneReady" class="scene-action">
+        <ActionButton :visible="!dialogueStore.isDialogueActive && sceneReady">
           <GameButton variant="primary" size="lg" @click="advanceScene">
             🎮 Comenzar
           </GameButton>
-        </div>
+        </ActionButton>
       </div>
 
       <!-- DIALOGUE SCENE -->
       <div v-else-if="currentSceneType === 'dialogue'" class="scene dialogue-full-scene">
-        <div class="scene-sky scene-sky--nice" />
-        <div class="city-layer city-far" style="opacity: 0.3;">
-          <span>🏢</span><span>🏗️</span><span>🏢</span>
-        </div>
-        <div class="city-layer city-mid">
-          <span>🏘️</span><span>🏠</span><span>🌳</span><span>🏠</span><span>🏘️</span>
-        </div>
-        <div class="street-ground" />
-        <!-- Ambient life -->
-        <div class="ambient-element" style="bottom: 28%; right: 8%;">🐕</div>
-        <div class="ambient-element" style="bottom: 26%; left: 10%; animation-delay: 2s;">🚶</div>
+        <SceneSky variant="nice" />
+        <SceneStreet variant="normal" />
         <DialogueScene />
-        <div v-if="!dialogueStore.isDialogueActive && sceneReady" class="scene-action">
+        <ActionButton :visible="!dialogueStore.isDialogueActive && sceneReady">
           <GameButton variant="primary" size="lg" @click="advanceScene">
             Continuar ▶
           </GameButton>
-        </div>
+        </ActionButton>
       </div>
 
       <!-- EXPLORATION SCENE (Observation) -->
       <div v-else-if="currentSceneType === 'exploration'" class="scene exploration-scene">
-        <div class="scene-sky scene-sky--hot" />
-        <!-- Street environment -->
-        <div class="city-layer city-mid" style="opacity: 0.6;">
-          <span>🏚️</span><span>🏠</span><span>🏚️</span><span>🏠</span>
-        </div>
-        <div class="street-ground street-ground--dirty" />
+        <SceneSky variant="hot" />
+        <SceneStreet variant="dirty" />
         <div class="exploration-bg">
           <div class="explore-title">
             <span class="explore-title__icon">🔍</span>
@@ -102,32 +80,29 @@
           </div>
         </div>
         <DialogueScene />
-        <div v-if="observedCount >= 5 && !dialogueStore.isDialogueActive && sceneReady" class="scene-action">
+        <ActionButton :visible="observedCount >= 5 && !dialogueStore.isDialogueActive">
           <GameButton variant="primary" size="lg" @click="advanceScene">
             ¡Listo! ▶
           </GameButton>
-        </div>
+        </ActionButton>
       </div>
 
       <!-- MISSION SCENE -->
       <div v-else-if="currentSceneType === 'mission'" class="scene mission-scene">
         <div v-if="missionPhase === 'intro'" class="mission-intro">
-          <div class="scene-sky scene-sky--nice" />
-          <div class="city-layer city-mid" style="opacity: 0.4;">
-            <span>🏠</span><span>🏘️</span><span>🌳</span><span>🏠</span>
-          </div>
-          <div class="street-ground" />
+          <SceneSky variant="nice" />
+          <SceneStreet variant="normal" />
           <!-- Mission title card -->
           <div class="mission-title-card animate-pop-in">
             <div class="mission-title-card__icon">{{ missionIcon }}</div>
             <div class="mission-title-card__name">{{ currentMissionConfig?.title }}</div>
           </div>
           <DialogueScene />
-          <div v-if="!dialogueStore.isDialogueActive && sceneReady" class="scene-action">
+          <ActionButton :visible="!dialogueStore.isDialogueActive && sceneReady">
             <GameButton variant="primary" size="lg" @click="startCurrentMission">
               💪 ¡A trabajar!
             </GameButton>
-          </div>
+          </ActionButton>
         </div>
 
         <div v-else-if="missionPhase === 'playing'" class="mission-playing">
@@ -135,8 +110,8 @@
         </div>
 
         <div v-else-if="missionPhase === 'success'" class="mission-success">
-          <div class="scene-sky scene-sky--nice" />
-          <div class="street-ground street-ground--clean" />
+          <SceneSky variant="nice" />
+          <SceneStreet variant="clean" />
           <!-- Celebration particles -->
           <div class="particles">
             <span v-for="i in 12" :key="i" class="particle" :style="particleStyle(i)">{{ particleEmoji(i) }}</span>
@@ -155,7 +130,7 @@
 
       <!-- TRANSFORMATION SCENE -->
       <div v-else-if="currentSceneType === 'transformation'" class="scene transformation-scene">
-        <div class="scene-sky" :class="transformStep >= 1 ? 'scene-sky--nice' : 'scene-sky--hot'" style="transition: all 2s ease;" />
+        <SceneSky :variant="transformStep >= 1 ? 'nice' : 'hot'" />
         <div class="transform-container">
           <!-- Before -->
           <div class="transform-card" :class="{ 'transform--fading': transformStep >= 1 }">
@@ -182,24 +157,24 @@
             </div>
           </div>
         </div>
-        <div v-if="transformStep < 1" class="scene-action">
+        <ActionButton :visible="transformStep < 1">
           <GameButton variant="primary" size="lg" @click="transformStep = 1">
             ✨ Ver la transformación
           </GameButton>
-        </div>
-        <div v-else>
+        </ActionButton>
+        <template v-if="transformStep >= 1">
           <DialogueScene />
-          <div v-if="!dialogueStore.isDialogueActive && sceneReady" class="scene-action">
+          <ActionButton :visible="!dialogueStore.isDialogueActive && sceneReady">
             <GameButton variant="primary" size="lg" @click="advanceScene">
               Continuar ▶
             </GameButton>
-          </div>
-        </div>
+          </ActionButton>
+        </template>
       </div>
 
       <!-- SUMMARY SCENE -->
       <div v-else-if="currentSceneType === 'summary'" class="scene summary-scene">
-        <div class="scene-sky scene-sky--nice" />
+        <SceneSky variant="nice" />
         <div class="particles particles--celebration">
           <span v-for="i in 8" :key="i" class="particle" :style="particleStyle(i)">{{ ['⭐','🌟','✨','🎉','🌿','🌱','🏅','💚'][i-1] }}</span>
         </div>
@@ -237,7 +212,7 @@
 
       <!-- HOOK TO NEXT CHAPTER -->
       <div v-else-if="currentSceneType === 'hook'" class="scene hook-scene">
-        <div class="scene-sky scene-sky--sunset" />
+        <SceneSky variant="sunset" />
         <div class="hook-bg">
           <div class="hook-preview animate-pop-in">
             <span style="font-size: 72px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));">🏞️</span>
@@ -246,11 +221,11 @@
           </div>
         </div>
         <DialogueScene />
-        <div v-if="!dialogueStore.isDialogueActive && sceneReady" class="scene-action">
+        <ActionButton :visible="!dialogueStore.isDialogueActive && sceneReady">
           <GameButton variant="secondary" size="lg" @click="goToMenu">
             🏠 Volver al inicio
           </GameButton>
-        </div>
+        </ActionButton>
       </div>
     </div>
 
@@ -362,20 +337,17 @@ const observationSpots = ref<ObservationSpot[]>([
 
 const observedCount = computed(() => observationSpots.value.filter(s => s.found).length)
 
-const observationDone = ref(false)
-
 function tapObservation(spot: ObservationSpot) {
-  if (spot.found || dialogueStore.isDialogueActive || observationDone.value) return
+  if (spot.found || dialogueStore.isDialogueActive) return
   spot.found = true
 
   const pool = chapter1Dialogues[spot.dialogueId]
   if (pool) {
     dialogueStore.startDialogue(pool.lines, () => {
-      if (observedCount.value >= 4 && !observationDone.value) {
-        observationDone.value = true
+      // After last spot, show completion dialogue then enable button
+      if (observedCount.value >= 5) {
         const completePool = chapter1Dialogues['observation-complete']
         if (completePool) {
-          sceneReady.value = false
           dialogueStore.startDialogue(completePool.lines, () => {
             sceneReady.value = true
           })
@@ -432,7 +404,6 @@ function startSceneDialogue() {
   }
 
   if (scene.type === 'exploration') {
-    observationDone.value = false
     observationSpots.value.forEach(s => { s.found = false })
   }
 
@@ -558,43 +529,6 @@ onMounted(() => {
 <style scoped>
 .scene { width: 100%; height: 100%; position: relative; display: flex; flex-direction: column; overflow: hidden; }
 
-/* ===== SHARED SCENE BUILDING BLOCKS ===== */
-.scene-sky {
-  position: absolute; inset: 0; z-index: 0;
-  transition: background 2s ease;
-}
-.scene-sky--hot {
-  background: linear-gradient(180deg, #fb923c 0%, #fbbf24 25%, #fde68a 50%, #e8d5b7 75%, #d4cbb8 100%);
-}
-.scene-sky--nice {
-  background: linear-gradient(180deg, #38bdf8 0%, #7dd3fc 30%, #bae6fd 55%, #d8f3dc 80%, #a8e6c3 100%);
-}
-.scene-sky--sunset {
-  background: linear-gradient(180deg, #6366f1 0%, #a78bfa 20%, #f472b6 45%, #fb923c 70%, #fbbf24 100%);
-}
-
-.city-layer {
-  position: absolute; left: 0; right: 0; z-index: 1;
-  display: flex; justify-content: center; gap: 4px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
-}
-.city-far { bottom: 32%; font-size: 36px; opacity: 0.25; gap: 12px; }
-.city-mid { bottom: 22%; font-size: 44px; opacity: 0.5; gap: 6px; }
-
-.street-ground {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 22%; z-index: 1;
-  background: linear-gradient(180deg, #a8a29e 0%, #78716c 100%);
-  border-top: 3px solid #d6d3d1;
-}
-.street-ground--dirty {
-  background: linear-gradient(180deg, #9ca3af 0%, #6b7280 100%);
-  border-top-color: #d1d5db;
-}
-.street-ground--clean {
-  background: linear-gradient(180deg, #86efac 0%, #4ade80 50%, #22c55e 100%);
-  border-top-color: #bbf7d0;
-}
-
 /* Floating elements */
 .floating-element {
   position: absolute; z-index: 2;
@@ -606,14 +540,6 @@ onMounted(() => {
   display: block;
 }
 .heat-wave { animation: heatWave 2s infinite; }
-
-/* Ambient life */
-.ambient-element {
-  position: absolute; z-index: 2;
-  font-size: 24px;
-  animation: float 5s ease-in-out infinite;
-  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15));
-}
 
 /* ===== EXPLORATION ===== */
 .exploration-scene { background: transparent; }
@@ -789,10 +715,6 @@ onMounted(() => {
 .hook-preview p { font-weight: 600; margin-top: 6px; font-size: 15px; text-shadow: 0 1px 6px rgba(0,0,0,0.4); }
 
 /* ===== SHARED ===== */
-.scene-action {
-  position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
-  z-index: 25; animation: slideUp 500ms var(--ease-out);
-}
 
 /* Pause */
 .pause-menu { text-align: center; }

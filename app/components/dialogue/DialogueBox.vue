@@ -95,16 +95,12 @@ onUnmounted(() => {
 }
 
 .dialogue-box__speaker {
-  font-weight: 800;
-  font-size: 13px;
-  margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  display: none; /* name is shown in DialogueScene name tag instead */
 }
 
 .dialogue-box__text {
-  font-size: 16px;
-  line-height: 1.55;
+  font-size: 18px;
+  line-height: 1.6;
   color: var(--color-text);
   font-weight: 600;
 }
@@ -119,12 +115,12 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--color-text);
   justify-content: flex-end;
   margin-top: 10px;
-  opacity: 0.6;
+  opacity: 0.5;
   animation: pulse 1.5s ease-in-out infinite;
 }
 

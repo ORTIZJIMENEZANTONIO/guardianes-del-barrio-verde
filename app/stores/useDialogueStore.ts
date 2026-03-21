@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { DialogueLine, DialogueChoice } from '~/shared/types/character'
+import { usePlayerStore } from './usePlayerStore'
 
 export const useDialogueStore = defineStore('dialogue', {
   state: () => ({
@@ -31,7 +32,18 @@ export const useDialogueStore = defineStore('dialogue', {
 
   actions: {
     startDialogue(lines: DialogueLine[], onComplete?: () => void) {
-      this.queue = lines
+      const playerStore = usePlayerStore()
+      const name = playerStore.playerName || 'Guardián'
+
+      // Filter optional lines for older players, replace {nombre}
+      let processed = lines
+      if (playerStore.isCompactDialogue) {
+        processed = lines.filter(l => !l.optional)
+      }
+      this.queue = processed.map(l => ({
+        ...l,
+        text: l.text.replace(/\{nombre\}/g, name),
+      }))
       this.currentIndex = 0
       this.isActive = true
       this.isTyping = true

@@ -18,6 +18,8 @@ export interface DialogueLine {
   text: string
   choices?: DialogueChoice[]
   delay?: number
+  /** If true, this line is skipped for players age 11+ (compact dialogue mode) */
+  optional?: boolean
 }
 
 export interface DialogueChoice {

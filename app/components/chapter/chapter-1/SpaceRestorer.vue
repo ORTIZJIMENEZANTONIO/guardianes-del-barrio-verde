@@ -12,6 +12,8 @@
   >
     <div class="restore-game">
       <!-- Scene with placement zones -->
+      <SceneSky :variant="transformLevel >= 4 ? 'nice' : 'hot'" />
+      <SceneStreet :variant="transformLevel >= 4 ? 'clean' : 'dirty'" />
       <div class="scene-area" :class="{ 'scene--transformed': transformLevel >= 4 }">
         <div
           v-for="zone in zones"
@@ -19,6 +21,7 @@
           class="place-zone"
           :class="{ 'place-zone--filled': zone.filled, 'place-zone--highlight': selectedItem && !zone.filled }"
           :style="{ left: zone.x + '%', top: zone.y + '%' }"
+          :data-zone="zone.id"
           @click="placeInZone(zone)"
         >
           <template v-if="zone.filled">
@@ -136,6 +139,9 @@ function selectItem(item: RestoreItem) {
   selectedItem.value = item
 }
 
+import { useGameAnimations } from '~/composables/useGameAnimations'
+const { shakeWrong, celebrateSuccess, confettiBurst } = useGameAnimations()
+
 const feedback = ref<{ message: string; ok: boolean } | null>(null)
 let feedbackTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -161,11 +167,20 @@ function placeInZone(zone: PlaceZone) {
     showFB('¡Perfecto!', true)
     selectedItem.value = null
 
+    nextTick(() => {
+      const zoneEl = document.querySelector(`[data-zone="${zone.id}"] .placed-emoji`)
+      if (zoneEl) celebrateSuccess(zoneEl)
+    })
+
     if (isComplete.value) {
+      const gameEl = document.querySelector('.restore-game')
+      if (gameEl) confettiBurst(gameEl, 24)
       setTimeout(() => { showResult.value = true }, 1000)
     }
   } else {
     showFB('Ese elemento no va en este lugar', false)
+    const zoneEl = document.querySelector(`[data-zone="${zone.id}"]`)
+    if (zoneEl) shakeWrong(zoneEl)
   }
 }
 
@@ -191,12 +206,8 @@ function resetGame() {
 .scene-area {
   flex: 1;
   position: relative;
-  background: linear-gradient(180deg, #87ceeb 0%, #d4cbb8 50%, #b8a88a 100%);
-  transition: background 1s ease;
-}
-
-.scene--transformed {
-  background: linear-gradient(180deg, #87ceeb 0%, #b7e4c7 50%, #d8f3dc 100%);
+  z-index: 5;
+  background: transparent;
 }
 
 .place-zone {
@@ -248,6 +259,8 @@ function resetGame() {
 .items-tray {
   padding: 12px 16px;
   background: rgba(255,255,255,0.95);
+  position: relative;
+  z-index: 5;
 }
 
 .tray-title {
