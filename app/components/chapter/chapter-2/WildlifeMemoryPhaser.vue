@@ -46,6 +46,7 @@
 
 <script setup lang="ts">
 import { WildlifeMemoryScene } from '~/phaser/scenes/chapter-2/WildlifeMemoryScene'
+import PhaserCanvas from '~/components/phaser/PhaserCanvas.vue'
 import type { MinigameBridge } from '~/phaser/types'
 
 defineEmits<{ complete: [] }>()

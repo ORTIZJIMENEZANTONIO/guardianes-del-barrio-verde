@@ -46,6 +46,7 @@
 
 <script setup lang="ts">
 import { HeatDetectorScene } from '~/phaser/scenes/chapter-1/HeatDetectorScene'
+import PhaserCanvas from '~/components/phaser/PhaserCanvas.vue'
 import type { MinigameBridge } from '~/phaser/types'
 
 defineEmits<{ complete: [] }>()

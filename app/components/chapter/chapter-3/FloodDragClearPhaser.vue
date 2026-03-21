@@ -48,6 +48,7 @@
 
 <script setup lang="ts">
 import { FloodDragClearScene } from '~/phaser/scenes/chapter-3/FloodDragClearScene'
+import PhaserCanvas from '~/components/phaser/PhaserCanvas.vue'
 import type { MinigameBridge } from '~/phaser/types'
 
 defineEmits<{ complete: [] }>()

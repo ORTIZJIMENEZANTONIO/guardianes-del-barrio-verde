@@ -272,7 +272,7 @@ import WildlifeMemory from '~/components/chapter/chapter-2/WildlifeMemory.vue'
 import ParkDragRestore from '~/components/chapter/chapter-2/ParkDragRestore.vue'
 
 // Phaser-based minigames (async to keep Phaser out of initial bundle)
-const USE_PHASER = true
+const USE_PHASER = false
 // Chapter 1
 const SidewalkCleanupPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-1/SidewalkCleanupPhaser.vue'))
 const HeatDetectorPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-1/HeatDetectorPhaser.vue'))
@@ -335,7 +335,7 @@ const currentScene = computed(() => {
 const currentSceneType = computed(() => currentScene.value?.type ?? 'dialogue')
 
 const showHud = computed(() => {
-  return currentSceneType.value !== 'cinematic' && currentSceneType.value !== 'summary'
+  return true
 })
 
 // Mission handling

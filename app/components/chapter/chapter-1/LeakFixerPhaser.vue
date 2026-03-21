@@ -48,6 +48,7 @@
 
 <script setup lang="ts">
 import { LeakFixerScene } from '~/phaser/scenes/chapter-1/LeakFixerScene'
+import PhaserCanvas from '~/components/phaser/PhaserCanvas.vue'
 import type { MinigameBridge } from '~/phaser/types'
 
 defineEmits<{ complete: [] }>()

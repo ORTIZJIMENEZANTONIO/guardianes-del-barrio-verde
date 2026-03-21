@@ -4,7 +4,7 @@
     description="Arrastra o toca cada residuo y llévalo al contenedor correcto."
     :completed="correctSorts"
     :total="totalItems"
-    :time-limit="60"
+    :time-limit="90"
     :is-success="isComplete"
     :show-result="showResult"
     @start="onStart"

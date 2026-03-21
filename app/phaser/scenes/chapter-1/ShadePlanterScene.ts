@@ -112,4 +112,8 @@ export class ShadePlanterScene extends BaseMinigameScene {
   }
 
   startGame() {}
+
+  shutdown() {
+    this.input.removeAllListeners()
+  }
 }

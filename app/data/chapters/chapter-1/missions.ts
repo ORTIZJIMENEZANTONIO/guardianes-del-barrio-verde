@@ -8,7 +8,7 @@ export const chapter1Missions: MissionConfig[] = [
     description: 'Arrastra cada residuo al contenedor correcto',
     type: 'drag-drop',
     objectives: [
-      { id: 'sort-trash', description: 'Clasificar residuos correctamente', target: 8, current: 0 },
+      { id: 'sort-trash', description: 'Clasificar residuos correctamente', target: 10, current: 0 },
     ],
     timeLimit: 90,
     reward: { points: 15, seeds: 2, badge: 'first-rescue', badgeTitle: 'Primer Rescate' },

@@ -27,6 +27,7 @@
 
 <script setup lang="ts">
 import { PipeDragFitScene } from '~/phaser/scenes/chapter-3/PipeDragFitScene'
+import PhaserCanvas from '~/components/phaser/PhaserCanvas.vue'
 import type { MinigameBridge } from '~/phaser/types'
 
 defineEmits<{ complete: [] }>()

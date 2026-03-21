@@ -48,6 +48,7 @@
 
 <script setup lang="ts">
 import { WaterDragDropScene } from '~/phaser/scenes/chapter-2/WaterDragDropScene'
+import PhaserCanvas from '~/components/phaser/PhaserCanvas.vue'
 import type { MinigameBridge } from '~/phaser/types'
 
 defineEmits<{ complete: [] }>()

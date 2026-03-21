@@ -175,8 +175,9 @@ defineExpose({ stopTimer })
   background: var(--glass-bg-strong);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  z-index: 5;
+  z-index: 8;
   border-bottom: 1px solid rgba(255,255,255,0.4);
+  position: relative;
 }
 
 .minigame-title {
@@ -229,7 +230,7 @@ defineExpose({ stopTimer })
   background: rgba(0,0,0,0.45);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  z-index: 10;
+  z-index: 100;
   padding: 20px;
 }
 

@@ -101,4 +101,8 @@ export class HeatDetectorScene extends BaseMinigameScene {
   }
 
   startGame() {}
+
+  shutdown() {
+    this.input.removeAllListeners()
+  }
 }

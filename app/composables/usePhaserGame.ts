@@ -19,6 +19,7 @@ export function usePhaserGame(
   const game = shallowRef<any>(null)
   const scene = shallowRef<any>(null)
   const ready = ref(false)
+  let fallbackTimer: ReturnType<typeof setTimeout> | null = null
 
   onMounted(async () => {
     if (!containerRef.value) return
@@ -56,7 +57,7 @@ export function usePhaserGame(
     })
 
     // Fallback: grab scene after a short delay if 'ready' doesn't fire
-    setTimeout(() => {
+    fallbackTimer = setTimeout(() => {
       if (!scene.value && game.value) {
         const scenes = game.value.scene.getScenes(true)
         if (scenes.length > 0) {
@@ -68,6 +69,10 @@ export function usePhaserGame(
   })
 
   onUnmounted(() => {
+    if (fallbackTimer) {
+      clearTimeout(fallbackTimer)
+      fallbackTimer = null
+    }
     if (game.value) {
       game.value.destroy(true)
       game.value = null
