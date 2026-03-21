@@ -163,51 +163,19 @@
       </g>
     </template>
 
-    <!-- BOLILLO — perro sentado con bracitos, paliacate+placa en el cuello -->
+    <!-- BOLILLO — imagen PNG con animaciones CSS -->
     <template v-else-if="characterId === 'bolillo'">
-      <g class="dog-body-idle">
-        <!-- Tail -->
-        <g class="dog-tail" :class="{ 'tail--wagging': isSpeaking }">
-          <path d="M72 104 Q84 94 82 82 Q80 76 76 80" fill="#c89850" stroke="#a07028" stroke-width="2.5" stroke-linecap="round" />
-        </g>
-
-        <!-- Body -->
-        <ellipse cx="50" cy="108" rx="26" ry="17" fill="#c89850" />
-        <ellipse cx="55" cy="103" rx="10" ry="6" fill="#a07028" opacity="0.15" />
-        <!-- Panza/pecho claro -->
-        <ellipse cx="50" cy="106" rx="18" ry="13" fill="#d8b878" />
-
-        <!-- Left arm (idle sway) -->
-        <g class="arm-left" :class="{ 'arm--talking': isSpeaking }">
-          <rect x="23" y="96" width="10" height="24" rx="5" fill="#c89850" />
-          <ellipse cx="28" cy="121" rx="6" ry="4" fill="#c89850" />
-        </g>
-        <!-- Right arm (gesture when speaking) -->
-        <g class="arm-right" :class="{ 'arm--gesture': isSpeaking }">
-          <rect x="67" y="96" width="10" height="24" rx="5" fill="#c89850" />
-          <ellipse cx="72" cy="121" rx="6" ry="4" fill="#c89850" />
-        </g>
-
-        <!-- Front legs -->
-        <rect x="32" y="118" width="13" height="14" rx="6" fill="#c89850" />
-        <rect x="49" y="116" width="13" height="16" rx="6" fill="#c89850" />
-        <!-- Paws -->
-        <ellipse cx="38" cy="134" rx="9" ry="4.5" fill="#c89850" />
-        <ellipse cx="56" cy="134" rx="9" ry="4.5" fill="#c89850" />
-        <!-- Toes -->
-        <path d="M34 135 L35 137" stroke="#a07028" stroke-width="0.6" stroke-linecap="round" />
-        <path d="M38 135 L39 137" stroke="#a07028" stroke-width="0.6" stroke-linecap="round" />
-        <path d="M52 135 L53 137" stroke="#a07028" stroke-width="0.6" stroke-linecap="round" />
-        <path d="M56 135 L57 137" stroke="#a07028" stroke-width="0.6" stroke-linecap="round" />
-
-        <!-- Paliacate + placa sobre el pecho -->
-        <path d="M36 92 Q50 97 64 92" fill="#dc2626" stroke="#b91c1c" stroke-width="1" />
-        <path d="M41 95 L45 103 L49 95" fill="#dc2626" stroke="#b91c1c" stroke-width="0.8" />
-        <path d="M45 95 L48 101 L51 95" fill="#ef4444" />
-        <!-- Placa "B" -->
-        <circle cx="46" cy="103" r="3.5" fill="#fbbf24" stroke="#d97706" stroke-width="0.8" />
-        <text x="43.8" y="105.5" font-size="4.5" fill="#7c2d12" font-weight="bold">B</text>
-      </g>
+      <foreignObject x="2" y="8" width="96" height="160">
+        <img
+          src="~/assets/images/bolillo.png"
+          alt="Bolillo"
+          class="bolillo-png"
+          :class="{
+            'bolillo--speaking': isSpeaking,
+            'bolillo--idle': !isSpeaking,
+          }"
+        />
+      </foreignObject>
     </template>
 
     <!-- FALLBACK -->
@@ -223,8 +191,8 @@
       <g class="arm-right"><rect x="66" y="90" width="10" height="30" rx="4" fill="#d1d5db" /></g>
     </template>
 
-    <!-- HEAD — Bolillo baja más para unirse al cuerpo, humanos conservan cuello -->
-    <foreignObject x="10" :y="characterId === 'bolillo' ? 26 : 20" width="80" height="80">
+    <!-- HEAD — skip for Bolillo (PNG includes full character) -->
+    <foreignObject v-if="characterId !== 'bolillo'" x="10" y="20" width="80" height="80">
       <CharacterFace
         :character-id="characterId"
         :emotion="emotion"
@@ -326,6 +294,35 @@ const viewBox = '10 8 80 162'
 @keyframes cloudBodyFloat {
   0%, 100% { transform: translateY(0) scale(1); }
   50% { transform: translateY(-6px) scale(1.02); }
+}
+
+/* ===== BOLILLO PNG ===== */
+.bolillo-png {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+.bolillo--idle {
+  animation: bolilloIdle 3s ease-in-out infinite;
+}
+
+.bolillo--speaking {
+  animation: bolilloSpeak 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes bolilloIdle {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-2px) rotate(-0.5deg); }
+  50% { transform: translateY(0px) rotate(0deg); }
+  75% { transform: translateY(-1px) rotate(0.5deg); }
+}
+
+@keyframes bolilloSpeak {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-3px) scale(1.02); }
 }
 
 /* ===== CANELA dog idle ===== */

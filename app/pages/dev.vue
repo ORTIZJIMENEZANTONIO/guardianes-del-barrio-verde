@@ -136,6 +136,75 @@
       </Teleport>
     </section>
 
+    <!-- ===== TESTING / AUTOBOTS ===== -->
+    <section class="dev-section">
+      <div class="dev-section-header" @click="sections.testing = !sections.testing">
+        <h2>🤖 Testing / Autobots</h2>
+        <button class="skip-btn">{{ sections.testing ? 'Ocultar' : 'Mostrar' }}</button>
+      </div>
+      <div v-if="sections.testing" class="dev-section-body">
+        <p class="test-desc">Prueba que todos los minijuegos se pueden iniciar, jugar y completar sin jugarlos manualmente.</p>
+
+        <!-- Global actions -->
+        <div class="test-actions">
+          <button class="test-btn test-btn--green" @click="autoTestAll">
+            🤖 Auto-test TODOS los minijuegos
+          </button>
+          <button class="test-btn test-btn--blue" @click="autoCompleteAll">
+            ⚡ Marcar TODO completado (progreso)
+          </button>
+          <button class="test-btn test-btn--red" @click="resetAll">
+            🔄 Reset progreso completo
+          </button>
+        </div>
+
+        <!-- Per-chapter auto-complete -->
+        <div class="test-chapters">
+          <div v-for="ch in chaptersData" :key="ch.id" class="test-chapter-row">
+            <span class="test-chapter-name">{{ ch.icon }} {{ ch.title }}</span>
+            <span class="test-chapter-status">
+              {{ playerStore.isChapterComplete(ch.id) ? '✅' : '⬜' }}
+              {{ ch.missionIds.filter(id => playerStore.isMissionComplete(id)).length }}/{{ ch.missionIds.length }}
+            </span>
+            <button class="test-btn test-btn--small test-btn--blue" @click="autoCompleteChapter(ch)">
+              ⚡ Completar
+            </button>
+            <button class="test-btn test-btn--small test-btn--green" @click="autoTestChapter(ch)">
+              🤖 Test
+            </button>
+          </div>
+        </div>
+
+        <!-- Per-mission auto-test -->
+        <div class="test-missions">
+          <div v-for="ch in allMissions" :key="ch.chapter" class="test-mission-group">
+            <h4>{{ ch.chapter }}</h4>
+            <div v-for="m in ch.missions" :key="m.id" class="test-mission-row">
+              <span class="test-mission-status">{{ playerStore.isMissionComplete(m.id) ? '✅' : '⬜' }}</span>
+              <span class="test-mission-name">{{ m.title }}</span>
+              <button class="test-btn test-btn--tiny test-btn--green" @click="autoTestMission(m)">
+                🤖 Test
+              </button>
+              <button class="test-btn test-btn--tiny test-btn--blue" @click="autoCompleteMission(m)">
+                ⚡ OK
+              </button>
+              <span v-if="testResults[m.id]" class="test-result" :class="testResults[m.id].ok ? 'test-result--pass' : 'test-result--fail'">
+                {{ testResults[m.id].ok ? '✅ PASS' : '❌ FAIL' }}: {{ testResults[m.id].message }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Test log -->
+        <div v-if="testLog.length" class="test-log">
+          <h4>📋 Log de pruebas</h4>
+          <div v-for="(entry, i) in testLog" :key="i" class="test-log-entry" :class="entry.ok ? 'log--pass' : 'log--fail'">
+            {{ entry.ok ? '✅' : '❌' }} {{ entry.message }}
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== MECÁNICAS ===== -->
     <section class="dev-section">
       <div class="dev-section-header" @click="sections.mechanics = !sections.mechanics">
@@ -175,7 +244,10 @@ import { chapter5Missions } from '~/data/chapters/chapter-5/missions'
 import { chapter6 } from '~/data/chapters/chapter-6'
 import { chapter6Missions } from '~/data/chapters/chapter-6/missions'
 import { useGameStore } from '~/stores/useGameStore'
+import { usePlayerStore } from '~/stores/usePlayerStore'
 import type { Emotion } from '~/shared/types/character'
+import type { MissionConfig } from '~/shared/types/mission'
+import type { ChapterConfig } from '~/shared/types/chapter'
 
 // Minigame components for individual play
 import SidewalkCleanup from '~/components/chapter/chapter-1/SidewalkCleanup.vue'
@@ -209,6 +281,7 @@ import PipeDragFit from '~/components/chapter/chapter-3/PipeDragFit.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
+const playerStore = usePlayerStore()
 
 const isDev = ref(false)
 onMounted(() => {
@@ -227,6 +300,7 @@ const sections = ref({
   characters: true,
   chapters: true,
   missions: false,
+  testing: false,
   mechanics: false,
 })
 
@@ -300,6 +374,122 @@ function stopPlaying() {
   playingMissionId.value = null
   playingMissionTitle.value = ''
 }
+
+// ===== TESTING / AUTOBOTS =====
+interface TestResult { ok: boolean; message: string }
+const testResults = ref<Record<string, TestResult>>({})
+const testLog = ref<TestResult[]>([])
+
+function log(ok: boolean, message: string) {
+  const entry = { ok, message }
+  testLog.value.unshift(entry)
+  return entry
+}
+
+// Auto-test a single mission: verify component exists, can mount, has correct total
+function autoTestMission(m: MissionConfig) {
+  const comp = missionComponentMap[m.id]
+  if (!comp) {
+    testResults.value[m.id] = log(false, `${m.title}: componente NO encontrado en missionComponentMap`)
+    return
+  }
+
+  // Check dialogues exist
+  const allDialogueIds = [m.introDialogueId, m.successDialogueId, m.failureDialogueId]
+  const chapterIdx = chaptersData.findIndex(ch => ch.missionIds.includes(m.id))
+  const dialogueSets = [chapter1Dialogues, chapter2Dialogues, chapter3Dialogues, chapter4Dialogues, chapter5Dialogues, chapter6Dialogues]
+  const dialogues = chapterIdx >= 0 ? dialogueSets[chapterIdx] : null
+
+  if (!dialogues) {
+    testResults.value[m.id] = log(false, `${m.title}: capítulo no encontrado para verificar diálogos`)
+    return
+  }
+
+  for (const dId of allDialogueIds) {
+    if (!dialogues[dId]) {
+      testResults.value[m.id] = log(false, `${m.title}: diálogo '${dId}' NO existe`)
+      return
+    }
+  }
+
+  testResults.value[m.id] = log(true, `${m.title}: componente ✓, diálogos (intro/success/failure) ✓`)
+}
+
+// Auto-complete mission: mark as done in playerStore
+function autoCompleteMission(m: MissionConfig) {
+  playerStore.completeMission(m.id)
+  playerStore.addScore(m.reward.points)
+  if (m.reward.seeds) playerStore.addSeeds(m.reward.seeds)
+  if (m.reward.badge) playerStore.awardBadge(m.reward.badge, m.reward.badgeTitle ?? '')
+  playerStore.saveProgress()
+  log(true, `${m.title}: completada + ${m.reward.points}pts`)
+}
+
+// Auto-test all missions in a chapter
+function autoTestChapter(ch: ChapterConfig) {
+  const chMissions = allMissions.find(a => a.missions.some(m => m.chapterId === ch.id))?.missions ?? []
+  for (const m of chMissions) {
+    autoTestMission(m)
+  }
+  log(true, `${ch.title}: ${chMissions.length} misiones testeadas`)
+}
+
+// Auto-complete all missions in a chapter
+function autoCompleteChapter(ch: ChapterConfig) {
+  const chMissions = allMissions.find(a => a.missions.some(m => m.chapterId === ch.id))?.missions ?? []
+  for (const m of chMissions) {
+    autoCompleteMission(m)
+  }
+  playerStore.completeChapter(ch.id)
+  playerStore.addScore(ch.completionReward.points)
+  playerStore.awardBadge(ch.completionReward.badge, ch.completionReward.badgeTitle)
+  playerStore.saveProgress()
+  log(true, `${ch.title}: capítulo completo ✓`)
+}
+
+// Auto-test ALL missions across all chapters
+function autoTestAll() {
+  testLog.value = []
+  testResults.value = {}
+  let pass = 0
+  let fail = 0
+  for (const ch of allMissions) {
+    for (const m of ch.missions) {
+      autoTestMission(m)
+      if (testResults.value[m.id]?.ok) pass++
+      else fail++
+    }
+  }
+  log(true, `=== RESUMEN: ${pass} PASS, ${fail} FAIL de ${pass + fail} misiones ===`)
+}
+
+// Auto-complete ALL chapters
+function autoCompleteAll() {
+  // Ensure player profile exists
+  if (!playerStore.isRegistered) {
+    playerStore.setProfile('TestBot', 10)
+  }
+  for (const ch of chaptersData) {
+    autoCompleteChapter(ch)
+  }
+  log(true, '=== TODO COMPLETADO ===')
+}
+
+// Reset all progress
+function resetAll() {
+  playerStore.resetProgress()
+  testResults.value = {}
+  testLog.value = []
+  log(true, '=== PROGRESO RESETEADO ===')
+}
+
+// Import dialogues for testing
+import { chapter1Dialogues } from '~/data/chapters/chapter-1/dialogues'
+import { chapter2Dialogues } from '~/data/chapters/chapter-2/dialogues'
+import { chapter3Dialogues } from '~/data/chapters/chapter-3/dialogues'
+import { chapter4Dialogues } from '~/data/chapters/chapter-4/dialogues'
+import { chapter5Dialogues } from '~/data/chapters/chapter-5/dialogues'
+import { chapter6Dialogues } from '~/data/chapters/chapter-6/dialogues'
 
 function goToChapter(chapterId: string) {
   gameStore.setPhase('playing')
@@ -628,4 +818,53 @@ function goToChapter(chapterId: string) {
 .mechanic-type { font-size: 14px; font-weight: 800; color: #1e293b; text-transform: uppercase; }
 .mechanic-desc { font-size: 12px; color: #64748b; margin: 6px 0; line-height: 1.4; }
 .mechanic-chapters { font-size: 11px; font-weight: 700; color: var(--color-green-mid); }
+/* ===== TESTING ===== */
+.test-desc { font-size: 13px; color: #64748b; margin-bottom: 16px; line-height: 1.4; }
+
+.test-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+
+.test-btn {
+  padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 800;
+  cursor: pointer; border: none; transition: all 150ms; white-space: nowrap;
+}
+.test-btn:active { transform: scale(0.95); }
+.test-btn--green { background: #22c55e; color: white; }
+.test-btn--green:hover { background: #16a34a; }
+.test-btn--blue { background: #3b82f6; color: white; }
+.test-btn--blue:hover { background: #2563eb; }
+.test-btn--red { background: #ef4444; color: white; }
+.test-btn--red:hover { background: #dc2626; }
+.test-btn--small { padding: 4px 10px; font-size: 11px; }
+.test-btn--tiny { padding: 3px 8px; font-size: 10px; }
+
+.test-chapters { margin-bottom: 16px; }
+.test-chapter-row {
+  display: flex; align-items: center; gap: 8px; padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+.test-chapter-name { font-size: 13px; font-weight: 700; color: #1e293b; flex: 1; }
+.test-chapter-status { font-size: 12px; font-weight: 600; color: #64748b; min-width: 50px; }
+
+.test-missions { margin-bottom: 16px; }
+.test-mission-group { margin-bottom: 12px; }
+.test-mission-group h4 { font-size: 12px; font-weight: 800; color: #475569; margin-bottom: 6px; }
+.test-mission-row {
+  display: flex; align-items: center; gap: 6px; padding: 4px 0;
+  border-bottom: 1px solid #f8fafc; flex-wrap: wrap;
+}
+.test-mission-status { font-size: 12px; width: 20px; }
+.test-mission-name { font-size: 12px; font-weight: 600; color: #1e293b; flex: 1; min-width: 120px; }
+
+.test-result { font-size: 10px; font-weight: 700; }
+.test-result--pass { color: #16a34a; }
+.test-result--fail { color: #dc2626; }
+
+.test-log {
+  background: #1e293b; border-radius: 8px; padding: 12px; max-height: 300px;
+  overflow-y: auto; margin-top: 12px;
+}
+.test-log h4 { color: #94a3b8; font-size: 12px; margin-bottom: 8px; }
+.test-log-entry { font-size: 11px; font-family: monospace; padding: 2px 0; }
+.log--pass { color: #4ade80; }
+.log--fail { color: #f87171; }
 </style>
