@@ -1,0 +1,75 @@
+import type { MissionConfig } from '~/shared/types/mission'
+
+export const chapter4Missions: MissionConfig[] = [
+  {
+    id: 'mission-1-collect',
+    chapterId: 'chapter-4',
+    title: 'Recolectar basura',
+    description: 'Toca cada residuo tirado en la calle para recolectarlo',
+    type: 'tap-detect',
+    objectives: [
+      { id: 'collect-trash', description: 'Recolectar 8 residuos de la calle', target: 8, current: 0 },
+    ],
+    reward: { points: 15, seeds: 1, badge: 'street-cleaner', badgeTitle: 'Limpiador de Calles' },
+    introDialogueId: 'mission-1-intro',
+    successDialogueId: 'mission-1-success',
+    failureDialogueId: 'mission-1-failure',
+  },
+  {
+    id: 'mission-2-separate',
+    chapterId: 'chapter-4',
+    title: 'Separar residuos',
+    description: 'Arrastra cada residuo al contenedor correcto por su tipo de material',
+    type: 'drag-drop',
+    objectives: [
+      { id: 'separate-waste', description: 'Clasificar 8 residuos correctamente', target: 8, current: 0 },
+    ],
+    timeLimit: 90,
+    reward: { points: 25, seeds: 2, badge: 'waste-separator', badgeTitle: 'Separador Experto' },
+    introDialogueId: 'mission-2-intro',
+    successDialogueId: 'mission-2-success',
+    failureDialogueId: 'mission-2-failure',
+  },
+  {
+    id: 'mission-3-pollution',
+    chapterId: 'chapter-4',
+    title: 'Detectar contaminación',
+    description: 'Explora la calle y encuentra los 4 puntos de contaminación',
+    type: 'tap-detect',
+    objectives: [
+      { id: 'find-pollution', description: 'Encontrar 4 focos de contaminación', target: 4, current: 0 },
+    ],
+    reward: { points: 20, seeds: 1, badge: 'pollution-detector', badgeTitle: 'Detector de Contaminación' },
+    introDialogueId: 'mission-3-intro',
+    successDialogueId: 'mission-3-success',
+    failureDialogueId: 'mission-3-failure',
+  },
+  {
+    id: 'mission-4-compost',
+    chapterId: 'chapter-4',
+    title: 'Hacer composta',
+    description: 'Aprende a hacer composta: agrega cada capa en el orden correcto',
+    type: 'placement',
+    objectives: [
+      { id: 'compost-layers', description: 'Armar las 5 capas de la composta', target: 5, current: 0 },
+    ],
+    reward: { points: 25, seeds: 3, badge: 'compost-maker', badgeTitle: 'Maestro de la Composta' },
+    introDialogueId: 'mission-4-intro',
+    successDialogueId: 'mission-4-success',
+    failureDialogueId: 'mission-4-failure',
+  },
+  {
+    id: 'mission-5-recycle',
+    chapterId: 'chapter-4',
+    title: 'Centro de reciclaje',
+    description: 'Encuentra las parejas: cada material tiene un producto reciclado',
+    type: 'memorama',
+    objectives: [
+      { id: 'recycle-pairs', description: 'Encontrar 5 parejas', target: 5, current: 0 },
+    ],
+    reward: { points: 30, seeds: 3, badge: 'recycler', badgeTitle: 'Reciclador Estrella', visualUnlock: 'recycle-center' },
+    introDialogueId: 'mission-5-intro',
+    successDialogueId: 'mission-5-success',
+    failureDialogueId: 'mission-5-failure',
+  },
+]

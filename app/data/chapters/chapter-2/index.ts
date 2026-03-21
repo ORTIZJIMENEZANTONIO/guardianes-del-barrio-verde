@@ -17,11 +17,12 @@ export const chapter2: ChapterConfig = {
     { id: 'mission-3', type: 'mission', missionId: 'mission-3-water' },
     { id: 'mission-4', type: 'mission', missionId: 'mission-4-life' },
     { id: 'mission-5', type: 'mission', missionId: 'mission-5-reactivate' },
+    { id: 'mission-6', type: 'mission', missionId: 'mission-6-bolillo-route' },
     { id: 'transformation', type: 'transformation', dialoguePoolId: 'chapter-2-ending' },
     { id: 'summary', type: 'summary' },
     { id: 'hook', type: 'hook', dialoguePoolId: 'chapter-3-hook' },
   ],
-  missionIds: ['mission-1-paths', 'mission-2-soil', 'mission-3-water', 'mission-4-life', 'mission-5-reactivate'],
+  missionIds: ['mission-1-paths', 'mission-2-soil', 'mission-3-water', 'mission-4-life', 'mission-5-reactivate', 'mission-6-bolillo-route'],
   completionReward: {
     points: 60,
     badge: 'sleeping-park-guardian',

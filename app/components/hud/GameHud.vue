@@ -2,10 +2,21 @@
   <div class="game-hud">
     <div class="hud-left">
       <button class="hud-btn" @click="$emit('pause')">⏸</button>
+      <PlayerAvatar :size="32" />
       <div class="hud-chapter">
         {{ chapterTitle }}
       </div>
     </div>
+    <!-- Mission progress dots -->
+    <div v-if="totalMissions > 0" class="hud-progress">
+      <span
+        v-for="i in totalMissions"
+        :key="i"
+        class="hud-dot"
+        :class="i <= completedMissions ? 'hud-dot--done' : 'hud-dot--pending'"
+      />
+    </div>
+
     <div class="hud-right">
       <div ref="scoreRef" class="hud-stat">
         <span class="hud-stat__icon">🌿</span>
@@ -29,6 +40,8 @@ import { useGameAnimations } from '~/composables/useGameAnimations'
 
 defineProps<{
   chapterTitle?: string
+  totalMissions?: number
+  completedMissions?: number
 }>()
 
 defineEmits<{
@@ -100,6 +113,29 @@ watch(() => playerStore.totalBadges, () => {
   font-weight: 800;
   font-size: 14px;
   text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.hud-progress {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.hud-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transition: all 300ms var(--ease-spring);
+}
+
+.hud-dot--done {
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34,197,94,0.5);
+}
+
+.hud-dot--pending {
+  background: rgba(255,255,255,0.25);
+  border: 1px solid rgba(255,255,255,0.3);
 }
 
 .hud-right {

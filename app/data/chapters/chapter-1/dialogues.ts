@@ -3,44 +3,55 @@ import type { DialoguePool } from '~/shared/types/character'
 export const chapter1Dialogues: Record<string, DialoguePool> = {
   'cinematic-intro': {
     id: 'cinematic-intro',
-    context: 'Cinemática de apertura del juego',
+    context: 'Cinemática breve — máximo 3 líneas',
     lines: [
-      { id: 'ci-1', speaker: 'lila', emotion: 'sad', text: 'Este barrio antes tenía sombra, flores y parques llenos de vida.' },
-      { id: 'ci-2', speaker: 'timo', emotion: 'worried', text: 'Pero entre fugas, basura y descuido… todo empezó a cambiar.', optional: true },
-      { id: 'ci-3', speaker: 'xani', emotion: 'thinking', text: 'Aun así, todavía hay algo aquí… una oportunidad.' },
-      { id: 'ci-4', speaker: 'nube-gris', emotion: 'mischievous', text: 'Ahhh… calor pegajoso, aire pesado y calles vacías. Mi combinación favorita.' },
-      { id: 'ci-5', speaker: 'lila', emotion: 'excited', text: 'Eso se va a acabar.' },
+      { id: 'ci-1', speaker: 'nube-gris', emotion: 'mischievous', text: 'Calor pegajoso, basura y calles vacías. Nadie va a cambiar esto.' },
+      { id: 'ci-2', speaker: 'lila', emotion: 'excited', text: 'Eso crees tú.' },
     ],
   },
 
   'welcome': {
     id: 'welcome',
-    context: 'Bienvenida al jugador',
+    context: 'Bienvenida + choices con opciones negativas + EcoKit',
     lines: [
-      { id: 'w-1', speaker: 'lila', emotion: 'happy', text: '¡{nombre}! ¡Llegaste justo a tiempo! Este barrio necesita ayuda.' },
-      { id: 'w-2', speaker: 'lila', emotion: 'excited', text: 'Nos llamamos Guardianes del Barrio Verde. Y desde hoy, tú también formas parte, {nombre}.', optional: true },
-      { id: 'w-3', speaker: 'timo', emotion: 'happy', text: 'Necesitamos ojos atentos, manos rápidas y ganas de cambiar las cosas.' },
-      { id: 'w-4', speaker: 'xani', emotion: 'neutral', text: 'El barrio no se va a salvar solo.', optional: true },
+      { id: 'w-1', speaker: 'lila', emotion: 'happy', text: '¡{nombre}! Somos los Guardianes del Barrio Verde. Esta calle necesita ayuda urgente.' },
       {
-        id: 'w-5',
+        id: 'w-2',
         speaker: 'lila',
         emotion: 'excited',
-        text: '{nombre}, ¿te unes a los Guardianes del Barrio Verde?',
+        text: '¿Te unes a la brigada?',
         choices: [
-          { id: 'join-1', text: '¡Sí, vamos!' },
-          { id: 'join-2', text: '¡Claro que sí!' },
-          { id: 'join-3', text: '¡Quiero ayudar!' },
+          { id: 'join-yes', text: '¡Sí, vamos!' },
+          { id: 'join-maybe', text: 'Mmm, no sé...' },
+          { id: 'join-no', text: '¿Y si mejor no?' },
         ],
       },
-      { id: 'w-6', speaker: 'lila', emotion: 'happy', text: '¡Sabía que dirías que sí, {nombre}!' },
+      { id: 'w-3', speaker: 'timo', emotion: 'happy', text: '¿Sabías que una sola calle con sombra puede bajar la temperatura 5 grados? Con tu ayuda podemos lograrlo.' },
+      { id: 'w-4', speaker: 'lila', emotion: 'excited', text: '¡Entonces vamos, {nombre}! Toma tu EcoKit y a explorar la calle.' },
     ],
   },
 
   'observation': {
     id: 'observation',
-    context: 'Observación inicial de la calle',
+    context: 'Observación inicial — solo hint breve',
     lines: [
-      { id: 'obs-1', speaker: 'lila', emotion: 'thinking', text: '{nombre}, mira bien esta calle. ¿Qué notas?' },
+      { id: 'obs-1', speaker: 'lila', emotion: 'thinking', text: 'Explora la calle, {nombre}. Toca lo que te parezca un problema.' },
+    ],
+  },
+
+  'observation-ok-1': {
+    id: 'observation-ok-1',
+    context: 'Spot falso — poste de luz',
+    lines: [
+      { id: 'ok1-1', speaker: 'timo', emotion: 'neutral', text: 'Ese poste se ve bien. No todo es un problema.' },
+    ],
+  },
+
+  'observation-ok-2': {
+    id: 'observation-ok-2',
+    context: 'Spot falso — puerta',
+    lines: [
+      { id: 'ok2-1', speaker: 'xani', emotion: 'neutral', text: 'Esa puerta está en buen estado. ¡Sigue buscando!' },
     ],
   },
 
@@ -187,15 +198,16 @@ export const chapter1Dialogues: Record<string, DialoguePool> = {
     ],
   },
 
-  // Mission 4
+  // Mission 4 — evento sorpresa (la fuga aparece inesperadamente)
   'mission-4-intro': {
     id: 'mission-4-intro',
-    context: 'Intro misión 4',
+    context: 'Intro misión 4 — sorpresa narrativa',
     lines: [
-      { id: 'm4i-1', speaker: 'timo', emotion: 'surprised', text: '¡{nombre}, espera… ¿oyes eso?' },
-      { id: 'm4i-2', speaker: 'lila', emotion: 'worried', text: '¡Hay una fuga!' },
-      { id: 'm4i-3', speaker: 'don-tono', emotion: 'sad', text: 'Lleva días así.', optional: true },
-      { id: 'm4i-4', speaker: 'timo', emotion: 'excited', text: '¡Pues hoy se termina!' },
+      { id: 'm4i-1', speaker: 'timo', emotion: 'surprised', text: '¡¡{nombre}, ESPERA!! ¿Oyes eso? 💧💧💧' },
+      { id: 'm4i-2', speaker: 'lila', emotion: 'worried', text: '¡Una fuga! ¡No estaba en el plan!' },
+      { id: 'm4i-3', speaker: 'nube-gris', emotion: 'mischievous', text: 'Jajaja… ¿creyeron que iba a ser fácil?', optional: true },
+      { id: 'm4i-4', speaker: 'don-tono', emotion: 'sad', text: 'Esa fuga lleva días. Nadie la había arreglado.' },
+      { id: 'm4i-5', speaker: 'timo', emotion: 'excited', text: '¡Pues hoy se acaba! {nombre}, necesito tu ayuda AHORA.' },
     ],
   },
   'mission-4-success': {
@@ -254,13 +266,14 @@ export const chapter1Dialogues: Record<string, DialoguePool> = {
     id: 'mission-6-intro',
     context: 'Intro misión 6 — techo verde',
     lines: [
-      { id: 'm6i-1', speaker: 'timo', emotion: 'thinking', text: '{nombre}, ya mejoramos la calle… pero los techos siguen hirviendo. ¡Absorben todo el calor!' },
-      { id: 'm6i-2', speaker: 'xani', emotion: 'excited', text: '¿Saben qué? En el Instituto Politécnico Nacional, en un centro que se llama CIIEMAD, estudian algo increíble: techos verdes.' },
-      { id: 'm6i-3', speaker: 'don-tono', emotion: 'surprised', text: '¿Plantas en el techo? ¿Y no se cae todo?', optional: true },
-      { id: 'm6i-4', speaker: 'timo', emotion: 'excited', text: '¡No! Es como un sándwich: primero va una capa que no deja pasar el agua, luego una que drena, después un filtro, tierra especial, y al final las plantas.' },
-      { id: 'm6i-5', speaker: 'xani', emotion: 'happy', text: 'Un techo verde puede bajar la temperatura del edificio hasta 15%. Y absorbe el agua de lluvia como esponja.' },
-      { id: 'm6i-6', speaker: 'lila', emotion: 'excited', text: '¡{nombre}, vamos a armar un techo verde! Hay que poner cada capa en su lugar.' },
-      { id: 'm6i-7', speaker: 'nube-gris', emotion: 'mischievous', text: '¿Plantas en un techo? Eso no va a funcionar.', optional: true },
+      { id: 'm6i-1', speaker: 'timo', emotion: 'thinking', text: '{nombre}, ya mejoramos la calle… pero mira los techos. ¡Siguen hirviendo!' },
+      { id: 'm6i-2', speaker: 'xani', emotion: 'excited', text: 'Voy a enseñarte algo. En el Instituto Politécnico Nacional hay un centro llamado CIIEMAD donde estudian techos verdes.' },
+      { id: 'm6i-3', speaker: 'xani', emotion: 'thinking', text: 'Mira la diferencia: un techo gris de concreto llega a 70°C al sol. ¡Podrías freír un huevo ahí!' },
+      { id: 'm6i-4', speaker: 'xani', emotion: 'happy', text: 'Pero un techo verde con plantas solo llega a 35°C. ¡La mitad! Y además absorbe el 40% del agua de lluvia.' },
+      { id: 'm6i-5', speaker: 'don-tono', emotion: 'surprised', text: '¿Plantas en el techo? ¿Y no se cae todo?', optional: true },
+      { id: 'm6i-6', speaker: 'timo', emotion: 'excited', text: '¡No! Es como un sándwich de capas. Cada una tiene su función. Te enseño, {nombre}.' },
+      { id: 'm6i-7', speaker: 'lila', emotion: 'excited', text: '¡Vamos a armar un techo verde! Pon cada capa en su lugar.' },
+      { id: 'm6i-8', speaker: 'nube-gris', emotion: 'mischievous', text: '¿Plantas en un techo? Eso no va a funcionar.', optional: true },
     ],
   },
   'mission-6-success': {

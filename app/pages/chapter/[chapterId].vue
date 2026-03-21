@@ -4,6 +4,8 @@
     <GameHud
       v-if="showHud"
       :chapter-title="chapter?.title"
+      :total-missions="chapter?.missionIds.length ?? 0"
+      :completed-missions="chapterCompletedMissions"
       @pause="showPauseModal = true"
     />
 
@@ -42,38 +44,50 @@
         </ActionButton>
       </div>
 
-      <!-- EXPLORATION SCENE (Observation) -->
+      <!-- EXPLORATION SCENE (Observation with horizontal scroll) -->
       <div v-else-if="currentSceneType === 'exploration'" class="scene exploration-scene">
         <SceneSky variant="hot" />
-        <SceneStreet variant="dirty" />
-        <div class="exploration-bg">
-          <div class="explore-title">
-            <span class="explore-title__icon">🔍</span>
-            {{ route.params.chapterId === 'chapter-2' ? 'Explora el parque. ¡Toca lo que notes!' : 'Observa la calle. ¡Toca lo que notes!' }}
-          </div>
-
-          <div
-            v-for="spot in observationSpots"
-            :key="spot.id"
-            class="observe-spot"
-            :class="{ 'observe-spot--found': spot.found }"
-            :style="{ left: spot.x + '%', top: spot.y + '%' }"
-            @click="tapObservation(spot)"
-          >
-            <span class="observe-emoji">{{ spot.emoji }}</span>
-            <span class="observe-label">{{ spot.label }}</span>
-            <span v-if="!spot.found" class="observe-ping" />
-          </div>
-
-          <div class="observe-progress">
-            <span class="observe-progress__bar">
-              <span class="observe-progress__fill" :style="{ width: (observedCount / 5 * 100) + '%' }" />
-            </span>
-            <span class="observe-progress__text">{{ observedCount }}/5</span>
+        <!-- Scrollable street area -->
+        <div class="exploration-scroll" ref="explorationScrollRef">
+          <div class="exploration-street">
+            <SceneStreet variant="dirty" />
+            <!-- Spots distributed across wider area -->
+            <div
+              v-for="spot in observationSpots"
+              :key="spot.id"
+              class="observe-spot"
+              :class="{
+                'observe-spot--found': spot.found,
+                'observe-spot--ok': spot.found && spot.id.startsWith('obs-ok'),
+              }"
+              :style="{ left: spot.x + '%', top: spot.y + '%' }"
+              @click="tapObservation(spot)"
+            >
+              <span class="observe-emoji">{{ spot.emoji }}</span>
+              <span v-if="!spot.found" class="observe-ping" />
+            </div>
           </div>
         </div>
+        <!-- Fixed UI on top -->
+        <div class="exploration-ui">
+          <div class="explore-title">
+            <span class="explore-title__icon">🔍</span>
+            {{ route.params.chapterId === 'chapter-2' ? 'Explora el parque. ¡Toca lo que notes!' : 'Desliza y toca lo que notes →' }}
+          </div>
+          <div class="observe-progress">
+            <span class="observe-progress__bar">
+              <span class="observe-progress__fill" :style="{ width: (observedCount / realSpotCount * 100) + '%' }" />
+            </span>
+            <span class="observe-progress__text">{{ observedCount }}/{{ realSpotCount }}</span>
+          </div>
+        </div>
+        <!-- Scroll hint arrow (fades after first scroll) -->
+        <div v-if="showScrollHint" class="scroll-hint">
+          <span class="scroll-hint__arrow">→</span>
+          <span class="scroll-hint__text">Desliza para explorar</span>
+        </div>
         <DialogueScene />
-        <ActionButton :visible="observedCount >= 5 && !dialogueStore.isDialogueActive">
+        <ActionButton :visible="observedCount >= realSpotCount && !dialogueStore.isDialogueActive">
           <GameButton variant="primary" size="lg" @click="advanceScene">
             ¡Listo! ▶
           </GameButton>
@@ -85,10 +99,14 @@
         <div v-if="missionPhase === 'intro'" class="mission-intro">
           <SceneSky variant="nice" />
           <SceneStreet variant="normal" />
-          <!-- Mission title card -->
+          <!-- Mission title card with reward preview -->
           <div class="mission-title-card animate-pop-in">
             <div class="mission-title-card__icon">{{ missionIcon }}</div>
             <div class="mission-title-card__name">{{ currentMissionConfig?.title }}</div>
+            <div class="mission-title-card__reward">
+              <span>🌿 {{ currentMissionConfig?.reward.points }}pts</span>
+              <span v-if="currentMissionConfig?.reward.badgeTitle">🏅 {{ currentMissionConfig?.reward.badgeTitle }}</span>
+            </div>
           </div>
           <DialogueScene />
           <ActionButton :visible="!dialogueStore.isDialogueActive && sceneReady">
@@ -104,7 +122,15 @@
 
         <div v-else-if="missionPhase === 'success'" class="mission-success">
           <SceneSky variant="nice" />
-          <SceneStreet variant="clean" />
+          <SceneStreet :variant="chapterCompletedMissions >= 4 ? 'clean' : 'normal'" />
+          <!-- Progressive improvements — appear as missions complete -->
+          <div class="progressive-improvements">
+            <Transition name="fade"><span v-if="chapterCompletedMissions >= 1" class="prog-emoji" style="left:15%;top:20%">🌱</span></Transition>
+            <Transition name="fade"><span v-if="chapterCompletedMissions >= 2" class="prog-emoji" style="left:75%;top:30%">🌸</span></Transition>
+            <Transition name="fade"><span v-if="chapterCompletedMissions >= 3" class="prog-emoji" style="left:40%;top:15%">🦋</span></Transition>
+            <Transition name="fade"><span v-if="chapterCompletedMissions >= 4" class="prog-emoji" style="left:60%;top:25%">🌳</span></Transition>
+            <Transition name="fade"><span v-if="chapterCompletedMissions >= 5" class="prog-emoji" style="left:25%;top:35%">👨‍👩‍👧</span></Transition>
+          </div>
           <!-- Celebration particles -->
           <div class="particles">
             <span v-for="i in 12" :key="i" class="particle" :style="particleStyle(i)">{{ particleEmoji(i) }}</span>
@@ -256,6 +282,15 @@ import { chapter2Missions } from '~/data/chapters/chapter-2/missions'
 import { chapter3 } from '~/data/chapters/chapter-3'
 import { chapter3Dialogues } from '~/data/chapters/chapter-3/dialogues'
 import { chapter3Missions } from '~/data/chapters/chapter-3/missions'
+import { chapter4 } from '~/data/chapters/chapter-4'
+import { chapter4Dialogues } from '~/data/chapters/chapter-4/dialogues'
+import { chapter4Missions } from '~/data/chapters/chapter-4/missions'
+import { chapter5 } from '~/data/chapters/chapter-5'
+import { chapter5Dialogues } from '~/data/chapters/chapter-5/dialogues'
+import { chapter5Missions } from '~/data/chapters/chapter-5/missions'
+import { chapter6 } from '~/data/chapters/chapter-6'
+import { chapter6Dialogues } from '~/data/chapters/chapter-6/dialogues'
+import { chapter6Missions } from '~/data/chapters/chapter-6/missions'
 import type { MissionConfig } from '~/shared/types/mission'
 import type { DialoguePool } from '~/shared/types/character'
 
@@ -264,13 +299,12 @@ import HeatDetector from '~/components/chapter/chapter-1/HeatDetector.vue'
 import ShadePlanter from '~/components/chapter/chapter-1/ShadePlanter.vue'
 import LeakFixer from '~/components/chapter/chapter-1/LeakFixer.vue'
 import SpaceRestorer from '~/components/chapter/chapter-1/SpaceRestorer.vue'
-import GreenRoofBuilder from '~/components/chapter/chapter-1/GreenRoofBuilder.vue'
-
 import PathClear from '~/components/chapter/chapter-2/PathClear.vue'
 import SoilMemory from '~/components/chapter/chapter-2/SoilMemory.vue'
 import WaterDragDrop from '~/components/chapter/chapter-2/WaterDragDrop.vue'
 import WildlifeMemory from '~/components/chapter/chapter-2/WildlifeMemory.vue'
 import ParkDragRestore from '~/components/chapter/chapter-2/ParkDragRestore.vue'
+import BolilloRoute from '~/components/chapter/chapter-2/BolilloRoute.vue'
 
 // Phaser-based minigames (async to keep Phaser out of initial bundle)
 const USE_PHASER = false
@@ -295,6 +329,26 @@ import FloodDragClear from '~/components/chapter/chapter-3/FloodDragClear.vue'
 import WetlandMemory from '~/components/chapter/chapter-3/WetlandMemory.vue'
 import PipeDragFit from '~/components/chapter/chapter-3/PipeDragFit.vue'
 
+// Chapter 4
+import TrashCollector from '~/components/chapter/chapter-4/TrashCollector.vue'
+import WasteSeparator from '~/components/chapter/chapter-4/WasteSeparator.vue'
+import PollutionDetector from '~/components/chapter/chapter-4/PollutionDetector.vue'
+import CompostBuilder from '~/components/chapter/chapter-4/CompostBuilder.vue'
+import RecycleMemory from '~/components/chapter/chapter-4/RecycleMemory.vue'
+
+// Chapter 5
+import GreenRoofBuilder from '~/components/chapter/chapter-1/GreenRoofBuilder.vue'
+import RoofEvaluator from '~/components/chapter/chapter-5/RoofEvaluator.vue'
+import RoofDesigner from '~/components/chapter/chapter-5/RoofDesigner.vue'
+import PlantMatcher from '~/components/chapter/chapter-5/PlantMatcher.vue'
+import IrrigationBuilder from '~/components/chapter/chapter-5/IrrigationBuilder.vue'
+
+// Chapter 6
+import FestivalSetup from '~/components/chapter/chapter-6/FestivalSetup.vue'
+import NeighborInviter from '~/components/chapter/chapter-6/NeighborInviter.vue'
+import FestivalProblems from '~/components/chapter/chapter-6/FestivalProblems.vue'
+import FestivalInauguration from '~/components/chapter/chapter-6/FestivalInauguration.vue'
+
 const route = useRoute()
 const router = useRouter()
 const gameStore = useGameStore()
@@ -302,6 +356,8 @@ const playerStore = usePlayerStore()
 const dialogueStore = useDialogueStore()
 
 const showPauseModal = ref(false)
+const showScrollHint = ref(true)
+const explorationScrollRef = ref<HTMLElement | null>(null)
 const showReward = ref(false)
 const missionPhase = ref<'intro' | 'playing' | 'success'>('intro')
 const sceneReady = ref(false)
@@ -312,6 +368,9 @@ const chapter = computed(() => {
   if (route.params.chapterId === 'chapter-1') return chapter1
   if (route.params.chapterId === 'chapter-2') return chapter2
   if (route.params.chapterId === 'chapter-3') return chapter3
+  if (route.params.chapterId === 'chapter-4') return chapter4
+  if (route.params.chapterId === 'chapter-5') return chapter5
+  if (route.params.chapterId === 'chapter-6') return chapter6
   return null
 })
 
@@ -319,12 +378,18 @@ const chapter = computed(() => {
 const chapterDialogues = computed<Record<string, DialoguePool>>(() => {
   if (route.params.chapterId === 'chapter-2') return chapter2Dialogues
   if (route.params.chapterId === 'chapter-3') return chapter3Dialogues
+  if (route.params.chapterId === 'chapter-4') return chapter4Dialogues
+  if (route.params.chapterId === 'chapter-5') return chapter5Dialogues
+  if (route.params.chapterId === 'chapter-6') return chapter6Dialogues
   return chapter1Dialogues
 })
 
 const chapterMissions = computed<MissionConfig[]>(() => {
   if (route.params.chapterId === 'chapter-2') return chapter2Missions
   if (route.params.chapterId === 'chapter-3') return chapter3Missions
+  if (route.params.chapterId === 'chapter-4') return chapter4Missions
+  if (route.params.chapterId === 'chapter-5') return chapter5Missions
+  if (route.params.chapterId === 'chapter-6') return chapter6Missions
   return chapter1Missions
 })
 
@@ -337,6 +402,11 @@ const currentSceneType = computed(() => currentScene.value?.type ?? 'dialogue')
 
 const showHud = computed(() => {
   return true
+})
+
+const chapterCompletedMissions = computed(() => {
+  if (!chapter.value) return 0
+  return chapter.value.missionIds.filter(id => playerStore.isMissionComplete(id)).length
 })
 
 // Mission handling
@@ -353,17 +423,34 @@ const missionComponentMap: Record<string, any> = {
   'mission-3-plant': USE_PHASER ? ShadePlanterPhaser : ShadePlanter,
   'mission-4-leak': USE_PHASER ? LeakFixerPhaser : LeakFixer,
   'mission-5-restore': USE_PHASER ? SpaceRestorerPhaser : SpaceRestorer,
-  'mission-6-greenroof': GreenRoofBuilder,
   // Chapter 2
   'mission-1-paths': USE_PHASER ? PathClearPhaser : PathClear,
   'mission-2-soil': USE_PHASER ? SoilMemoryPhaser : SoilMemory,
   'mission-3-water': USE_PHASER ? WaterDragDropPhaser : WaterDragDrop,
   'mission-4-life': USE_PHASER ? WildlifeMemoryPhaser : WildlifeMemory,
   'mission-5-reactivate': USE_PHASER ? ParkDragRestorePhaser : ParkDragRestore,
+  'mission-6-bolillo-route': BolilloRoute,
   // Chapter 3
   'mission-1-waste': USE_PHASER ? FloodDragClearPhaser : FloodDragClear,
   'mission-2-wetland': USE_PHASER ? WetlandMemoryPhaser : WetlandMemory,
   'mission-3-repair': USE_PHASER ? PipeDragFitPhaser : PipeDragFit,
+  // Chapter 4
+  'mission-1-collect': TrashCollector,
+  'mission-2-separate': WasteSeparator,
+  'mission-3-pollution': PollutionDetector,
+  'mission-4-compost': CompostBuilder,
+  'mission-5-recycle': RecycleMemory,
+  // Chapter 5
+  'mission-0-greenroof': GreenRoofBuilder,
+  'mission-1-evaluate': RoofEvaluator,
+  'mission-2-design': RoofDesigner,
+  'mission-3-plants': PlantMatcher,
+  'mission-4-irrigation': IrrigationBuilder,
+  // Chapter 6
+  'mission-1-prepare': FestivalSetup,
+  'mission-2-invite': NeighborInviter,
+  'mission-3-solve': FestivalProblems,
+  'mission-4-inaugurate': FestivalInauguration,
 }
 
 const currentMissionComponent = computed(() => {
@@ -384,11 +471,15 @@ interface ObservationSpot {
 }
 
 const chapter1Spots: ObservationSpot[] = [
-  { id: 'obs-trash', label: 'Basura', emoji: '🛍️', dialogueId: 'observation-trash', x: 20, y: 50, found: false },
-  { id: 'obs-notrees', label: 'Sin árboles', emoji: '🌵', dialogueId: 'observation-notrees', x: 55, y: 30, found: false },
-  { id: 'obs-bench', label: 'Banca caliente', emoji: '🪑', dialogueId: 'observation-bench', x: 40, y: 60, found: false },
-  { id: 'obs-leak', label: 'Fuga', emoji: '💧', dialogueId: 'observation-leak', x: 75, y: 45, found: false },
-  { id: 'obs-pavement', label: 'Pavimento', emoji: '🟫', dialogueId: 'observation-pavement', x: 30, y: 75, found: false },
+  // 5 problemas reales — distribuidos a lo largo de la calle extendida (x hasta ~85% del 200% width)
+  { id: 'obs-trash', label: '', emoji: '🛍️', dialogueId: 'observation-trash', x: 10, y: 50, found: false },
+  { id: 'obs-notrees', label: '', emoji: '🌵', dialogueId: 'observation-notrees', x: 30, y: 30, found: false },
+  { id: 'obs-bench', label: '', emoji: '🪑', dialogueId: 'observation-bench', x: 45, y: 60, found: false },
+  { id: 'obs-leak', label: '', emoji: '💧', dialogueId: 'observation-leak', x: 65, y: 45, found: false },
+  { id: 'obs-pavement', label: '', emoji: '🟫', dialogueId: 'observation-pavement', x: 80, y: 70, found: false },
+  // 2 spots falsos
+  { id: 'obs-ok-1', label: '', emoji: '🔦', dialogueId: 'observation-ok-1', x: 55, y: 65, found: false },
+  { id: 'obs-ok-2', label: '', emoji: '🚪', dialogueId: 'observation-ok-2', x: 20, y: 35, found: false },
 ]
 
 const chapter2Spots: ObservationSpot[] = [
@@ -399,14 +490,37 @@ const chapter2Spots: ObservationSpot[] = [
   { id: 'obs-bench', label: 'Banca dañada', emoji: '🪑', dialogueId: 'observation-bench', x: 30, y: 70, found: false },
 ]
 
+const chapter4Spots: ObservationSpot[] = [
+  { id: 'obs-pile', label: '', emoji: '🛍️', dialogueId: 'observation-pile', x: 15, y: 45, found: false },
+  { id: 'obs-drain', label: '', emoji: '🕳️', dialogueId: 'observation-drain', x: 40, y: 60, found: false },
+  { id: 'obs-soil', label: '', emoji: '🟤', dialogueId: 'observation-soil', x: 60, y: 35, found: false },
+  { id: 'obs-dump', label: '', emoji: '🚯', dialogueId: 'observation-dump', x: 80, y: 50, found: false },
+  { id: 'obs-creek', label: '', emoji: '🏞️', dialogueId: 'observation-creek', x: 30, y: 70, found: false },
+  { id: 'obs-ok-1', label: '', emoji: '🌳', dialogueId: 'observation-ok-1', x: 50, y: 25, found: false },
+  { id: 'obs-ok-2', label: '', emoji: '🏠', dialogueId: 'observation-ok-2', x: 70, y: 65, found: false },
+]
+
+const chapter5Spots: ObservationSpot[] = [
+  { id: 'obs-weight', label: '', emoji: '⚖️', dialogueId: 'observation-weight', x: 20, y: 40, found: false },
+  { id: 'obs-sun', label: '', emoji: '☀️', dialogueId: 'observation-sun', x: 50, y: 30, found: false },
+  { id: 'obs-access', label: '', emoji: '🪜', dialogueId: 'observation-access', x: 75, y: 45, found: false },
+  { id: 'obs-drain', label: '', emoji: '🕳️', dialogueId: 'observation-drain', x: 35, y: 60, found: false },
+  { id: 'obs-ok-1', label: '', emoji: '🧱', dialogueId: 'observation-ok-1', x: 60, y: 55, found: false },
+  { id: 'obs-ok-2', label: '', emoji: '📡', dialogueId: 'observation-ok-2', x: 15, y: 65, found: false },
+]
+
 const defaultSpots = computed(() => {
   if (route.params.chapterId === 'chapter-2') return chapter2Spots
+  if (route.params.chapterId === 'chapter-4') return chapter4Spots
+  if (route.params.chapterId === 'chapter-5') return chapter5Spots
   return chapter1Spots
 })
 
 const observationSpots = ref<ObservationSpot[]>(defaultSpots.value.map(s => ({ ...s })))
 
-const observedCount = computed(() => observationSpots.value.filter(s => s.found).length)
+// Solo cuenta problemas reales (no spots falsos obs-ok-*)
+const realSpotCount = computed(() => observationSpots.value.filter(s => !s.id.startsWith('obs-ok')).length)
+const observedCount = computed(() => observationSpots.value.filter(s => s.found && !s.id.startsWith('obs-ok')).length)
 
 function tapObservation(spot: ObservationSpot) {
   if (spot.found || dialogueStore.isDialogueActive) return
@@ -416,7 +530,7 @@ function tapObservation(spot: ObservationSpot) {
   if (pool) {
     dialogueStore.startDialogue(pool.lines, () => {
       // After last spot, show completion dialogue then enable button
-      if (observedCount.value >= 5) {
+      if (observedCount.value >= realSpotCount.value) {
         const completePool = chapterDialogues.value['observation-complete']
         if (completePool) {
           dialogueStore.startDialogue(completePool.lines, () => {
@@ -476,6 +590,15 @@ function startSceneDialogue() {
 
   if (scene.type === 'exploration') {
     observationSpots.value = defaultSpots.value.map(s => ({ ...s }))
+    showScrollHint.value = true
+    // Hide scroll hint after first scroll
+    nextTick(() => {
+      const scrollEl = explorationScrollRef.value
+      if (scrollEl) {
+        const hideHint = () => { showScrollHint.value = false; scrollEl.removeEventListener('scroll', hideHint) }
+        scrollEl.addEventListener('scroll', hideHint)
+      }
+    })
   }
 
   if (scene.type === 'hook') {
@@ -546,7 +669,7 @@ function onRewardClaimed() {
 }
 
 // Ordered chapter list for navigation
-const chapterOrder = ['chapter-1', 'chapter-2', 'chapter-3']
+const chapterOrder = ['chapter-1', 'chapter-2', 'chapter-3', 'chapter-4', 'chapter-5', 'chapter-6']
 
 // Next chapter: the one right after current. If current is last, find first incomplete.
 const nextChapterId = computed(() => {
@@ -592,17 +715,34 @@ const missionIconMap: Record<string, string> = {
   'mission-3-plant': '🌳',
   'mission-4-leak': '🔧',
   'mission-5-restore': '🎨',
-  'mission-6-greenroof': '🌿',
   // Chapter 2
   'mission-1-paths': '🧹',
   'mission-2-soil': '🌱',
   'mission-3-water': '💧',
   'mission-4-life': '🦋',
   'mission-5-reactivate': '🎨',
+  'mission-6-bolillo-route': '🐕',
   // Chapter 3
   'mission-1-waste': '🚧',
   'mission-2-wetland': '🌿',
   'mission-3-repair': '🔧',
+  // Chapter 4
+  'mission-1-collect': '🧹',
+  'mission-2-separate': '♻️',
+  'mission-3-pollution': '🔍',
+  'mission-4-compost': '🌱',
+  'mission-5-recycle': '🔄',
+  // Chapter 5
+  'mission-0-greenroof': '🌿',
+  'mission-1-evaluate': '📋',
+  'mission-2-design': '🏗️',
+  'mission-3-plants': '🌱',
+  'mission-4-irrigation': '💧',
+  // Chapter 6
+  'mission-1-prepare': '🎪',
+  'mission-2-invite': '📣',
+  'mission-3-solve': '🧩',
+  'mission-4-inaugurate': '🎉',
 }
 const missionIcon = computed(() => missionIconMap[currentScene.value?.missionId ?? ''] ?? '⭐')
 
@@ -618,6 +758,24 @@ const transformEmojis = computed(() => {
     return {
       before: [['💧', '🛍️', '🧱'], ['😰', '🪵', '🥤']],
       after: [['💧', '🌿', '🐸'], ['🪷', '🦆', '😊']],
+    }
+  }
+  if (route.params.chapterId === 'chapter-4') {
+    return {
+      before: [['🛍️', '🗑️', '🥤'], ['😷', '🏭', '🚯']],
+      after: [['♻️', '🗑️', '📦'], ['🌿', '😊', '🔄']],
+    }
+  }
+  if (route.params.chapterId === 'chapter-5') {
+    return {
+      before: [['🏗️', '☀️', '🧱'], ['😰', '🏚️', '🌡️']],
+      after: [['🌱', '🌿', '🌻'], ['💧', '🦋', '😊']],
+    }
+  }
+  if (route.params.chapterId === 'chapter-6') {
+    return {
+      before: [['🏚️', '😔', '🌡️'], ['🛍️', '💧', '🧱']],
+      after: [['🎉', '🌳', '👨‍👩‍👧'], ['🌸', '🦋', '🎊']],
     }
   }
   return {
@@ -655,6 +813,47 @@ const summaryData = computed(() => {
       unlockLabel: 'Zona 4: La Ruta de la Basura',
     }
   }
+  if (route.params.chapterId === 'chapter-4') {
+    return {
+      heading: 'La Ruta de la Basura cambió porque:',
+      learnings: [
+        'Se recolectó la basura de la calle',
+        'Se aprendió a separar residuos correctamente',
+        'Se detectaron focos de contaminación',
+        'Se organizó la ruta de recolección',
+        'Se descubrió que la basura puede reciclarse',
+      ],
+      message: 'La basura no desaparece sola. Separarla y reciclarla le da una segunda vida.',
+      unlockLabel: 'Zona 5: Azoteas con Vida',
+    }
+  }
+  if (route.params.chapterId === 'chapter-5') {
+    return {
+      heading: 'Las Azoteas cambiaron porque:',
+      learnings: [
+        'Se evaluó la azotea para verificar que fuera apta',
+        'Se diseñó un espacio verde funcional',
+        'Se eligieron las plantas adecuadas',
+        'Se instaló un sistema de riego con agua de lluvia',
+      ],
+      message: 'Una azotea vacía puede convertirse en un jardín que enfría, alimenta y da vida.',
+      unlockLabel: 'Zona 6: El Gran Festival Verde',
+    }
+  }
+  if (route.params.chapterId === 'chapter-6') {
+    return {
+      heading: 'El barrio entero cambió porque:',
+      learnings: [
+        'Se preparó un festival comunitario',
+        'Se invitó a todo el barrio a participar',
+        'Se resolvieron los imprevistos en equipo',
+        'Se inauguró el Gran Festival Verde',
+        '¡La comunidad se unió para cuidar su barrio!',
+      ],
+      message: 'El cambio ambiental no es de una persona — es de toda la comunidad. Y tú lo iniciaste.',
+      unlockLabel: '¡Juego completado!',
+    }
+  }
   return {
     heading: 'La calle cambió porque:',
     learnings: [
@@ -662,10 +861,9 @@ const summaryData = computed(() => {
       'Se detectaron zonas de mayor calor',
       'Se plantó sombra',
       'Se arregló una fuga',
-      'Se recuperó el espacio',
-      'Se construyó un techo verde que enfría el edificio',
+      'Se recuperó el espacio para la comunidad',
     ],
-    message: 'Más sombra, menos basura, techos verdes y mejor cuidado pueden cambiar cómo se vive una calle.',
+    message: 'Más sombra, menos basura y mejor cuidado pueden cambiar cómo se vive una calle.',
     unlockLabel: 'Zona 2: El Parque Dormido',
   }
 })
@@ -675,24 +873,24 @@ const chapterMeta: Record<string, { icon: string; title: string }> = {
   'chapter-1': { icon: '🌡️', title: 'La Calle Caliente' },
   'chapter-2': { icon: '🏞️', title: 'El Parque Dormido' },
   'chapter-3': { icon: '💧', title: 'La Fuga Infinita' },
+  'chapter-4': { icon: '🗑️', title: 'La Ruta de la Basura' },
+  'chapter-5': { icon: '🌱', title: 'Azoteas con Vida' },
+  'chapter-6': { icon: '🎉', title: 'El Gran Festival Verde' },
 }
-// What chapter comes next in the story (for the hook preview text/icon)
 const storyNextMap: Record<string, string> = {
   'chapter-1': 'chapter-2',
   'chapter-2': 'chapter-3',
-  'chapter-3': 'chapter-4', // future
+  'chapter-3': 'chapter-4',
+  'chapter-4': 'chapter-5',
+  'chapter-5': 'chapter-6',
 }
 const hookData = computed(() => {
   const storyNext = storyNextMap[route.params.chapterId as string]
-  // If story-next exists in meta, show it
   if (storyNext && chapterMeta[storyNext]) return chapterMeta[storyNext]
-  // If nextChapterId is a wrap-around to an incomplete chapter, show that
   if (nextChapterId.value && chapterMeta[nextChapterId.value]) return chapterMeta[nextChapterId.value]
-  // Fallback for future chapters
-  const futureHooks: Record<string, { icon: string; title: string }> = {
-    'chapter-3': { icon: '🗑️', title: 'La Ruta de la Basura' },
-  }
-  return futureHooks[route.params.chapterId as string] ?? { icon: '🌿', title: 'Siguiente aventura' }
+  // Chapter 6 is the last — show game complete
+  if (route.params.chapterId === 'chapter-6') return { icon: '🏆', title: '¡Juego completado!' }
+  return { icon: '🌿', title: 'Siguiente aventura' }
 })
 
 // Chapter-specific cinematic floating elements
@@ -713,6 +911,33 @@ const cinematicFloats = computed(() => {
       { emoji: '🧱', style: 'top: 35%; left: 30%; animation-delay: 0.6s;', class: '' },
       { emoji: '🌊', style: 'top: 20%; left: 55%; animation-delay: 1.8s;', class: '' },
       { emoji: '🪵', style: 'top: 30%; right: 25%; animation-delay: 2.4s;', class: '' },
+    ]
+  }
+  if (route.params.chapterId === 'chapter-4') {
+    return [
+      { emoji: '🛍️', style: 'top: 12%; left: 15%; animation-delay: 0s;', class: '' },
+      { emoji: '🥤', style: 'top: 25%; right: 12%; animation-delay: 1.2s;', class: '' },
+      { emoji: '📦', style: 'top: 35%; left: 30%; animation-delay: 0.6s;', class: '' },
+      { emoji: '🗑️', style: 'top: 20%; left: 55%; animation-delay: 1.8s;', class: '' },
+      { emoji: '♻️', style: 'top: 30%; right: 25%; animation-delay: 2.4s;', class: '' },
+    ]
+  }
+  if (route.params.chapterId === 'chapter-5') {
+    return [
+      { emoji: '🏗️', style: 'top: 12%; left: 15%; animation-delay: 0s;', class: '' },
+      { emoji: '🌱', style: 'top: 25%; right: 12%; animation-delay: 1.2s;', class: '' },
+      { emoji: '☀️', style: 'top: 35%; left: 30%; animation-delay: 0.6s;', class: 'heat-wave' },
+      { emoji: '💧', style: 'top: 20%; left: 55%; animation-delay: 1.8s;', class: '' },
+      { emoji: '🌿', style: 'top: 30%; right: 25%; animation-delay: 2.4s;', class: '' },
+    ]
+  }
+  if (route.params.chapterId === 'chapter-6') {
+    return [
+      { emoji: '🎉', style: 'top: 12%; left: 15%; animation-delay: 0s;', class: '' },
+      { emoji: '🌳', style: 'top: 25%; right: 12%; animation-delay: 1.2s;', class: '' },
+      { emoji: '🎊', style: 'top: 35%; left: 30%; animation-delay: 0.6s;', class: '' },
+      { emoji: '👨‍👩‍👧', style: 'top: 20%; left: 55%; animation-delay: 1.8s;', class: '' },
+      { emoji: '🐕', style: 'top: 30%; right: 25%; animation-delay: 2.4s;', class: '' },
     ]
   }
   return [
@@ -776,41 +1001,83 @@ onMounted(() => {
 
 /* ===== EXPLORATION ===== */
 .exploration-scene { background: transparent; }
-.exploration-bg { position: absolute; inset: 0; z-index: 2; padding-top: 50px; }
+
+.exploration-scroll {
+  position: absolute; inset: 0; z-index: 2;
+  overflow-x: auto; overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.exploration-street {
+  width: 200%;
+  height: 100%;
+  position: relative;
+}
+
+.exploration-street :deep(.scene-street) {
+  width: 100%; min-width: 100%;
+}
+
+.exploration-ui {
+  position: absolute; top: 0; left: 0; right: 0;
+  z-index: 10; pointer-events: none;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 10px 14px;
+}
+
+.exploration-ui > * { pointer-events: auto; }
 
 .explore-title {
-  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
   background: var(--glass-bg-strong);
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255,255,255,0.5);
-  padding: 10px 20px; border-radius: var(--radius-full);
-  font-weight: 800; font-size: 13px; color: var(--color-text);
-  white-space: nowrap; z-index: 5;
+  padding: 8px 16px; border-radius: var(--radius-full);
+  font-weight: 800; font-size: 12px; color: var(--color-text);
+  white-space: nowrap;
   box-shadow: var(--shadow-md);
   display: flex; align-items: center; gap: 6px;
 }
-.explore-title__icon { font-size: 18px; }
+.explore-title__icon { font-size: 16px; }
+
+.scroll-hint {
+  position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
+  z-index: 10; display: flex; align-items: center; gap: 6px;
+  background: rgba(0,0,0,0.6); color: white;
+  padding: 8px 18px; border-radius: var(--radius-full);
+  font-weight: 700; font-size: 13px;
+  animation: scrollHintPulse 1.5s ease-in-out infinite;
+}
+.scroll-hint__arrow { font-size: 18px; animation: scrollArrow 1s ease-in-out infinite; }
+@keyframes scrollArrow { 0%,100%{ transform: translateX(0); } 50%{ transform: translateX(6px); } }
+@keyframes scrollHintPulse { 0%,100%{ opacity: 0.9; } 50%{ opacity: 0.6; } }
 
 .observe-spot {
   position: absolute; display: flex; flex-direction: column;
-  align-items: center; gap: 4px; padding: 12px 14px;
-  background: var(--glass-bg-strong);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  border: 2px solid rgba(255,255,255,0.5);
-  border-radius: var(--radius-md); cursor: pointer;
+  align-items: center; justify-content: center;
+  width: 56px; height: 56px;
+  background: rgba(255,255,255,0.5);
+  border: 2px solid rgba(255,255,255,0.6);
+  border-radius: 50%; cursor: pointer;
   transition: all 300ms var(--ease-spring);
-  box-shadow: var(--shadow-md); z-index: 3;
+  box-shadow: var(--shadow-md), 0 0 12px rgba(251,191,36,0.3);
+  z-index: 3;
+  transform: translate(-50%, -50%);
 }
-.observe-spot:hover { transform: scale(1.1); box-shadow: var(--shadow-lg), 0 0 20px rgba(255,255,255,0.3); }
-.observe-spot:active { transform: scale(0.9); transition-duration: 80ms; }
+.observe-spot:hover { transform: translate(-50%, -50%) scale(1.15); box-shadow: var(--shadow-lg), 0 0 24px rgba(251,191,36,0.5); }
+.observe-spot:active { transform: translate(-50%, -50%) scale(0.9); transition-duration: 80ms; }
 .observe-spot--found {
-  background: rgba(69,201,122,0.3); border-color: var(--color-green-mid);
+  background: rgba(69,201,122,0.35); border-color: var(--color-green-mid);
   box-shadow: var(--shadow-sm), var(--glow-green);
+  pointer-events: none;
+}
+.observe-spot--ok {
+  background: rgba(200,200,200,0.3); border-color: rgba(0,0,0,0.15);
+  box-shadow: none; opacity: 0.5;
 }
 .observe-spot--found .observe-ping { display: none; }
 
-.observe-emoji { font-size: 28px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15)); }
-.observe-label { font-size: 11px; font-weight: 800; color: var(--color-text); }
+.observe-emoji { font-size: 26px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15)); }
 
 .observe-ping {
   position: absolute; inset: -4px; border-radius: var(--radius-md);
@@ -840,6 +1107,14 @@ onMounted(() => {
 }
 .observe-progress__text { font-weight: 800; font-size: 13px; color: var(--color-text); }
 
+/* ===== PROGRESSIVE IMPROVEMENTS ===== */
+.progressive-improvements { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.prog-emoji {
+  position: absolute; font-size: 28px;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
 /* ===== MISSION ===== */
 .mission-intro, .mission-success { width: 100%; height: 100%; position: relative; }
 .mission-playing { width: 100%; height: 100%; }
@@ -855,6 +1130,15 @@ onMounted(() => {
 }
 .mission-title-card__icon { font-size: 48px; margin-bottom: 6px; }
 .mission-title-card__name { font-size: 18px; font-weight: 800; color: var(--color-text); }
+.mission-title-card__reward {
+  display: flex; gap: 10px; justify-content: center; margin-top: 8px;
+  padding: 6px 12px; border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-green-bg), rgba(168,230,195,0.4));
+  border: 1px solid var(--color-green-pale);
+}
+.mission-title-card__reward span {
+  font-size: 12px; font-weight: 800; color: var(--color-green-dark);
+}
 
 /* Particles */
 .particles {

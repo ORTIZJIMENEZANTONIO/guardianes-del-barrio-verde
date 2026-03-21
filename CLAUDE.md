@@ -284,25 +284,39 @@ Todas las mecánicas son de **dominio público** (sin copyright).
 
 ## Capítulo 1 — La Calle Caliente
 
-12 escenas, 5 misiones (timers base: 90s, ajustados por edad).
-Tema: calor urbano, limpieza, sombra, fugas, recuperación del espacio.
+13 escenas, 6 misiones (timers base: 90s, ajustados por edad).
+Tema: calor urbano, limpieza, sombra, fugas, recuperación del espacio, techos verdes (ref. CIIEMAD/IPN).
 
-| # | Escena | Tipo | Componente Vue | Scene Phaser | Mecánica |
-|---|--------|------|----------------|--------------|----------|
-| 0 | Cinemática | cinematic | — | — | — |
-| 1 | Bienvenida | dialogue | — | — | — |
-| 2 | Observación | exploration | — | — | tap (5 spots) |
-| 3 | Tutorial | dialogue | — | — | — |
-| 4 | Limpiar banqueta | mission | `SidewalkCleanup` | `SidewalkCleanupScene` | drag (10→4 bins) |
-| 5 | Detectar calor | mission | `HeatDetector` | `HeatDetectorScene` | tap (3 hot de 6) |
-| 6 | Plantar sombra | mission | `ShadePlanter` | `ShadePlanterScene` | tap (4 de 7 slots) |
-| 7 | Reparar fuga | mission | `LeakFixer` | `LeakFixerScene` | pipe-fit (5 piezas) |
-| 8 | Recuperar espacio | mission | `SpaceRestorer` | `SpaceRestorerScene` | placement (5 items) |
-| 9 | Transformación | transformation | — | — | — |
-| 10 | Resumen | summary | — | — | — |
-| 11 | Gancho | hook | — | — | → Cap. 2 |
+| # | Escena | Tipo | Componente Vue | Mecánica | Notas |
+|---|--------|------|----------------|----------|-------|
+| 0 | Cinemática | cinematic | — | — | Barrio deteriorado |
+| 1 | Bienvenida | dialogue | — | — | "{nombre}! ¡Llegaste!" |
+| 2 | Observación | exploration | — | tap (5 spots) | Todos requeridos |
+| 3 | Tutorial | dialogue | — | — | EcoKit |
+| 4 | Limpiar banqueta | mission | `SidewalkCleanup` | drag (10→4 bins) | 90s timer |
+| 5 | Detectar calor | mission | `HeatDetector` | tap (3 hot de 6) | Sin timer |
+| 6 | Plantar sombra | mission | `ShadePlanter` | tap (4 de 7 slots, 6 semillas) | Sin timer |
+| 7 | Reparar fuga | mission | `LeakFixer` | pipe-fit (5 piezas) | 45s timer |
+| 8 | Recuperar espacio | mission | `SpaceRestorer` | placement (5 soluciones + 2 distractores) | Urbanismo táctico |
+| 9 | Techo verde | mission | `GreenRoofBuilder` | placement (5 capas + 3 distractores, shuffle) | Ref. CIIEMAD/IPN |
+| 10 | Transformación | transformation | — | — | Cielo hot→nice |
+| 11 | Resumen | summary | — | — | Recompensas |
+| 12 | Gancho | hook | — | — | → Cap. 2 |
 
 Recompensa: 50 pts, "Guardián de la Calle Caliente".
+
+### Misión 8: Recuperar el espacio (urbanismo táctico)
+- Zonas con PROBLEMAS: "Esquina oscura", "Pared vacía", "Nadie se detiene", "Basura en el piso", "Sol directo"
+- 7 items: 5 soluciones correctas (luminaria, mural, banca, contenedor, jardinera) + 2 distractores (carpa de circo, alberca inflable)
+- Feedback educativo: cada acierto explica POR QUÉ esa solución funciona
+- Distractores se rechazan con explicación
+
+### Misión 9: Techo verde (referencia CIIEMAD/Instituto Politécnico Nacional)
+- El jugador arma un techo verde colocando **5 capas en orden**: impermeabilizante → drenaje → filtro → sustrato → plantas nativas
+- 8 items shuffled: 5 correctos + **3 distractores** (cemento, pintura verde, plástico) con feedback educativo
+- Diálogos mencionan al **CIIEMAD del Instituto Politécnico Nacional** como referencia real
+- Datos: baja temperatura 15%, absorbe lluvia, da hogar a polinizadores
+- Insignia: "Arquitecto Verde"
 
 ## Capítulo 2 — El Parque Dormido
 
@@ -372,7 +386,7 @@ Personajes que brillan: Timo (reparaciones), Xani (humedales y biodiversidad).
 - **Fondos SVG detallados**: SceneSky y SceneStreet en todas las pantallas, nunca gradientes planos solos. Se renderizan debajo del canvas Phaser.
 - **Phaser drag & drop**: drag nativo Phaser con `setInteractive({ draggable: true })`, drop zones con `getBounds().contains()`, bounce back con `Back.easeOut`.
 - **Phaser memorama**: flip con `scaleX` tween (0→1), mejor que CSS `rotateY` en Android. Fisher-Yates shuffle, max 2 cartas, lock board.
-- **Catálogo dev** (`/dev`): solo visible en localhost. Accesible desde botón en home. Muestra personajes con todas las emociones/animaciones, capítulos con escenas, misiones y mecánicas. Usa `position: fixed` + `overflow-y: scroll` para escapar del `body { overflow: hidden }` del juego.
+- **Catálogo dev** (`/dev`): solo visible en localhost. Muestra personajes con emociones/animaciones, capítulos con escenas, misiones con botón "▶ Jugar" para probar cada minijuego individualmente (overlay fullscreen con Teleport), y mecánicas. Usa `position: fixed` + `overflow-y: scroll`.
 
 ## Bugs corregidos (historial)
 
@@ -392,14 +406,13 @@ Personajes que brillan: Timo (reparaciones), Xani (humedales y biodiversidad).
 
 - Registro de jugador con personalización por edad
 - Selector de capítulos (`/capitulos`) — todos desbloqueados, el jugador elige libremente
-- Capítulo 1 "La Calle Caliente" completo y jugable (5 misiones: drag, tap, placement, pipe-fit)
+- Capítulo 1 "La Calle Caliente" completo y jugable (6 misiones: drag, tap, placement, pipe-fit, urbanismo táctico, techo verde)
 - Capítulo 2 "El Parque Dormido" completo y jugable (5 misiones: drag & drop + memorama, Bolillo narra)
 - Capítulo 3 "La Fuga Infinita" completo y jugable (3 misiones: drag & drop + memorama, humedales)
-- 13 minijuegos en total, 8 personajes, 3 mecánicas principales
-- **Integración Phaser.js completa**: 13 minijuegos con Phaser canvas (drag nativo, flip tween scaleX, confetti particles). Toggle `USE_PHASER` en `[chapterId].vue`. Componentes Vue originales preservados como fallback (`USE_PHASER = false`).
-- Phaser lazy-loaded (~333KB gzip) solo cuando se inicia un minijuego, no afecta carga inicial
+- **14 minijuegos** en total, 8 personajes, 3 mecánicas principales
+- **Integración Phaser.js**: 13 scenes + wrappers creados. Actualmente `USE_PHASER = false` (componentes Vue activos). Toggle en `[chapterId].vue`.
 - Navegación post-capítulo: hook → siguiente capítulo → wrap-around al primero incompleto → selector si todos completos
 - Reflexión y agradecimiento cuando todos los capítulos están completos
-- Catálogo dev (`/dev`) con personajes, animaciones, capítulos y mecánicas — solo en localhost
+- **Catálogo dev** (`/dev`): personajes, animaciones, capítulos, mecánicas + **jugar cada minijuego individualmente** con botón "▶ Jugar"
 - Deploy en guardianes.cercu.com.mx
 - Capítulos 4-6 pendientes: La Ruta de la Basura, Azoteas con Vida, El Gran Festival Verde

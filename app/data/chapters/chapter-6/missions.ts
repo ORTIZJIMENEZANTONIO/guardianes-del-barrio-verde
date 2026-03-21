@@ -1,0 +1,63 @@
+import type { MissionConfig } from '~/shared/types/mission'
+
+export const chapter6Missions: MissionConfig[] = [
+  {
+    id: 'mission-1-prepare',
+    chapterId: 'chapter-6',
+    title: 'Preparar el espacio',
+    description: 'Coloca las estaciones del festival en el barrio. Elige bien: no todas sirven.',
+    type: 'placement',
+    objectives: [
+      { id: 'prepare-stations', description: 'Colocar 5 estaciones', target: 5, current: 0 },
+    ],
+    timeLimit: 90,
+    reward: { points: 20, seeds: 1, badge: 'festival-planner', badgeTitle: 'Organizador del Festival' },
+    introDialogueId: 'mission-1-intro',
+    successDialogueId: 'mission-1-success',
+    failureDialogueId: 'mission-1-failure',
+  },
+  {
+    id: 'mission-2-invite',
+    chapterId: 'chapter-6',
+    title: 'Invitar al barrio',
+    description: 'Encuentra a los vecinos y vecinas del barrio para invitarlos al festival.',
+    type: 'tap-detect',
+    objectives: [
+      { id: 'invite-neighbors', description: 'Invitar a 6 vecinos', target: 6, current: 0 },
+    ],
+    timeLimit: 90,
+    reward: { points: 20, seeds: 1, badge: 'community-caller', badgeTitle: 'Convocador Comunitario' },
+    introDialogueId: 'mission-2-intro',
+    successDialogueId: 'mission-2-success',
+    failureDialogueId: 'mission-2-failure',
+  },
+  {
+    id: 'mission-3-solve',
+    chapterId: 'chapter-6',
+    title: 'Resolver imprevistos',
+    description: 'Encuentra las parejas: cada problema del festival tiene una solución sustentable.',
+    type: 'memorama',
+    objectives: [
+      { id: 'solve-problems', description: 'Encontrar 4 parejas', target: 4, current: 0 },
+    ],
+    reward: { points: 20, seeds: 2, badge: 'problem-solver', badgeTitle: 'Solucionador Verde' },
+    introDialogueId: 'mission-3-intro',
+    successDialogueId: 'mission-3-success',
+    failureDialogueId: 'mission-3-failure',
+  },
+  {
+    id: 'mission-4-inaugurate',
+    chapterId: 'chapter-6',
+    title: 'Inaugurar el festival',
+    description: 'Arrastra cada elemento a su lugar para la gran inauguracion del festival.',
+    type: 'drag-drop',
+    objectives: [
+      { id: 'inaugurate-festival', description: 'Colocar 5 elementos', target: 5, current: 0 },
+    ],
+    timeLimit: 90,
+    reward: { points: 30, badge: 'festival-guardian', badgeTitle: 'Guardian del Festival Verde' },
+    introDialogueId: 'mission-4-intro',
+    successDialogueId: 'mission-4-success',
+    failureDialogueId: 'mission-4-failure',
+  },
+]

@@ -73,18 +73,4 @@ export const chapter1Missions: MissionConfig[] = [
     successDialogueId: 'mission-5-success',
     failureDialogueId: 'mission-5-failure',
   },
-  {
-    id: 'mission-6-greenroof',
-    chapterId: 'chapter-1',
-    title: 'Construir un techo verde',
-    description: 'Coloca cada capa del techo verde en el orden correcto',
-    type: 'placement',
-    objectives: [
-      { id: 'place-layers', description: 'Armar las 5 capas del techo verde', target: 5, current: 0 },
-    ],
-    reward: { points: 30, seeds: 2, badge: 'green-roof', badgeTitle: 'Arquitecto Verde' },
-    introDialogueId: 'mission-6-intro',
-    successDialogueId: 'mission-6-success',
-    failureDialogueId: 'mission-6-failure',
-  },
 ]

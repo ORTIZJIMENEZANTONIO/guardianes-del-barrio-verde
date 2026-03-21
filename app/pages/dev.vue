@@ -168,6 +168,12 @@ import { chapter2 } from '~/data/chapters/chapter-2'
 import { chapter2Missions } from '~/data/chapters/chapter-2/missions'
 import { chapter3 } from '~/data/chapters/chapter-3'
 import { chapter3Missions } from '~/data/chapters/chapter-3/missions'
+import { chapter4 } from '~/data/chapters/chapter-4'
+import { chapter4Missions } from '~/data/chapters/chapter-4/missions'
+import { chapter5 } from '~/data/chapters/chapter-5'
+import { chapter5Missions } from '~/data/chapters/chapter-5/missions'
+import { chapter6 } from '~/data/chapters/chapter-6'
+import { chapter6Missions } from '~/data/chapters/chapter-6/missions'
 import { useGameStore } from '~/stores/useGameStore'
 import type { Emotion } from '~/shared/types/character'
 
@@ -183,6 +189,20 @@ import SoilMemory from '~/components/chapter/chapter-2/SoilMemory.vue'
 import WaterDragDrop from '~/components/chapter/chapter-2/WaterDragDrop.vue'
 import WildlifeMemory from '~/components/chapter/chapter-2/WildlifeMemory.vue'
 import ParkDragRestore from '~/components/chapter/chapter-2/ParkDragRestore.vue'
+import BolilloRoute from '~/components/chapter/chapter-2/BolilloRoute.vue'
+import TrashCollector from '~/components/chapter/chapter-4/TrashCollector.vue'
+import WasteSeparator from '~/components/chapter/chapter-4/WasteSeparator.vue'
+import PollutionDetector from '~/components/chapter/chapter-4/PollutionDetector.vue'
+import CompostBuilder from '~/components/chapter/chapter-4/CompostBuilder.vue'
+import RecycleMemory from '~/components/chapter/chapter-4/RecycleMemory.vue'
+import RoofEvaluator from '~/components/chapter/chapter-5/RoofEvaluator.vue'
+import RoofDesigner from '~/components/chapter/chapter-5/RoofDesigner.vue'
+import PlantMatcher from '~/components/chapter/chapter-5/PlantMatcher.vue'
+import IrrigationBuilder from '~/components/chapter/chapter-5/IrrigationBuilder.vue'
+import FestivalSetup from '~/components/chapter/chapter-6/FestivalSetup.vue'
+import NeighborInviter from '~/components/chapter/chapter-6/NeighborInviter.vue'
+import FestivalProblems from '~/components/chapter/chapter-6/FestivalProblems.vue'
+import FestivalInauguration from '~/components/chapter/chapter-6/FestivalInauguration.vue'
 import FloodDragClear from '~/components/chapter/chapter-3/FloodDragClear.vue'
 import WetlandMemory from '~/components/chapter/chapter-3/WetlandMemory.vue'
 import PipeDragFit from '~/components/chapter/chapter-3/PipeDragFit.vue'
@@ -214,12 +234,15 @@ function toggleSpeak(charId: string) {
   speakingChar.value = speakingChar.value === charId ? null : charId
 }
 
-const chaptersData = [chapter1, chapter2, chapter3]
+const chaptersData = [chapter1, chapter2, chapter3, chapter4, chapter5, chapter6]
 
 const allMissions = [
   { chapter: 'Cap. 1 — La Calle Caliente', missions: chapter1Missions },
   { chapter: 'Cap. 2 — El Parque Dormido', missions: chapter2Missions },
   { chapter: 'Cap. 3 — La Fuga Infinita', missions: chapter3Missions },
+  { chapter: 'Cap. 4 — La Ruta de la Basura', missions: chapter4Missions },
+  { chapter: 'Cap. 5 — Azoteas con Vida', missions: chapter5Missions },
+  { chapter: 'Cap. 6 — El Gran Festival Verde', missions: chapter6Missions },
 ]
 
 const mechanics = [
@@ -237,15 +260,32 @@ const missionComponentMap: Record<string, any> = {
   'mission-3-plant': ShadePlanter,
   'mission-4-leak': LeakFixer,
   'mission-5-restore': SpaceRestorer,
-  'mission-6-greenroof': GreenRoofBuilder,
   'mission-1-paths': PathClear,
   'mission-2-soil': SoilMemory,
   'mission-3-water': WaterDragDrop,
   'mission-4-life': WildlifeMemory,
   'mission-5-reactivate': ParkDragRestore,
+  'mission-6-bolillo-route': BolilloRoute,
   'mission-1-waste': FloodDragClear,
   'mission-2-wetland': WetlandMemory,
   'mission-3-repair': PipeDragFit,
+  // Chapter 4
+  'mission-1-collect': TrashCollector,
+  'mission-2-separate': WasteSeparator,
+  'mission-3-pollution': PollutionDetector,
+  'mission-4-compost': CompostBuilder,
+  'mission-5-recycle': RecycleMemory,
+  // Chapter 5
+  'mission-0-greenroof': GreenRoofBuilder,
+  'mission-1-evaluate': RoofEvaluator,
+  'mission-2-design': RoofDesigner,
+  'mission-3-plants': PlantMatcher,
+  'mission-4-irrigation': IrrigationBuilder,
+  // Chapter 6
+  'mission-1-prepare': FestivalSetup,
+  'mission-2-invite': NeighborInviter,
+  'mission-3-solve': FestivalProblems,
+  'mission-4-inaugurate': FestivalInauguration,
 }
 
 const playingMissionId = ref<string | null>(null)

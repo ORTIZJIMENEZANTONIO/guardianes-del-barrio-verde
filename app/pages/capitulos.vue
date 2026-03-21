@@ -77,6 +77,9 @@ const chapters = computed<ChapterEntry[]>(() => {
     { id: 'chapter-1', number: 1, title: 'La Calle Caliente', icon: '🌡️' },
     { id: 'chapter-2', number: 2, title: 'El Parque Dormido', icon: '🏞️' },
     { id: 'chapter-3', number: 3, title: 'La Fuga Infinita', icon: '💧' },
+    { id: 'chapter-4', number: 4, title: 'La Ruta de la Basura', icon: '🗑️' },
+    { id: 'chapter-5', number: 5, title: 'Azoteas con Vida', icon: '🌱' },
+    { id: 'chapter-6', number: 6, title: 'El Gran Festival Verde', icon: '🎉' },
   ]
 
   return allChapters.map((ch) => {

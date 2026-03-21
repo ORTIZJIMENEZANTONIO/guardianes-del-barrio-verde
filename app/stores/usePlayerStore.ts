@@ -14,6 +14,9 @@ export const usePlayerStore = defineStore('player', {
     badgeTitles: {} as Record<string, string>,
     completedMissions: [] as string[],
     completedChapters: [] as string[],
+    avatarSkin: 0,       // 0-2 index
+    avatarHair: 0,       // 0-3 index
+    avatarAccessory: -1,  // -1 = none, 0-2 index
   }),
 
   getters: {
@@ -42,6 +45,20 @@ export const usePlayerStore = defineStore('player', {
 
     addScore(points: number) {
       this.score += points
+    },
+
+    setAvatar(skin: number, hair: number, accessory: number) {
+      this.avatarSkin = skin
+      this.avatarHair = hair
+      this.avatarAccessory = accessory
+    },
+
+    spendSeeds(amount: number) {
+      if (this.seeds >= amount) {
+        this.seeds -= amount
+        return true
+      }
+      return false
     },
 
     addSeeds(count: number) {
@@ -83,6 +100,9 @@ export const usePlayerStore = defineStore('player', {
         badgeTitles: this.badgeTitles,
         completedMissions: this.completedMissions,
         completedChapters: this.completedChapters,
+        avatarSkin: this.avatarSkin,
+        avatarHair: this.avatarHair,
+        avatarAccessory: this.avatarAccessory,
         timestamp: Date.now(),
       }
       localStorage.setItem(SAVE_KEY, JSON.stringify(data))
@@ -102,6 +122,9 @@ export const usePlayerStore = defineStore('player', {
         this.badgeTitles = data.badgeTitles ?? {}
         this.completedMissions = data.completedMissions ?? []
         this.completedChapters = data.completedChapters ?? []
+        this.avatarSkin = data.avatarSkin ?? 0
+        this.avatarHair = data.avatarHair ?? 0
+        this.avatarAccessory = data.avatarAccessory ?? -1
         return true
       }
       return false
@@ -118,6 +141,9 @@ export const usePlayerStore = defineStore('player', {
       this.badgeTitles = {}
       this.completedMissions = []
       this.completedChapters = []
+      this.avatarSkin = 0
+      this.avatarHair = 0
+      this.avatarAccessory = -1
       localStorage.removeItem(SAVE_KEY)
     },
   },

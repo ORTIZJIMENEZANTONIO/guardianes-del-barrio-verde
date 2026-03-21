@@ -73,4 +73,18 @@ export const chapter2Missions: MissionConfig[] = [
     successDialogueId: 'mission-5-success',
     failureDialogueId: 'mission-5-failure',
   },
+  {
+    id: 'mission-6-bolillo-route',
+    chapterId: 'chapter-2',
+    title: 'La Ruta de Bolillo',
+    description: 'Sigue a Bolillo por el parque y ayúdalo en cada parada',
+    type: 'placement',
+    objectives: [
+      { id: 'bolillo-needs', description: 'Cubrir las 5 necesidades de Bolillo', target: 5, current: 0 },
+    ],
+    reward: { points: 35, seeds: 3, badge: 'bolillo-friend', badgeTitle: 'Amigo de Bolillo' },
+    introDialogueId: 'mission-6-intro',
+    successDialogueId: 'mission-6-success',
+    failureDialogueId: 'mission-6-failure',
+  },
 ]

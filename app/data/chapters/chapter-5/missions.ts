@@ -1,0 +1,75 @@
+import type { MissionConfig } from '~/shared/types/mission'
+
+export const chapter5Missions: MissionConfig[] = [
+  {
+    id: 'mission-0-greenroof',
+    chapterId: 'chapter-5',
+    title: 'Construir un techo verde',
+    description: 'Coloca cada capa del techo verde en el orden correcto',
+    type: 'placement',
+    objectives: [
+      { id: 'place-layers', description: 'Armar las 5 capas del techo verde', target: 5, current: 0 },
+    ],
+    reward: { points: 30, seeds: 2, badge: 'green-roof', badgeTitle: 'Arquitecto Verde' },
+    introDialogueId: 'mission-0-intro',
+    successDialogueId: 'mission-0-success',
+    failureDialogueId: 'mission-0-failure',
+  },
+  {
+    id: 'mission-1-evaluate',
+    chapterId: 'chapter-5',
+    title: 'Evaluar la azotea',
+    description: 'Inspecciona la azotea y detecta las 4 condiciones que necesitas verificar antes de empezar.',
+    type: 'tap-detect',
+    objectives: [
+      { id: 'evaluate-roof', description: 'Inspeccionar 4 condiciones', target: 4, current: 0 },
+    ],
+    reward: { points: 15, seeds: 1, badge: 'roof-inspector', badgeTitle: 'Inspector de Azoteas' },
+    introDialogueId: 'mission-1-intro',
+    successDialogueId: 'mission-1-success',
+    failureDialogueId: 'mission-1-failure',
+  },
+  {
+    id: 'mission-2-design',
+    chapterId: 'chapter-5',
+    title: 'Diseñar el espacio',
+    description: 'Elige las soluciones correctas y colócalas en la azotea para crear un espacio verde funcional.',
+    type: 'placement',
+    objectives: [
+      { id: 'design-roof', description: 'Colocar 6 elementos', target: 6, current: 0 },
+    ],
+    reward: { points: 20, seeds: 2, badge: 'roof-designer', badgeTitle: 'Diseñador de Azoteas' },
+    introDialogueId: 'mission-2-intro',
+    successDialogueId: 'mission-2-success',
+    failureDialogueId: 'mission-2-failure',
+  },
+  {
+    id: 'mission-3-plants',
+    chapterId: 'chapter-5',
+    title: 'Elegir plantas',
+    description: 'Encuentra las parejas: cada condición de la azotea necesita la planta correcta.',
+    type: 'memorama',
+    objectives: [
+      { id: 'match-plants', description: 'Encontrar 4 parejas', target: 4, current: 0 },
+    ],
+    reward: { points: 20, seeds: 2, badge: 'plant-expert', badgeTitle: 'Experto en Plantas', visualUnlock: 'roof-plants' },
+    introDialogueId: 'mission-3-intro',
+    successDialogueId: 'mission-3-success',
+    failureDialogueId: 'mission-3-failure',
+  },
+  {
+    id: 'mission-4-irrigation',
+    chapterId: 'chapter-5',
+    title: 'Instalar riego',
+    description: 'Arrastra las piezas de tubería para conectar el captador de lluvia con las zonas de plantas.',
+    type: 'drag-drop',
+    objectives: [
+      { id: 'install-irrigation', description: 'Colocar 5 piezas correctas', target: 5, current: 0 },
+    ],
+    timeLimit: 90,
+    reward: { points: 25, badge: 'rain-engineer', badgeTitle: 'Ingeniero de Lluvia' },
+    introDialogueId: 'mission-4-intro',
+    successDialogueId: 'mission-4-success',
+    failureDialogueId: 'mission-4-failure',
+  },
+]

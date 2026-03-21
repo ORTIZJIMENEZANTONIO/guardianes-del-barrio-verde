@@ -279,6 +279,37 @@ export const chapter2Dialogues: Record<string, DialoguePool> = {
     ],
   },
 
+  // ===== Misión 6 — La Ruta de Bolillo =====
+  'mission-6-intro': {
+    id: 'mission-6-intro',
+    context: 'Intro misión 6 — Ruta de Bolillo',
+    lines: [
+      { id: 'm6i-1', speaker: 'bolillo', emotion: 'happy', text: '¡Guau! {nombre}, el parque ya se siente diferente.' },
+      { id: 'm6i-2', speaker: 'xani', emotion: 'thinking', text: 'Bolillo hace su recorrido por el parque todos los días. Tiene sus paradas favoritas.' },
+      { id: 'm6i-3', speaker: 'xani', emotion: 'excited', text: 'Pero en cada parada necesita algo: agua, sombra, un lugar seguro para descansar…' },
+      { id: 'm6i-4', speaker: 'lila', emotion: 'happy', text: '{nombre}, sigue a Bolillo y dale lo que necesita en cada punto. Eso es cuidar a un animal callejero de verdad.' },
+      { id: 'm6i-5', speaker: 'xani', emotion: 'neutral', text: 'Recuerda: nunca fuerces contacto. Si gruñe, no es agresión, es miedo. Y si necesita ayuda médica, pide a un adulto.', optional: true },
+    ],
+  },
+  'mission-6-success': {
+    id: 'mission-6-success',
+    context: 'Éxito misión 6',
+    lines: [
+      { id: 'm6s-1', speaker: 'bolillo', emotion: 'happy', text: '¡Guau guau! *mueve la cola*' },
+      { id: 'm6s-2', speaker: 'xani', emotion: 'proud', text: 'Bolillo ahora tiene todo lo que necesita: agua, sombra, comida, espacio seguro y compañía.' },
+      { id: 'm6s-3', speaker: 'don-tono', emotion: 'happy', text: 'Así se cuida a un perrito del barrio. Sin forzar nada, con respeto.', optional: true },
+      { id: 'm6s-4', speaker: 'lila', emotion: 'proud', text: '{nombre}, los animales callejeros también son parte del barrio. Cuidarlos es cuidar a la comunidad.' },
+      { id: 'm6s-5', speaker: 'bolillo', emotion: 'proud', text: '*se echa tranquilo junto a la brigada* 🐕' },
+    ],
+  },
+  'mission-6-failure': {
+    id: 'mission-6-failure',
+    context: 'Fallo misión 6',
+    lines: [
+      { id: 'm6f-1', speaker: 'xani', emotion: 'neutral', text: 'Piensa en lo que Bolillo necesita en cada parada, {nombre}. ¡Tú puedes!' },
+    ],
+  },
+
   // ===== Gancho =====
   'chapter-3-hook': {
     id: 'chapter-3-hook',
