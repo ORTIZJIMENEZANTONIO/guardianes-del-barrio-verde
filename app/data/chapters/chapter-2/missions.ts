@@ -7,6 +7,7 @@ export const chapter2Missions: MissionConfig[] = [
     title: 'Despejar los senderos',
     description: 'Arrastra los obstáculos fuera del camino para abrir los senderos del parque',
     type: 'drag-drop',
+    difficulty: 1,
     objectives: [
       { id: 'clear-paths', description: 'Despejar 6 obstáculos del camino', target: 6, current: 0 },
     ],
@@ -22,6 +23,7 @@ export const chapter2Missions: MissionConfig[] = [
     title: 'Cuidar el suelo',
     description: 'Encuentra las parejas para aprender a restaurar el suelo del parque',
     type: 'memorama',
+    difficulty: 1,
     objectives: [
       { id: 'soil-pairs', description: 'Encontrar 4 parejas', target: 4, current: 0 },
     ],
@@ -36,6 +38,7 @@ export const chapter2Missions: MissionConfig[] = [
     title: 'Regar con estrategia',
     description: 'Arrastra las gotas de agua a las plantas que las necesitan',
     type: 'drag-drop',
+    difficulty: 2,
     objectives: [
       { id: 'water-plants', description: 'Regar 4 zonas correctamente', target: 4, current: 0 },
     ],
@@ -51,6 +54,7 @@ export const chapter2Missions: MissionConfig[] = [
     title: 'Vida en el parque',
     description: 'Encuentra las parejas de animales y lo que necesitan para volver al parque',
     type: 'memorama',
+    difficulty: 1,
     objectives: [
       { id: 'wildlife-pairs', description: 'Encontrar 4 parejas', target: 4, current: 0 },
     ],
@@ -65,6 +69,7 @@ export const chapter2Missions: MissionConfig[] = [
     title: 'Reactivar el parque',
     description: 'Arrastra cada elemento al lugar correcto para restaurar el parque',
     type: 'drag-drop',
+    difficulty: 2,
     objectives: [
       { id: 'reactivate', description: 'Colocar 5 elementos', target: 5, current: 0 },
     ],
@@ -79,6 +84,7 @@ export const chapter2Missions: MissionConfig[] = [
     title: 'La Ruta de Bolillo',
     description: 'Sigue a Bolillo por el parque y ayúdalo en cada parada',
     type: 'placement',
+    difficulty: 2,
     objectives: [
       { id: 'bolillo-needs', description: 'Cubrir las 5 necesidades de Bolillo', target: 5, current: 0 },
     ],

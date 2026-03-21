@@ -2,7 +2,9 @@
   <div class="game-hud">
     <div class="hud-left">
       <button class="hud-btn" @click="$emit('pause')">⏸</button>
-      <PlayerAvatar :size="32" />
+      <div class="hud-avatar">
+        <CharacterFace :character-id="playerStore.avatarCharacterId" emotion="happy" />
+      </div>
       <div class="hud-chapter">
         {{ chapterTitle }}
       </div>
@@ -106,6 +108,16 @@ watch(() => playerStore.totalBadges, () => {
 
 .hud-btn:active {
   transform: scale(0.9);
+}
+
+.hud-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.15);
+  flex-shrink: 0;
 }
 
 .hud-chapter {

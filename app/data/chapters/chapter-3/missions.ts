@@ -7,6 +7,7 @@ export const chapter3Missions: MissionConfig[] = [
     title: 'Controlar el desperdicio',
     description: 'Arrastra los obstáculos fuera del agua para despejar el paso',
     type: 'drag-drop',
+    difficulty: 1,
     objectives: [
       { id: 'control-waste', description: 'Retirar 5 obstáculos', target: 5, current: 0 },
     ],
@@ -22,6 +23,7 @@ export const chapter3Missions: MissionConfig[] = [
     title: 'Proteger el humedal',
     description: 'Encuentra las parejas para aprender sobre el humedal y cómo cuidarlo',
     type: 'memorama',
+    difficulty: 2,
     objectives: [
       { id: 'wetland-pairs', description: 'Encontrar 4 parejas', target: 4, current: 0 },
     ],
@@ -36,6 +38,7 @@ export const chapter3Missions: MissionConfig[] = [
     title: 'Reparar y redirigir el agua',
     description: 'Arrastra las piezas de tubería al lugar correcto para reparar la fuga',
     type: 'drag-drop',
+    difficulty: 3,
     objectives: [
       { id: 'repair-pipe', description: 'Colocar 4 piezas correctas', target: 4, current: 0 },
     ],

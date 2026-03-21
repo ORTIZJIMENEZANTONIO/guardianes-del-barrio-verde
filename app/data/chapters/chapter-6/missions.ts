@@ -7,6 +7,7 @@ export const chapter6Missions: MissionConfig[] = [
     title: 'Preparar el espacio',
     description: 'Coloca las estaciones del festival en el barrio. Elige bien: no todas sirven.',
     type: 'placement',
+    difficulty: 2,
     objectives: [
       { id: 'prepare-stations', description: 'Colocar 5 estaciones', target: 5, current: 0 },
     ],
@@ -22,6 +23,7 @@ export const chapter6Missions: MissionConfig[] = [
     title: 'Invitar al barrio',
     description: 'Encuentra a los vecinos y vecinas del barrio para invitarlos al festival.',
     type: 'tap-detect',
+    difficulty: 1,
     objectives: [
       { id: 'invite-neighbors', description: 'Invitar a 6 vecinos', target: 6, current: 0 },
     ],
@@ -37,6 +39,7 @@ export const chapter6Missions: MissionConfig[] = [
     title: 'Resolver imprevistos',
     description: 'Encuentra las parejas: cada problema del festival tiene una solución sustentable.',
     type: 'memorama',
+    difficulty: 2,
     objectives: [
       { id: 'solve-problems', description: 'Encontrar 4 parejas', target: 4, current: 0 },
     ],
@@ -51,6 +54,7 @@ export const chapter6Missions: MissionConfig[] = [
     title: 'Inaugurar el festival',
     description: 'Arrastra cada elemento a su lugar para la gran inauguracion del festival.',
     type: 'drag-drop',
+    difficulty: 1,
     objectives: [
       { id: 'inaugurate-festival', description: 'Colocar 5 elementos', target: 5, current: 0 },
     ],

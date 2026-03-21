@@ -7,6 +7,7 @@ export const chapter4Missions: MissionConfig[] = [
     title: 'Recolectar basura',
     description: 'Toca cada residuo tirado en la calle para recolectarlo',
     type: 'tap-detect',
+    difficulty: 1,
     objectives: [
       { id: 'collect-trash', description: 'Recolectar 8 residuos de la calle', target: 8, current: 0 },
     ],
@@ -21,6 +22,7 @@ export const chapter4Missions: MissionConfig[] = [
     title: 'Separar residuos',
     description: 'Arrastra cada residuo al contenedor correcto por su tipo de material',
     type: 'drag-drop',
+    difficulty: 2,
     objectives: [
       { id: 'separate-waste', description: 'Clasificar 8 residuos correctamente', target: 8, current: 0 },
     ],
@@ -36,6 +38,7 @@ export const chapter4Missions: MissionConfig[] = [
     title: 'Detectar contaminación',
     description: 'Explora la calle y encuentra los 4 puntos de contaminación',
     type: 'tap-detect',
+    difficulty: 2,
     objectives: [
       { id: 'find-pollution', description: 'Encontrar 4 focos de contaminación', target: 4, current: 0 },
     ],
@@ -50,6 +53,7 @@ export const chapter4Missions: MissionConfig[] = [
     title: 'Hacer composta',
     description: 'Aprende a hacer composta: agrega cada capa en el orden correcto',
     type: 'placement',
+    difficulty: 3,
     objectives: [
       { id: 'compost-layers', description: 'Armar las 5 capas de la composta', target: 5, current: 0 },
     ],
@@ -64,6 +68,7 @@ export const chapter4Missions: MissionConfig[] = [
     title: 'Centro de reciclaje',
     description: 'Encuentra las parejas: cada material tiene un producto reciclado',
     type: 'memorama',
+    difficulty: 2,
     objectives: [
       { id: 'recycle-pairs', description: 'Encontrar 5 parejas', target: 5, current: 0 },
     ],

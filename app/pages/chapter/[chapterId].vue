@@ -4,7 +4,7 @@
     <GameHud
       v-if="showHud"
       :chapter-title="chapter?.title"
-      :total-missions="chapter?.missionIds.length ?? 0"
+      :total-missions="activeMissionCount"
       :completed-missions="chapterCompletedMissions"
       @pause="showPauseModal = true"
     />
@@ -409,6 +409,37 @@ const chapterCompletedMissions = computed(() => {
   return chapter.value.missionIds.filter(id => playerStore.isMissionComplete(id)).length
 })
 
+// ===== Difficulty-based mission selection =====
+// Ages 6-7:  play difficulty 1 + 2 (skip 3) → ~3-4 missions, timers ×1.4
+// Ages 8-10: play ALL missions              → ~4-6 missions, timers ×1.0-1.25
+// Ages 11-12: skip difficulty 1 (play 2+3)  → ~3-4 harder missions, timers ×0.75-0.85
+// Age 12+ (13): ONLY difficulty 3           → ~2-3 hardest missions, timers ×0.6
+import type { MissionConfig } from '~/shared/types/mission'
+
+const activeMissionCount = computed(() => {
+  if (!chapter.value) return 0
+  return chapterMissions.value.filter(m => !shouldSkipMission(m)).length
+})
+
+function shouldSkipMission(mission: MissionConfig): boolean {
+  const age = playerStore.playerAge
+  const diff = mission.difficulty ?? 2
+
+  // Ages 6-7: skip hard (3)
+  if (age <= 7 && diff >= 3) return true
+
+  // Ages 8-10: play everything
+  // (no skip)
+
+  // Ages 11-12: skip easy (1)
+  if (age >= 11 && age <= 12 && diff <= 1) return true
+
+  // Age 12+ (stored as 13): ONLY hard (3) — expert mode
+  if (age >= 13 && diff < 3) return true
+
+  return false
+}
+
 // Mission handling
 const currentMissionConfig = computed<MissionConfig | null>(() => {
   const missionId = currentScene.value?.missionId
@@ -551,8 +582,13 @@ function startSceneDialogue() {
   if (!scene) return
 
   if (scene.type === 'mission') {
-    missionPhase.value = 'intro'
     const mission = currentMissionConfig.value
+    // Skip mission if difficulty doesn't match age bracket
+    if (mission && shouldSkipMission(mission)) {
+      nextTick(() => advanceScene())
+      return
+    }
+    missionPhase.value = 'intro'
     if (mission) {
       const pool = chapterDialogues.value[mission.introDialogueId]
       if (pool) {

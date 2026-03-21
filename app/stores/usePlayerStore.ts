@@ -14,9 +14,10 @@ export const usePlayerStore = defineStore('player', {
     badgeTitles: {} as Record<string, string>,
     completedMissions: [] as string[],
     completedChapters: [] as string[],
-    avatarSkin: 0,       // 0-2 index
-    avatarHair: 0,       // 0-3 index
-    avatarAccessory: -1,  // -1 = none, 0-2 index
+    avatarSkin: 0,
+    avatarHair: 0,
+    avatarAccessory: -1,
+    avatarCharacterId: 'lila',  // selected character as avatar
   }),
 
   getters: {
@@ -27,11 +28,13 @@ export const usePlayerStore = defineStore('player', {
     isRegistered: (state) => state.playerName.length > 0,
     /** Timer multiplier: younger kids get more time, older kids less */
     timerMultiplier: (state) => {
-      if (state.playerAge <= 8) return 1.3
-      if (state.playerAge <= 9) return 1.15
+      if (state.playerAge <= 7) return 1.4  // 6-7: mucho más tiempo
+      if (state.playerAge <= 8) return 1.25
+      if (state.playerAge <= 9) return 1.1
       if (state.playerAge <= 10) return 1.0
       if (state.playerAge <= 11) return 0.85
-      return 0.75 // 12+
+      if (state.playerAge <= 12) return 0.75
+      return 0.6 // 12+: modo experto
     },
     /** Older kids see fewer dialogue lines */
     isCompactDialogue: (state) => state.playerAge >= 11,
@@ -103,6 +106,7 @@ export const usePlayerStore = defineStore('player', {
         avatarSkin: this.avatarSkin,
         avatarHair: this.avatarHair,
         avatarAccessory: this.avatarAccessory,
+        avatarCharacterId: this.avatarCharacterId,
         timestamp: Date.now(),
       }
       localStorage.setItem(SAVE_KEY, JSON.stringify(data))
@@ -125,6 +129,7 @@ export const usePlayerStore = defineStore('player', {
         this.avatarSkin = data.avatarSkin ?? 0
         this.avatarHair = data.avatarHair ?? 0
         this.avatarAccessory = data.avatarAccessory ?? -1
+        this.avatarCharacterId = data.avatarCharacterId ?? 'lila'
         return true
       }
       return false
@@ -144,6 +149,7 @@ export const usePlayerStore = defineStore('player', {
       this.avatarSkin = 0
       this.avatarHair = 0
       this.avatarAccessory = -1
+      this.avatarCharacterId = 'lila'
       localStorage.removeItem(SAVE_KEY)
     },
   },

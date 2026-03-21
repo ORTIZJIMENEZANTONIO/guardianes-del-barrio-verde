@@ -1,16 +1,16 @@
 # Guardianes del Barrio Verde
 
-Juego educativo ambiental web para niños de 7-13 años en México.
+Juego educativo ambiental web para niños de 6-12+ años en México.
 
 ## Stack
 
 - **Nuxt 4** (SPA mode, `ssr: false`)
 - **Vue 3** (Composition API, `<script setup>`)
 - **Pinia** (state management)
-- **Phaser 3** (motor de minijuegos — scenes + wrappers creados, actualmente `USE_PHASER = false`)
+- **Phaser 3** (motor de minijuegos — scenes + wrappers creados, `USE_PHASER = false`)
 - **GSAP** (animaciones UI: confetti, bounce, shake, heartbeat, elastic)
 - **TypeScript**
-- CSS puro con custom properties. Design system con glassmorphism, glow effects, spring animations.
+- CSS puro con custom properties. Glassmorphism, glow effects, spring animations.
 - Fuente: Nunito (Google Fonts, pesos 400-900)
 
 ## Comandos
@@ -39,102 +39,100 @@ ssh root@72.62.200.124 "cd /var/www/cercu-frontend/guardianes && tar -xzf guardi
 
 ```
 app/
-  assets/css/main.css           # Design tokens, animaciones, glassmorphism, glow
+  assets/
+    css/main.css                # Design tokens, animaciones, glassmorphism
+    images/bolillo/             # 14 PNGs de capas para Bolillo (base, ojos, boca, cejas, cola)
   components/
     ui/                         # GameButton, ProgressBar, Modal, ActionButton, PlayerAvatar
-    hud/                        # GameHud (score, semillas, insignias, barra progreso, avatar)
+    hud/                        # GameHud (avatar, score, semillas, badges, barra progreso)
     dialogue/                   # DialogueBox, CharacterPortrait, CharacterFace, CharacterBody,
                                 #   ChoicePanel, DialogueScene
     scene/                      # SceneSky (cielos SVG), SceneStreet (barrio SVG)
-    minigame/                   # MinigameShell (wrapper con timer adaptativo, z-index 100 overlays)
-    reward/                     # RewardPopup (con GSAP confetti)
-    phaser/                     # PhaserCanvas (wrapper Phaser, auto-import Nuxt)
-    chapter/chapter-1/          # 5 minijuegos + Phaser wrappers
-    chapter/chapter-2/          # 6 minijuegos + Phaser wrappers
-    chapter/chapter-3/          # 3 minijuegos + Phaser wrappers
-    chapter/chapter-4/          # 5 minijuegos (La Ruta de la Basura)
-    chapter/chapter-5/          # 5 minijuegos (Azoteas con Vida)
-    chapter/chapter-6/          # 4 minijuegos (El Gran Festival Verde)
+    minigame/                   # MinigameShell (timer adaptativo, z-index 100 overlays)
+    reward/                     # RewardPopup
+    phaser/                     # PhaserCanvas (wrapper Phaser)
+    chapter/chapter-1/ a 6/     # 28 minijuegos Vue + Phaser wrappers (caps 1-3)
   composables/
-    useGameAnimations.ts        # GSAP helpers: popIn, shake, confetti, heartbeat, etc.
-    usePhaserGame.ts            # Monta/destruye Phaser en lifecycle Vue (lazy import)
-  phaser/                       # Phaser scenes, mechanics, effects (USE_PHASER = false por ahora)
+    useGameAnimations.ts        # GSAP helpers
+    usePhaserGame.ts            # Monta/destruye Phaser (lazy import)
+  phaser/                       # Scenes, mechanics, effects (USE_PHASER = false)
   pages/
     index.vue                   # Pantalla de inicio
-    registro.vue                # Registro: nombre + edad + avatar (4 pasos)
-    capitulos.vue               # Selector de 6 capítulos (todos desbloqueados)
-    chapter/[chapterId].vue     # Motor del juego
-    dev.vue                     # Catálogo dev con "▶ Jugar" por minijuego
+    registro.vue                # Registro: nombre + edad + avatar personaje (4 pasos)
+    capitulos.vue               # Selector de 6 capítulos
+    chapter/[chapterId].vue     # Motor del juego (dificultad adaptativa por edad)
+    dev.vue                     # Catálogo dev + Testing Autobots
   stores/
-    useGameStore.ts             # Estado maestro (capítulo, escena, fase)
-    usePlayerStore.ts           # Perfil + progreso + avatar (nombre, edad, skin/hair/accessory)
-    useDialogueStore.ts         # Cola de diálogos, typewriter, {nombre}, filtro por edad
+    useGameStore.ts             # Estado maestro
+    usePlayerStore.ts           # Perfil + progreso + avatarCharacterId
+    useDialogueStore.ts         # Diálogos, typewriter, {nombre}, filtro por edad
   data/
     characters/                 # 8 personajes
-    chapters/chapter-1/ a chapter-6/  # Datos de 6 capítulos (index, dialogues, missions)
-  shared/types/                 # Interfaces TypeScript
+    chapters/chapter-1/ a 6/    # 6 capítulos (index, dialogues, missions con difficulty)
+  shared/types/                 # TypeScript (MissionConfig con difficulty: 1|2|3)
 ```
 
 ## Flujo del usuario
 
 ```
-Home → Registro (nombre + edad + avatar) → Capítulos → Capítulo
-         4 pasos                            6 caps       Escenas secuenciales
-                                            desbloqueados  (cinemática → diálogos → exploración →
-                                                            misiones → transformación → resumen → hook)
+Home → Registro (nombre + edad + personaje) → Capítulos → Capítulo
+         4 pasos                               6 caps      Escenas adaptadas por edad
+         (6-12 + botón 12+)                    desbloqueados
 ```
 
 ## Sistema de registro y personalización
 
 ### Registro (`/registro`) — 4 pasos
 1. Nombre (mín. 2 caracteres)
-2. Edad (7-13)
-3. **Avatar** (tono de piel × 3, pelo × 4, accesorio × 3 + ninguno)
+2. Edad: botones `6, 7, 8, 9, 10, 11, 12` + botón especial `12+` (guarda como 13)
+3. **Avatar**: elegir personaje existente (Lila, Timo, Xani, Don Toño, Vale, Nico). Excluidos: Bolillo (mascota) y Nube Gris (villano). Muestra CharacterBody + CharacterFace.
 4. Bienvenida con Lila → `/capitulos`
 
-### Avatar (PlayerAvatar)
-- SVG component con `size` prop
-- 3 tonos de piel, 4 estilos de pelo, 3 accesorios (gorra, lentes, moño)
-- Visible en el **GameHud** junto al título del capítulo
-- Guardado en playerStore (`avatarSkin`, `avatarHair`, `avatarAccessory`)
-- `spendSeeds(amount)` action para futura tienda
+### Avatar como personaje
+- `avatarCharacterId` guardado en playerStore
+- **GameHud** muestra CharacterFace del personaje elegido (32px circular)
+- Persistido en localStorage
 
-### Personalización por edad
+### Adaptación por edad y dificultad
 
-| Edad | Timer | Diálogos |
-|------|-------|----------|
-| 7-8 | ×1.3 | Completos |
-| 9 | ×1.15 | Completos |
-| 10 | ×1.0 | Completos |
-| 11 | ×0.85 | Compactos |
-| 12-13 | ×0.75 | Compactos |
+Cada misión tiene `difficulty: 1 | 2 | 3` (fácil, medio, difícil).
 
-## Mejoras de UX implementadas
+| Edad | Misiones | Timer | Diálogos | Misiones/cap |
+|------|----------|:-----:|----------|:------------:|
+| **6-7** | dificultad 1+2 (skip 3) | ×1.4 | Completos | ~3-4 |
+| **8** | TODAS | ×1.25 | Completos | ~4-6 |
+| **9** | TODAS | ×1.1 | Completos | ~4-6 |
+| **10** | TODAS | ×1.0 | Completos | ~4-6 |
+| **11** | dificultad 2+3 (skip 1) | ×0.85 | Compactos | ~3-4 |
+| **12** | dificultad 2+3 (skip 1) | ×0.75 | Compactos | ~3-4 |
+| **12+** | **SOLO dificultad 3** | **×0.6** | Compactos | **~2-3** |
 
-- **Inicio acortado**: Cap.1 cinemática 2 líneas + bienvenida con choices (antes 4 escenas)
-- **Opciones negativas**: "¿Te unes?" → "¡Sí!" / "Mmm, no sé..." / "¿Y si mejor no?" + convencimiento con factos
-- **Exploración con scroll horizontal**: calle 2x más ancha, spots sin label (descubrimiento), spots falsos, hint "→ Desliza"
-- **Preview de recompensa**: antes de cada misión se muestra "🌿 20pts 🏅 Badge"
-- **Misión fuga sorpresa**: Cap.1 misión 4 se presenta como evento inesperado
-- **Barra de progreso en HUD**: dots 🟢🟢⚪⚪ muestran avance del capítulo
-- **Celebración visual progresiva**: emojis aparecen entre misiones (🌱→🌸→🦋→🌳→👨‍👩‍👧)
+Cada capítulo dura máximo ~15 minutos. El `shouldSkipMission()` en `[chapterId].vue` auto-avanza las misiones que no corresponden a la edad. El HUD muestra solo las misiones activas (`activeMissionCount`).
+
+## Mejoras de UX
+
+- **Inicio acortado**: cinemática 2 líneas + bienvenida con choices (antes 4 escenas)
+- **Opciones negativas**: "¿Te unes?" → "¡Sí!" / "Mmm, no sé..." / "¿Y si mejor no?" + convencimiento
+- **Exploración scroll horizontal**: calle 2x, spots sin label, spots falsos, hint "→ Desliza"
+- **Preview de recompensa**: "🌿 20pts 🏅 Badge" antes de cada misión
+- **Misión fuga sorpresa**: Cap.1 misión 4 como evento inesperado
+- **Barra de progreso en HUD**: dots 🟢⚪ (solo misiones activas por edad)
+- **Celebración visual progresiva**: emojis aparecen entre misiones
 - **ShadePlanter drag & drop**: arrastrar árboles en vez de tap
+- **LeakFixer rediseñado**: ruta SVG visual con huecos y gotas
+- **Mensajes de error educativos**: "Por qué estuvo mal. 💡 Consejo suave." Sin dar respuesta, sin "Piensa:"
 
 ## Capítulo 1 — La Calle Caliente
 
 11 escenas, 5 misiones. Tema: calor urbano, limpieza, sombra, fugas, espacio público.
 
-| # | Escena | Componente | Mecánica |
-|---|--------|------------|----------|
-| 0 | Cinemática | — | — |
-| 1 | Bienvenida + choices | — | — |
-| 2 | Exploración (scroll) | — | tap (5+2 spots falsos) |
-| 3 | Limpiar banqueta | `SidewalkCleanup` | drag (10→4 bins, 90s) |
-| 4 | Detectar calor | `HeatDetector` | tap-detect (3 hot de 6) |
-| 5 | Plantar sombra | `ShadePlanter` | drag (6 árboles→7 zonas) |
-| 6 | Reparar fuga (sorpresa) | `LeakFixer` | pipe-fit SVG (5 huecos, 45s) |
-| 7 | Recuperar espacio | `SpaceRestorer` | placement (5+2 distractores, urbanismo táctico) |
-| 8-10 | Transformación → Resumen → Hook | — | — |
+| # | Misión | Componente | Mecánica | Diff |
+|---|--------|------------|----------|:----:|
+| 3 | Limpiar banqueta | `SidewalkCleanup` | drag (10→4 bins, 90s) | 2 |
+| 4 | Detectar calor | `HeatDetector` | tap-detect (3 hot de 6) | 1 |
+| 5 | Plantar sombra | `ShadePlanter` | drag (6 árboles→7 zonas) | 2 |
+| 6 | Reparar fuga (sorpresa) | `LeakFixer` | pipe-fit SVG (5 huecos, 45s) | 3 |
+| 7 | Recuperar espacio | `SpaceRestorer` | placement (5+2 distractores) | 3 |
 
 Recompensa: 50 pts, "Guardián de la Calle Caliente".
 
@@ -142,151 +140,146 @@ Recompensa: 50 pts, "Guardián de la Calle Caliente".
 
 13 escenas, 6 misiones. Narrado por **Bolillo**.
 
-| # | Misión | Componente | Mecánica |
-|---|--------|------------|----------|
-| 1 | Despejar senderos | `PathClear` | drag (6→zona limpieza, 90s) |
-| 2 | Cuidar el suelo | `SoilMemory` | memorama (4 parejas) |
-| 3 | Regar con estrategia | `WaterDragDrop` | drag (6 gotas→plantas, 90s) |
-| 4 | Vida en el parque | `WildlifeMemory` | memorama (4 parejas, incluye Bolillo) |
-| 5 | Reactivar parque | `ParkDragRestore` | drag (5→zonas) |
-| 6 | **Ruta de Bolillo** | `BolilloRoute` | placement (5 necesidades + 2 distractores: chocolate, perseguir) |
+| # | Misión | Componente | Mecánica | Diff |
+|---|--------|------------|----------|:----:|
+| 1 | Despejar senderos | `PathClear` | drag (6→zona, 90s) | 1 |
+| 2 | Cuidar el suelo | `SoilMemory` | memorama (4 parejas) | 1 |
+| 3 | Regar con estrategia | `WaterDragDrop` | drag (6 gotas→plantas, 90s) | 2 |
+| 4 | Vida en el parque | `WildlifeMemory` | memorama (4 parejas) | 1 |
+| 5 | Reactivar parque | `ParkDragRestore` | drag (5→zonas) | 2 |
+| 6 | **Ruta de Bolillo** | `BolilloRoute` | placement (5+2 distractores) | 2 |
 
-Recompensa: 60 pts, "Guardián del Parque Dormido".
-
-### Bolillo como narrador
-- Escenas 0-1: no habla (Xani interpreta)
-- A partir de misión 2: habla directamente
-- Ruta de Bolillo: agua → sombra → comida → cama → compañía. Enseña respeto animal: no chocolate (tóxico), no perseguir, dejar que se acerque.
+Recompensa: 60 pts. Bolillo: agua → sombra → comida → cama → compañía. No chocolate (tóxico), no perseguir.
 
 ## Capítulo 3 — La Fuga Infinita
 
-8 escenas, 3 misiones (capítulo corto). Tema: agua, humedales.
+8 escenas, 3 misiones. Tema: agua, humedales.
 
-| # | Misión | Componente | Mecánica |
-|---|--------|------------|----------|
-| 1 | Controlar desperdicio | `FloodDragClear` | drag (5→zona segura, 90s) |
-| 2 | Proteger humedal | `WetlandMemory` | memorama (4 parejas) |
-| 3 | Reparar tubería | `PipeDragFit` | drag (4+2 trampa→slots, 90s) |
+| # | Misión | Componente | Mecánica | Diff |
+|---|--------|------------|----------|:----:|
+| 1 | Controlar desperdicio | `FloodDragClear` | drag (5→zona, 90s) | 1 |
+| 2 | Proteger humedal | `WetlandMemory` | memorama (4 parejas) | 2 |
+| 3 | Reparar tubería | `PipeDragFit` | drag (4+2 trampa, 90s) | 3 |
 
-Recompensa: 50 pts, "Guardián de la Fuga Infinita".
+Recompensa: 50 pts.
 
 ## Capítulo 4 — La Ruta de la Basura
 
-11 escenas, 5 misiones. Tema: separación de residuos, reciclaje, composta. Protagonistas: Vale + Timo.
+11 escenas, 5 misiones. Tema: residuos, reciclaje, composta. Protagonistas: Vale + Timo.
 
-| # | Misión | Componente | Mecánica |
-|---|--------|------------|----------|
-| 1 | Recolectar basura | `TrashCollector` | tap (8 items) |
-| 2 | Separar residuos | `WasteSeparator` | drag (8→4 bins, 90s, datos de degradación) |
-| 3 | Detectar contaminación | `PollutionDetector` | tap-detect (4 de 7) |
-| 4 | **Hacer composta** | `CompostBuilder` | placement (5 capas + 3 distractores: plástico, carne, metal) |
-| 5 | Centro de reciclaje | `RecycleMemory` | memorama (5 parejas: material→producto) |
+| # | Misión | Componente | Mecánica | Diff |
+|---|--------|------------|----------|:----:|
+| 1 | Recolectar basura | `TrashCollector` | tap (8 items) | 1 |
+| 2 | Separar residuos | `WasteSeparator` | drag (8→4 bins, 90s, datos degradación) | 2 |
+| 3 | Detectar contaminación | `PollutionDetector` | tap-detect (4 de 7) | 2 |
+| 4 | **Hacer composta** | `CompostBuilder` | placement (5 capas + 3 distractores) | 3 |
+| 5 | Centro de reciclaje | `RecycleMemory` | memorama (5 parejas: material→producto) | 2 |
 
-WasteSeparator se diferencia de SidewalkCleanup (Cap.1): muestra datos de degradación ("Botella PET: 450 años") y datos de reciclaje ("El aluminio se recicla infinitas veces").
-
-Recompensa: 60 pts, "Guardián de la Ruta de la Basura".
+Recompensa: 60 pts.
 
 ## Capítulo 5 — Azoteas con Vida
 
-11 escenas, 5 misiones. Tema: techos verdes, huertos urbanos, biodiversidad. Ref. CIIEMAD/IPN. Protagonistas: Xani + Timo.
+11 escenas, 5 misiones. Tema: techos verdes, ref. CIIEMAD/IPN. Protagonistas: Xani + Timo.
 
-| # | Misión | Componente | Mecánica |
-|---|--------|------------|----------|
-| 0 | **Construir techo verde** | `GreenRoofBuilder` | placement (5 capas + 3 distractores, CIIEMAD, 70°C vs 35°C) |
-| 1 | Evaluar la azotea | `RoofEvaluator` | tap-detect (4 de 6) |
-| 2 | Diseñar el espacio | `RoofDesigner` | placement (6+2 distractores) |
-| 3 | Elegir plantas | `PlantMatcher` | memorama (4 parejas: condición→planta) |
-| 4 | Instalar riego | `IrrigationBuilder` | drag (5+2 trampa, 90s) |
+| # | Misión | Componente | Mecánica | Diff |
+|---|--------|------------|----------|:----:|
+| 0 | **Construir techo verde** | `GreenRoofBuilder` | placement (5 capas + 3 distractores, 70°C vs 35°C) | 2 |
+| 1 | Evaluar azotea | `RoofEvaluator` | tap-detect (4 de 6) | 1 |
+| 2 | Diseñar espacio | `RoofDesigner` | placement (6+2 distractores) | 3 |
+| 3 | Elegir plantas | `PlantMatcher` | memorama (4 parejas) | 2 |
+| 4 | Instalar riego | `IrrigationBuilder` | drag (5+2 trampa, 90s) | 3 |
 
-Recompensa: 60 pts, "Guardián de las Azoteas".
+Recompensa: 60 pts.
 
 ## Capítulo 6 — El Gran Festival Verde
 
-9 escenas, 4 misiones. Tema: comunidad, celebración, cierre. TODOS los personajes.
+9 escenas, 4 misiones. Tema: comunidad, cierre. TODOS los personajes.
 
-| # | Misión | Componente | Mecánica |
-|---|--------|------------|----------|
-| 1 | Preparar el espacio | `FestivalSetup` | placement (5+2 distractores) |
-| 2 | Invitar al barrio | `NeighborInviter` | tap (6 vecinos) |
-| 3 | Resolver imprevistos | `FestivalProblems` | memorama (4 parejas) |
-| 4 | Inaugurar el festival | `FestivalInauguration` | drag (5 elementos) |
+| # | Misión | Componente | Mecánica | Diff |
+|---|--------|------------|----------|:----:|
+| 1 | Preparar espacio | `FestivalSetup` | placement (5+2 distractores) | 2 |
+| 2 | Invitar al barrio | `NeighborInviter` | tap (6 vecinos) | 1 |
+| 3 | Resolver imprevistos | `FestivalProblems` | memorama (4 parejas) | 2 |
+| 4 | Inaugurar festival | `FestivalInauguration` | drag (5 elementos) | 1 |
 
-Final emocional: cada personaje agradece a {nombre}. Nube Gris: "El barrio ya no me necesita... pero tal vez eso está bien." Bolillo: *mueve la cola feliz*.
-
-Recompensa: 80 pts, "Guardián del Festival Verde".
+Final emocional. Nube Gris: "El barrio ya no me necesita..." Bolillo: *mueve la cola feliz*.
+Recompensa: 80 pts.
 
 ## Distribución de temas educativos
 
 | Tema | Capítulo | Profundidad |
 |------|----------|-------------|
-| Calor urbano / isla de calor | Cap. 1 | Completo (detect + shade + restore) |
+| Calor urbano / isla de calor | Cap. 1 | Completo |
 | Espacio público / urbanismo | Cap. 1 | Misión dedicada (SpaceRestorer) |
-| Biodiversidad / animales callejeros | Cap. 2 | Completo (Bolillo narra + BolilloRoute) |
+| Biodiversidad / animales callejeros | Cap. 2 | Completo (Bolillo + BolilloRoute) |
 | Agua / humedales | Cap. 3 | Capítulo completo |
-| Separación de residuos | Cap. 1 (limpieza general) + Cap. 4 (reciclaje con datos) | Diferenciados |
-| **Composta** | Cap. 4 | Misión dedicada (CompostBuilder, proceso completo) |
-| **Techos verdes** | Cap. 5 | Capítulo completo (5 misiones, ref. CIIEMAD/IPN) |
-| Comunidad / activación | Cap. 6 | Capítulo completo (festival + cierre) |
+| Separación de residuos | Cap. 1 (general) + Cap. 4 (datos) | Diferenciados |
+| **Composta** | Cap. 4 | Misión dedicada (CompostBuilder) |
+| **Techos verdes** | Cap. 5 | Capítulo completo (CIIEMAD/IPN) |
+| Comunidad / activación | Cap. 6 | Capítulo completo (festival) |
 
 ## Personajes
 
-| Personaje | Rol | Color | Protagoniza |
-|-----------|-----|-------|-------------|
-| Lila | Líder | #2d9d5e | Todos los capítulos |
-| Timo | Inventor | #f97316 | Cap. 1 (fuga), 4 (reciclaje), 5 (riego) |
-| Xani | Naturaleza | #8b5cf6 | Cap. 2 (parque), 3 (humedal), 5 (plantas) |
-| Don Toño | Vecino | #8b6f47 | Cap. 1, 2 (memoria del barrio) |
-| Nube Gris | Antagonista | #6b7280 | Todos (comentarios sarcásticos) |
-| Nico | Deportista | #3b82f6 | Cap. 1, 2 (espacio público) |
-| Vale | Comerciante | #fbbf24 | Cap. 4 (residuos), 6 (festival) |
-| Bolillo | Perrito mestizo | #c89850 | Cap. 2 (narrador + ruta), 6 (cierre) |
+| Personaje | Rol | Color | Avatar | Protagoniza |
+|-----------|-----|-------|:------:|-------------|
+| Lila | Líder | #2d9d5e | ✅ | Todos |
+| Timo | Inventor | #f97316 | ✅ | Cap. 1, 4, 5 |
+| Xani | Naturaleza | #8b5cf6 | ✅ | Cap. 2, 3, 5 |
+| Don Toño | Vecino | #8b6f47 | ✅ | Cap. 1, 2 |
+| Nube Gris | Antagonista | #6b7280 | ❌ | Todos (sarcasmo) |
+| Nico | Deportista | #3b82f6 | ✅ | Cap. 1, 2 |
+| Vale | Comerciante | #fbbf24 | ✅ | Cap. 4, 6 |
+| Bolillo | Perrito mestizo | #c89850 | ❌ | Cap. 2, 6 |
 
-## Reglas de diseño
+### Bolillo — Sistema de capas PNG
 
-- **Alto contraste**: texto `#111827` sobre fondos claros
-- **Glassmorphism**: `backdrop-filter: blur()` + border de vidrio
-- **Español mexicano**, optimista, nunca moralista. `{nombre}` del jugador.
-- **Touch-first** (mobile). Mínimo 44x44px áreas tocables.
-- **Feedback GSAP**: confetti éxito, shake error, heartbeat timer bajo
-- **Catálogo dev** (`/dev`): personajes + capítulos + "▶ Jugar" cada minijuego + **🤖 Testing/Autobots**
+Imágenes en `app/assets/images/bolillo/` (14 PNGs):
+
+| Capa | Archivos | z-index | Cambia por |
+|------|----------|---------|------------|
+| Cola | tail-down/up | 1 | emoción + speaking |
+| Base | base | 2 | nunca |
+| Ojos | eyes-neutral/happy/sad/closed | 3 | emoción + blink (3-4s) |
+| Cejas | brows-neutral/worried/angry | 4 | emoción |
+| Boca | mouth-2-closed/open/wide | 3 | speaking (180ms) + emoción |
+
+- **Easter egg**: 5 taps rápidos → sonríe, cola super-wag, corazones ❤️💛 (3s)
+- **foreignObject** `x=10 y=8 width=80 height=162`, base `width:100%; height:auto`
+
+### Mensajes de error educativos
+
+Patrón: **"Por qué estuvo mal. 💡 Consejo suave."**
+- No dar respuesta directa
+- No usar "Piensa:" (agresivo)
+- Usar: "Fíjate en...", "Cada... tiene...", "Intenta con..."
 
 ## Catálogo dev (`/dev`)
 
-Solo visible en localhost. Secciones colapsables:
-
-- **Personajes**: preview de cada personaje con emociones y animación de hablar
-- **Capítulos**: datos de cada capítulo con botón "▶ Jugar este capítulo"
-- **Misiones**: lista de 28 minijuegos con botón "▶ Jugar" (overlay Teleport fullscreen)
-- **🤖 Testing / Autobots**: herramientas para verificar que todo funciona sin jugar manualmente
-
-### Testing / Autobots
+Solo localhost. Secciones:
+- **Personajes**: emociones + hablar
+- **Capítulos**: "▶ Jugar este capítulo"
+- **Misiones**: 28 minijuegos con "▶ Jugar" (overlay Teleport)
+- **🤖 Testing / Autobots**:
 
 | Botón | Función |
 |-------|---------|
-| **🤖 Auto-test TODOS** | Verifica los 28 minijuegos: componente existe + 3 diálogos (intro/success/failure). Muestra "X PASS, Y FAIL" |
-| **⚡ Marcar TODO completado** | Completa 6 capítulos con puntos, seeds, badges. Crea perfil TestBot si no hay registro |
-| **🔄 Reset progreso** | Limpia localStorage y progreso completo |
-| **⚡ Completar** (por capítulo) | Marca todas las misiones del capítulo + otorga recompensa |
-| **🤖 Test** (por capítulo) | Verifica componentes y diálogos de todas las misiones |
-| **🤖 Test** (por misión) | Verifica componente + intro + success + failure dialogue IDs existen |
-| **⚡ OK** (por misión) | Marca misión completada + otorga puntos/seeds/badge |
+| 🤖 Verificar TODOS | Checa componente + diálogos + icon + objectives + reward |
+| ▶ Correr TODOS | Abre cada misión secuencialmente (1.5s), completa, cierra |
+| ▶ Correr capítulo | Igual pero solo un capítulo |
+| ▶ Correr misión | Abre 1 misión (2s), completa, cierra |
+| ⚡ Completar | Marca done instantáneamente |
+| 🔄 Reset | Limpia progreso |
 
-Log de resultados en terminal oscuro (verde = PASS, rojo = FAIL) con scroll.
-
-El auto-test verifica:
-1. Componente Vue existe en `missionComponentMap`
-2. `introDialogueId` existe en el dialogues del capítulo correcto
-3. `successDialogueId` existe
-4. `failureDialogueId` existe
+Log en terminal oscuro. Banner amarillo cuando corre. Resumen PASS/FAIL.
 
 ## Estado actual
 
-- **6 capítulos completos y jugables** con 28 minijuegos
-- **Registro** con nombre + edad + avatar personalizable
-- **GameHud** con avatar, barra de progreso 🟢⚪, score, semillas, badges
-- **Exploración** con scroll horizontal, spots sin label, spots falsos
-- **Preview de recompensa** antes de cada misión
-- **Celebración visual progresiva** entre misiones
-- Integración Phaser.js preparada (`USE_PHASER = false`, componentes Vue activos)
-- **Catálogo dev** con 28 minijuegos jugables individualmente + **🤖 Autobots** para testing automatizado
+- **6 capítulos, 28 minijuegos** jugables
+- **Edades 6-12 + modo 12+** (solo misiones difíciles, timer ×0.6)
+- **Dificultad adaptativa**: `difficulty: 1|2|3` por misión, `shouldSkipMission()` por edad
+- **Registro**: nombre + edad (6-12, 12+) + avatar = personaje existente
+- **Bolillo** con capas PNG expresivas + easter egg
+- **Mensajes de error** educativos y amigables
+- **Dev tools** con autobots (verificar, correr, completar)
+- Integración Phaser.js preparada (`USE_PHASER = false`)
 - Deploy en guardianes.cercu.com.mx

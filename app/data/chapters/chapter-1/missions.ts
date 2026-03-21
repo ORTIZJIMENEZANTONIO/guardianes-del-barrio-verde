@@ -7,6 +7,7 @@ export const chapter1Missions: MissionConfig[] = [
     title: 'Limpiar la banqueta',
     description: 'Arrastra cada residuo al contenedor correcto',
     type: 'drag-drop',
+    difficulty: 2,
     objectives: [
       { id: 'sort-trash', description: 'Clasificar residuos correctamente', target: 10, current: 0 },
     ],
@@ -22,6 +23,7 @@ export const chapter1Missions: MissionConfig[] = [
     title: 'Detectar puntos de calor',
     description: 'Toca las superficies y encuentra las más calientes',
     type: 'tap-detect',
+    difficulty: 1,
     objectives: [
       { id: 'find-heat', description: 'Encontrar los 3 puntos más calientes', target: 3, current: 0 },
     ],
@@ -36,6 +38,7 @@ export const chapter1Missions: MissionConfig[] = [
     title: 'Plantar sombra',
     description: 'Coloca árboles y plantas en los lugares estratégicos',
     type: 'placement',
+    difficulty: 2,
     objectives: [
       { id: 'plant-trees', description: 'Plantar árboles en puntos estratégicos', target: 4, current: 0 },
     ],
@@ -50,6 +53,7 @@ export const chapter1Missions: MissionConfig[] = [
     title: 'Reparar la fuga',
     description: 'Encuentra la fuga y séllala con las piezas correctas',
     type: 'pipe-fit',
+    difficulty: 3,
     objectives: [
       { id: 'fix-leak', description: 'Reparar la tubería', target: 5, current: 0 },
     ],
@@ -65,6 +69,7 @@ export const chapter1Missions: MissionConfig[] = [
     title: 'Recuperar el espacio',
     description: 'Decora y recupera la calle para la comunidad',
     type: 'placement',
+    difficulty: 3,
     objectives: [
       { id: 'place-items', description: 'Colocar elementos de recuperación', target: 5, current: 0 },
     ],

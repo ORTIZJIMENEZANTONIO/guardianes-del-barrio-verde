@@ -7,6 +7,7 @@ export const chapter5Missions: MissionConfig[] = [
     title: 'Construir un techo verde',
     description: 'Coloca cada capa del techo verde en el orden correcto',
     type: 'placement',
+    difficulty: 2,
     objectives: [
       { id: 'place-layers', description: 'Armar las 5 capas del techo verde', target: 5, current: 0 },
     ],
@@ -21,6 +22,7 @@ export const chapter5Missions: MissionConfig[] = [
     title: 'Evaluar la azotea',
     description: 'Inspecciona la azotea y detecta las 4 condiciones que necesitas verificar antes de empezar.',
     type: 'tap-detect',
+    difficulty: 1,
     objectives: [
       { id: 'evaluate-roof', description: 'Inspeccionar 4 condiciones', target: 4, current: 0 },
     ],
@@ -35,6 +37,7 @@ export const chapter5Missions: MissionConfig[] = [
     title: 'Diseñar el espacio',
     description: 'Elige las soluciones correctas y colócalas en la azotea para crear un espacio verde funcional.',
     type: 'placement',
+    difficulty: 3,
     objectives: [
       { id: 'design-roof', description: 'Colocar 6 elementos', target: 6, current: 0 },
     ],
@@ -49,6 +52,7 @@ export const chapter5Missions: MissionConfig[] = [
     title: 'Elegir plantas',
     description: 'Encuentra las parejas: cada condición de la azotea necesita la planta correcta.',
     type: 'memorama',
+    difficulty: 2,
     objectives: [
       { id: 'match-plants', description: 'Encontrar 4 parejas', target: 4, current: 0 },
     ],
@@ -63,6 +67,7 @@ export const chapter5Missions: MissionConfig[] = [
     title: 'Instalar riego',
     description: 'Arrastra las piezas de tubería para conectar el captador de lluvia con las zonas de plantas.',
     type: 'drag-drop',
+    difficulty: 3,
     objectives: [
       { id: 'install-irrigation', description: 'Colocar 5 piezas correctas', target: 5, current: 0 },
     ],

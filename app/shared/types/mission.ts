@@ -17,12 +17,16 @@ export interface MissionObjective {
   current: number
 }
 
+/** 1 = fácil, 2 = medio, 3 = difícil */
+export type MissionDifficulty = 1 | 2 | 3
+
 export interface MissionConfig {
   id: string
   chapterId: string
   title: string
   description: string
   type: MissionType
+  difficulty: MissionDifficulty
   objectives: MissionObjective[]
   timeLimit?: number
   reward: MissionReward

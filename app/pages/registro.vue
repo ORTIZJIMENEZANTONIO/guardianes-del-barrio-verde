@@ -44,6 +44,13 @@
           >
             {{ a }}
           </button>
+          <button
+            class="age-btn age-btn--plus"
+            :class="{ 'age-btn--selected': age === 13 }"
+            @click="age = 13"
+          >
+            12+
+          </button>
         </div>
         <GameButton
           variant="primary"
@@ -55,69 +62,40 @@
         </GameButton>
       </div>
 
-      <!-- Step 3: Avatar customization -->
+      <!-- Step 3: Choose character avatar -->
       <div v-else-if="step === 3" class="register-card animate-scale-in">
         <div class="register-emoji">🎨</div>
-        <h1 class="register-title">Tu avatar</h1>
-        <p class="register-subtitle">Personaliza tu guardián</p>
+        <h1 class="register-title">Elige tu guardián</h1>
+        <p class="register-subtitle">¿Quién te representa en la brigada?</p>
 
-        <div class="avatar-preview">
-          <PlayerAvatar :size="120" />
+        <!-- Character preview -->
+        <div class="avatar-character-preview">
+          <CharacterBody
+            :character-id="selectedCharacterId"
+            emotion="happy"
+            :is-speaking="false"
+          />
+        </div>
+        <div class="avatar-selected-name" :style="{ color: avatarCharacters[selectedCharacterIdx]?.color }">
+          {{ avatarCharacters[selectedCharacterIdx]?.name }}
+          <span class="avatar-selected-role">{{ avatarCharacters[selectedCharacterIdx]?.role }}</span>
         </div>
 
-        <!-- Skin tone -->
-        <div class="avatar-section">
-          <span class="avatar-label">Piel</span>
-          <div class="avatar-options">
-            <button
-              v-for="(color, i) in skinColors"
-              :key="'skin-' + i"
-              class="avatar-color-btn"
-              :class="{ 'avatar-color-btn--selected': avatarSkin === i }"
-              :style="{ background: color }"
-              @click="avatarSkin = i"
-            />
-          </div>
-        </div>
-
-        <!-- Hair style -->
-        <div class="avatar-section">
-          <span class="avatar-label">Cabello</span>
-          <div class="avatar-options">
-            <button
-              v-for="(label, i) in hairLabels"
-              :key="'hair-' + i"
-              class="avatar-option-btn"
-              :class="{ 'avatar-option-btn--selected': avatarHair === i }"
-              :style="{ background: hairColors[i], color: '#fff' }"
-              @click="avatarHair = i"
-            >
-              {{ label }}
-            </button>
-          </div>
-        </div>
-
-        <!-- Accessory -->
-        <div class="avatar-section">
-          <span class="avatar-label">Accesorio</span>
-          <div class="avatar-options">
-            <button
-              class="avatar-option-btn"
-              :class="{ 'avatar-option-btn--selected': avatarAccessory === -1 }"
-              @click="avatarAccessory = -1"
-            >
-              Ninguno
-            </button>
-            <button
-              v-for="(label, i) in accessoryLabels"
-              :key="'acc-' + i"
-              class="avatar-option-btn"
-              :class="{ 'avatar-option-btn--selected': avatarAccessory === i }"
-              @click="avatarAccessory = i"
-            >
-              {{ label }}
-            </button>
-          </div>
+        <!-- Character grid -->
+        <div class="avatar-char-grid">
+          <button
+            v-for="(char, i) in avatarCharacters"
+            :key="char.id"
+            class="avatar-char-btn"
+            :class="{ 'avatar-char-btn--selected': selectedCharacterIdx === i }"
+            :style="{ '--char-color': char.color }"
+            @click="selectedCharacterIdx = i"
+          >
+            <div class="avatar-char-btn__body">
+              <CharacterFace :character-id="char.id" emotion="happy" />
+            </div>
+            <span class="avatar-char-btn__name">{{ char.name }}</span>
+          </button>
         </div>
 
         <GameButton variant="primary" size="lg" @click="goToWelcome">
@@ -149,6 +127,7 @@
 <script setup lang="ts">
 import { useGameStore } from '~/stores/useGameStore'
 import { usePlayerStore } from '~/stores/usePlayerStore'
+import { characters as allCharacters } from '~/data/characters'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -158,27 +137,19 @@ const step = ref(1)
 const name = ref('')
 const age = ref(0)
 const nameInputRef = ref<HTMLInputElement | null>(null)
-const ages = [7, 8, 9, 10, 11, 12, 13]
+const ages = [6, 7, 8, 9, 10, 11, 12]
 
-// Avatar customization state
-const avatarSkin = ref(0)
-const avatarHair = ref(0)
-const avatarAccessory = ref(-1)
-
-const skinColors = ['#c68642', '#f0c8a0', '#8d5524']
-const hairColors = ['#2d1810', '#5c3a1e', '#8b4513', '#1a1a2e']
-const hairLabels = ['Corto', 'Lacio', 'Rizado', 'Cola']
-const accessoryLabels = ['Gorra', 'Lentes', 'Moño']
-
-// Keep playerStore avatar in sync with local refs for live preview
-watch(avatarSkin, (v) => { playerStore.avatarSkin = v })
-watch(avatarHair, (v) => { playerStore.avatarHair = v })
-watch(avatarAccessory, (v) => { playerStore.avatarAccessory = v })
+// Avatar: choose from existing characters (exclude bolillo and nube-gris)
+const excludeIds = ['bolillo', 'nube-gris']
+const avatarCharacters = Object.values(allCharacters).filter(c => !excludeIds.includes(c.id))
+const selectedCharacterIdx = ref(0)
+const selectedCharacterId = computed(() => avatarCharacters[selectedCharacterIdx.value]?.id ?? 'lila')
 
 const ageMessage = computed(() => {
-  if (age.value <= 8) return 'Vas a ser un gran guardián. ¡Te daremos tiempo extra!'
+  if (age.value <= 7) return 'Vas a ser un gran guardián. ¡Te daremos tiempo extra!'
   if (age.value <= 10) return 'Perfecto para esta misión. ¡Vamos!'
-  return 'Ya eres grande. ¡Los retos serán más intensos!'
+  if (age.value <= 12) return 'Ya eres grande. ¡Los retos serán más intensos!'
+  return '¡Modo experto! Solo los retos más difíciles. ¿Le entras?'
 })
 
 function goToStep2() {
@@ -194,7 +165,7 @@ function goToStep3() {
 }
 
 function goToWelcome() {
-  playerStore.setAvatar(avatarSkin.value, avatarHair.value, avatarAccessory.value)
+  playerStore.avatarCharacterId = selectedCharacterId.value
   playerStore.saveProgress()
   step.value = 4
 }
@@ -340,90 +311,68 @@ onMounted(() => {
   line-height: 1.4;
 }
 
-/* Avatar customization */
-.avatar-preview {
-  display: flex;
-  justify-content: center;
-  margin: 4px 0;
+/* Avatar character selection */
+.avatar-character-preview {
+  width: 80px;
+  height: 130px;
+  margin: 0 auto;
 }
 
-.avatar-section {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-.avatar-label {
-  font-size: 13px;
+.avatar-selected-name {
+  font-size: 18px;
   font-weight: 800;
-  color: var(--color-text);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-align: center;
 }
 
-.avatar-options {
+.avatar-selected-role {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text);
+  opacity: 0.7;
+}
+
+.avatar-char-grid {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-.avatar-color-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+.avatar-char-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
   border: 3px solid #e5e7eb;
-  cursor: pointer;
-  transition: all 200ms var(--ease-spring);
-}
-
-.avatar-color-btn:hover {
-  transform: scale(1.1);
-  box-shadow: var(--shadow-md);
-}
-
-.avatar-color-btn:active {
-  transform: scale(0.95);
-}
-
-.avatar-color-btn--selected {
-  border-color: var(--color-green-dark);
-  box-shadow: 0 0 0 3px rgba(45,157,94,0.3), var(--shadow-md);
-  transform: scale(1.1);
-}
-
-.avatar-option-btn {
-  padding: 8px 14px;
   border-radius: var(--radius-md);
-  border: 3px solid #e5e7eb;
   background: white;
-  font-size: 14px;
-  font-weight: 700;
-  font-family: var(--font-main);
-  color: var(--color-text);
   cursor: pointer;
   transition: all 200ms var(--ease-spring);
-  min-width: 44px;
-  min-height: 44px;
+  width: 70px;
 }
 
-.avatar-option-btn:hover {
+.avatar-char-btn:active { transform: scale(0.95); }
+
+.avatar-char-btn--selected {
+  border-color: var(--char-color);
+  background: color-mix(in srgb, var(--char-color) 10%, white);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--char-color) 30%, transparent), var(--shadow-md);
   transform: scale(1.05);
-  box-shadow: var(--shadow-md);
 }
 
-.avatar-option-btn:active {
-  transform: scale(0.95);
+.avatar-char-btn__body {
+  width: 48px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 50%;
 }
 
-.avatar-option-btn--selected {
-  background: var(--color-green-mid);
-  color: white;
-  border-color: var(--color-green-dark);
-  box-shadow: 0 0 0 3px rgba(45,157,94,0.3), var(--shadow-md);
-  transform: scale(1.05);
+.avatar-char-btn__name {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--color-text);
 }
 
 @media (hover: none) {
@@ -434,20 +383,6 @@ onMounted(() => {
   }
   .age-btn--selected:hover {
     transform: scale(1.1);
-  }
-  .avatar-color-btn:hover {
-    transform: none;
-    box-shadow: none;
-  }
-  .avatar-color-btn--selected:hover {
-    transform: scale(1.1);
-  }
-  .avatar-option-btn:hover {
-    transform: none;
-    box-shadow: none;
-  }
-  .avatar-option-btn--selected:hover {
-    transform: scale(1.05);
   }
 }
 </style>

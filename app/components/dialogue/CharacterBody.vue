@@ -448,7 +448,7 @@ const bolilloTailSrc = computed(() => {
 
 /* Eyes: ~47% wide, positioned at ~26% left, ~26% top of base */
 .bolillo-eyes {
-  width: 40%;
+  width: 44%;
   left: 20%;
   top: 29%;
   z-index: 3;
