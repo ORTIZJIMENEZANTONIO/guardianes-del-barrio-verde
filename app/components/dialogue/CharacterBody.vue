@@ -163,18 +163,36 @@
       </g>
     </template>
 
-    <!-- BOLILLO — imagen PNG con animaciones CSS -->
+    <!-- BOLILLO — sistema de capas PNG con expresiones + easter egg -->
     <template v-else-if="characterId === 'bolillo'">
-      <foreignObject x="2" y="8" width="96" height="160">
-        <img
-          src="~/assets/images/bolillo.png"
-          alt="Bolillo"
-          class="bolillo-png"
+      <foreignObject x="10" y="8" width="80" height="162">
+        <div
+          class="bolillo-layers"
           :class="{
             'bolillo--speaking': isSpeaking,
-            'bolillo--idle': !isSpeaking,
+            'bolillo--idle': !isSpeaking && !bolilloPetted,
+            'bolillo--petted': bolilloPetted,
           }"
-        />
+          @click="petBolillo"
+          @touchstart.passive="petBolillo"
+        >
+          <!-- Tail -->
+          <img :src="bolilloPetted ? bolilloTailUp : bolilloTailSrc" alt="" class="bolillo-part bolillo-tail" :class="{ 'tail--wagging': isSpeaking || bolilloPetted, 'tail--super-wag': bolilloPetted }" />
+          <!-- Base -->
+          <img src="~/assets/images/bolillo/bolillo-base.png" alt="Bolillo" class="bolillo-base-img" />
+          <!-- Eyes -->
+          <img :src="bolilloPetted ? bolilloEyesHappy : bolilloEyesSrc" alt="" class="bolillo-part bolillo-eyes" />
+          <!-- Brows -->
+          <img :src="bolilloPetted ? bolilloBrowsNeutral : bolilloBrowsSrc" alt="" class="bolillo-part bolillo-brows" />
+          <!-- Mouth -->
+          <img :src="bolilloPetted ? bolilloMouthWide : bolilloMouthSrc" alt="" class="bolillo-part bolillo-mouth" />
+          <!-- Pet hearts easter egg -->
+          <div v-if="bolilloPetted" class="bolillo-hearts">
+            <span class="bolillo-heart" style="left:20%;animation-delay:0s">❤️</span>
+            <span class="bolillo-heart" style="left:50%;animation-delay:0.2s">💛</span>
+            <span class="bolillo-heart" style="left:75%;animation-delay:0.4s">❤️</span>
+          </div>
+        </div>
       </foreignObject>
     </template>
 
@@ -205,7 +223,7 @@
 <script setup lang="ts">
 import type { Emotion } from '~/shared/types/character'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   characterId: string
   emotion?: Emotion
   isSpeaking?: boolean
@@ -215,6 +233,110 @@ withDefaults(defineProps<{
 })
 
 const viewBox = '10 8 80 162'
+
+// ===== BOLILLO layer system =====
+import bolilloEyesNeutral from '~/assets/images/bolillo/bolillo-eyes-neutral.png'
+import bolilloEyesHappy from '~/assets/images/bolillo/bolillo-eyes-happy.png'
+import bolilloEyesSad from '~/assets/images/bolillo/bolillo-eyes-sad.png'
+import bolilloEyesClosed from '~/assets/images/bolillo/bolillo-eyes-closed.png'
+import bolilloMouthClosed from '~/assets/images/bolillo/bolillo-mouth-2-closed.png'
+import bolilloMouthOpen from '~/assets/images/bolillo/bolillo-mouth-2-open.png'
+import bolilloMouthWide from '~/assets/images/bolillo/bolillo-mouth-2-wide.png'
+import bolilloBrowsNeutral from '~/assets/images/bolillo/bolillo-brows-neutral.png'
+import bolilloBrowsWorried from '~/assets/images/bolillo/bolillo-brows-worried.png'
+import bolilloBrowsAngry from '~/assets/images/bolillo/bolillo-brows-angry.png'
+import bolilloTailDown from '~/assets/images/bolillo/bolillo-tail-down.png'
+import bolilloTailUp from '~/assets/images/bolillo/bolillo-tail-up.png'
+
+// Blink system
+const isBolilloBlinking = ref(false)
+let bolilloBlinkInterval: ReturnType<typeof setInterval> | null = null
+
+onMounted(() => {
+  bolilloBlinkInterval = setInterval(() => {
+    isBolilloBlinking.value = true
+    setTimeout(() => { isBolilloBlinking.value = false }, 150)
+  }, 3000 + Math.random() * 2000)
+})
+
+onUnmounted(() => {
+  if (bolilloBlinkInterval) clearInterval(bolilloBlinkInterval)
+})
+
+// Mouth toggle for speaking
+const bolilloMouthOpenState = ref(false)
+let bolilloTalkInterval: ReturnType<typeof setInterval> | null = null
+
+watch(() => props.isSpeaking, (speaking) => {
+  if (speaking) {
+    bolilloMouthOpenState.value = true
+    bolilloTalkInterval = setInterval(() => {
+      bolilloMouthOpenState.value = !bolilloMouthOpenState.value
+    }, 180)
+  } else {
+    if (bolilloTalkInterval) { clearInterval(bolilloTalkInterval); bolilloTalkInterval = null }
+    bolilloMouthOpenState.value = false
+  }
+}, { immediate: true })
+
+// Eyes: emotion → image
+const bolilloEyesSrc = computed(() => {
+  if (isBolilloBlinking.value) return bolilloEyesClosed
+  const e = props.emotion
+  if (e === 'happy' || e === 'excited' || e === 'proud' || e === 'mischievous') return bolilloEyesHappy
+  if (e === 'sad' || e === 'worried') return bolilloEyesSad
+  return bolilloEyesNeutral
+})
+
+// Brows: emotion → image
+const bolilloBrowsSrc = computed(() => {
+  const e = props.emotion
+  if (e === 'sad' || e === 'worried' || e === 'thinking' || e === 'surprised') return bolilloBrowsWorried
+  if (e === 'angry') return bolilloBrowsAngry
+  return bolilloBrowsNeutral
+})
+
+// Mouth: speaking + emotion
+const bolilloMouthSrc = computed(() => {
+  if (props.isSpeaking) return bolilloMouthOpenState.value ? bolilloMouthOpen : bolilloMouthClosed
+  const e = props.emotion
+  if (e === 'happy' || e === 'excited' || e === 'proud' || e === 'surprised') return bolilloMouthWide
+  return bolilloMouthClosed
+})
+
+// Easter egg: pet Bolillo 5 times → happy reaction
+const bolilloPetCount = ref(0)
+const bolilloPetted = ref(false)
+let bolilloPetTimer: ReturnType<typeof setTimeout> | null = null
+let bolilloPetResetTimer: ReturnType<typeof setTimeout> | null = null
+
+function petBolillo() {
+  if (bolilloPetted.value) return
+
+  bolilloPetCount.value++
+
+  // Reset tap counter after 3s of no taps
+  if (bolilloPetResetTimer) clearTimeout(bolilloPetResetTimer)
+  bolilloPetResetTimer = setTimeout(() => { bolilloPetCount.value = 0 }, 3000)
+
+  if (bolilloPetCount.value >= 5) {
+    bolilloPetted.value = true
+    bolilloPetCount.value = 0
+
+    // Return to normal after 3s
+    bolilloPetTimer = setTimeout(() => {
+      bolilloPetted.value = false
+    }, 3000)
+  }
+}
+
+// Tail: speaking/emotion
+const bolilloTailSrc = computed(() => {
+  if (props.isSpeaking) return bolilloTailUp
+  const e = props.emotion
+  if (e === 'happy' || e === 'excited' || e === 'proud') return bolilloTailUp
+  return bolilloTailDown
+})
 </script>
 
 <style scoped>
@@ -296,33 +418,136 @@ const viewBox = '10 8 80 162'
   50% { transform: translateY(-6px) scale(1.02); }
 }
 
-/* ===== BOLILLO PNG ===== */
-.bolillo-png {
+/* ===== BOLILLO LAYER SYSTEM ===== */
+/* Base: 413x496 (~0.83 aspect ratio). Preserve proportions. */
+.bolillo-layers {
+  position: relative;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  cursor: pointer;
 }
 
-.bolillo--idle {
+.bolillo-base-img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  position: relative;
+  z-index: 2;
+}
+
+.bolillo-part {
+  position: absolute;
+  pointer-events: none;
+  object-fit: contain;
+}
+
+/* Eyes: ~47% wide, positioned at ~26% left, ~26% top of base */
+.bolillo-eyes {
+  width: 40%;
+  left: 20%;
+  top: 29%;
+  z-index: 3;
+}
+
+/* Brows: ~47% wide, just above eyes */
+.bolillo-brows {
+  width: 42%;
+  left: 20%;
+  top: 27%;
+  z-index: 4;
+}
+
+/* Mouth: ~42% wide, below nose area */
+.bolillo-mouth {
+  width: 40%;
+  left: 20%;
+  top: 32%;
+  z-index: 3;
+}
+
+/* Tail down: right side, behind body */
+.bolillo-tail {
+  width: 25%;
+  left: 75%;
+  top: 48%;
+  z-index: 1;
+}
+
+/* Idle breathing */
+.bolillo--idle .bolillo-base-img {
   animation: bolilloIdle 3s ease-in-out infinite;
 }
 
-.bolillo--speaking {
+/* Speaking bounce */
+.bolillo--speaking .bolillo-base-img {
   animation: bolilloSpeak 0.4s ease-in-out infinite alternate;
 }
 
+/* Tail wagging */
+.tail--wagging {
+  animation: tailWagPng 0.3s ease-in-out infinite alternate;
+  transform-origin: 30% 90%;
+}
+
 @keyframes bolilloIdle {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-2px) rotate(-0.5deg); }
-  50% { transform: translateY(0px) rotate(0deg); }
-  75% { transform: translateY(-1px) rotate(0.5deg); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
 }
 
 @keyframes bolilloSpeak {
   0% { transform: translateY(0) scale(1); }
   100% { transform: translateY(-3px) scale(1.02); }
+}
+
+@keyframes tailWagPng {
+  0% { transform: rotate(-5deg); }
+  100% { transform: rotate(5deg); }
+}
+
+/* Easter egg: petted state */
+.bolillo--petted .bolillo-base-img {
+  animation: bolilloPetBounce 0.3s ease-in-out infinite alternate;
+}
+
+.tail--super-wag {
+  animation: tailSuperWag 0.15s ease-in-out infinite alternate !important;
+  transform-origin: 30% 90%;
+}
+
+@keyframes bolilloPetBounce {
+  0% { transform: translateY(0) rotate(-2deg); }
+  100% { transform: translateY(-4px) rotate(2deg); }
+}
+
+@keyframes tailSuperWag {
+  0% { transform: rotate(-15deg); }
+  100% { transform: rotate(15deg); }
+}
+
+/* Hearts floating up */
+.bolillo-hearts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.bolillo-heart {
+  position: absolute;
+  top: 10%;
+  font-size: 16px;
+  animation: heartFloat 1s ease-out forwards;
+}
+
+@keyframes heartFloat {
+  0% { transform: translateY(0) scale(0); opacity: 1; }
+  50% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+  100% { transform: translateY(-40px) scale(0.8); opacity: 0; }
 }
 
 /* ===== CANELA dog idle ===== */

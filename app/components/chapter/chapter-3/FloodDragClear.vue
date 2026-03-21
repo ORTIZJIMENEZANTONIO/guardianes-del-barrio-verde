@@ -170,7 +170,7 @@ function onPointerUp(e: PointerEvent) {
     if (inSafeZone) {
       clearObstacle(dragging.value)
     } else {
-      showFeedback('Llévalo a la zona segura', 'error')
+      showFeedback('No soltaste en la zona correcta. 💡 Arrastra el obstáculo hasta la zona verde "Zona segura" del lado derecho.', 'error')
       const gameEl = document.querySelector('.game-area')
       if (gameEl) shakeWrong(gameEl)
     }

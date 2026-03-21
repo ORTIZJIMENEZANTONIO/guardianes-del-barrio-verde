@@ -208,7 +208,7 @@ function placeInZone(zone: PlaceZone) {
     }
   } else {
     // Wrong zone for this item
-    showFB('Ese punto no corresponde a este lugar. Piensa: ¿qué hay en esta zona?', false)
+    showFB('Ese punto no corresponde a este lugar. 💡 Fíjate en lo que hay en esta zona.', false)
     const zoneEl = document.querySelector(`[data-zone="${zone.id}"]`)
     if (zoneEl) shakeWrong(zoneEl)
   }

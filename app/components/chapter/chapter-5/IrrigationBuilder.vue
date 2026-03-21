@@ -294,7 +294,7 @@ function tryPlace(piece: PipePiece, slotId: string) {
       setTimeout(() => { showResult.value = true }, 800)
     }
   } else {
-    showFB('Esa pieza no encaja aquí. Piensa en el camino del agua.', false)
+    showFB('Esa pieza no corresponde a este punto. 💡 Sigue el camino del agua desde el captador hasta las plantas.', false)
     nextTick(() => {
       const slotEl = document.querySelector(`[data-slot="${slotId}"]`)
       if (slotEl) shakeWrong(slotEl)

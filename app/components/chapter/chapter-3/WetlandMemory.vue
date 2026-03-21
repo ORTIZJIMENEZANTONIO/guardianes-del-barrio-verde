@@ -152,7 +152,7 @@ function checkMatch() {
     }
   } else {
     // No match
-    showFB('No es pareja, intenta otra vez', false)
+    showFB('Esas cartas no son pareja. 💡 Piensa en qué hace cada parte del humedal: ¿filtra, retiene o da hogar?', false)
 
     nextTick(() => {
       const firstEl = document.querySelector(`[data-card="${first.id}"]`)

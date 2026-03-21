@@ -271,7 +271,7 @@ function placeInGap(gap: PipeGap) {
   if (gap.filled) return
 
   if (!selectedPiece.value) {
-    showFB('Primero selecciona una pieza de abajo', false)
+    showFB('Necesitas una pieza primero. 💡 Toca una pieza del tray de abajo y luego toca el hueco.', false)
     return
   }
 
@@ -298,7 +298,7 @@ function placeInGap(gap: PipeGap) {
     }
   } else {
     // Wrong piece
-    showFB('Esa pieza no encaja aquí. Observa la forma del hueco.', false)
+    showFB('Esa pieza tiene forma diferente al hueco. 💡 Observa: ¿el hueco es recto, curvo o en T?', false)
     nextTick(() => {
       const gapEl = document.querySelector(`[data-gap="${gap.id}"]`)
       if (gapEl) shakeWrong(gapEl)

@@ -294,7 +294,7 @@ function tryPlace(piece: PipePiece, slotId: string) {
       setTimeout(() => { showResult.value = true }, 800)
     }
   } else {
-    showFB('Esa pieza no encaja aqui.', false)
+    showFB('Esa pieza no corresponde a ese hueco. 💡 Mira la forma del hueco y busca la pieza que coincida.', false)
     nextTick(() => {
       const slotEl = document.querySelector(`[data-slot="${slotId}"]`)
       if (slotEl) shakeWrong(slotEl)

@@ -172,7 +172,7 @@ function selectItem(item: RestoreItem) {
 function placeInZone(zone: PlaceZone) {
   if (zone.filled) return
   if (!selectedItem.value) {
-    showFB('Primero selecciona una solución de abajo', false)
+    showFB('Necesitas elegir una solución primero. 💡 Toca un elemento del tray y luego toca la zona del problema.', false)
     return
   }
 
@@ -210,7 +210,7 @@ function placeInZone(zone: PlaceZone) {
     }
   } else {
     // Wrong zone for this item
-    showFB('Esa solución no resuelve este problema. Piensa: ¿qué necesita este lugar?', false)
+    showFB('Esa solución no es para este problema. 💡 Lee el ícono de la zona: ¿qué falta aquí? ¿Luz, sombra, lugar para sentarse?', false)
     const zoneEl = document.querySelector(`[data-zone="${zone.id}"]`)
     if (zoneEl) shakeWrong(zoneEl)
   }

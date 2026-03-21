@@ -166,7 +166,7 @@ function selectItem(item: RoofItem) {
 function placeInSlot(slot: RoofSlot) {
   if (slot.filled) return
   if (!selectedItem.value) {
-    showFB('Primero selecciona una capa de abajo', false)
+    showFB('Necesitas elegir una capa primero. 💡 Toca una capa del tray y luego toca el nivel correcto del techo.', false)
     return
   }
 
@@ -203,7 +203,7 @@ function placeInSlot(slot: RoofSlot) {
       setTimeout(() => { showResult.value = true }, 1000)
     }
   } else {
-    showFB('Esa capa no va ahí. Recuerda el orden: base → drenaje → filtro → tierra → plantas.', false)
+    showFB('Esa capa no va en ese nivel. 💡 El orden es de abajo a arriba: base → drenaje → filtro → tierra → plantas.', false)
     const slotEl = document.querySelector(`[data-slot="${slot.id}"]`)
     if (slotEl) shakeWrong(slotEl)
   }

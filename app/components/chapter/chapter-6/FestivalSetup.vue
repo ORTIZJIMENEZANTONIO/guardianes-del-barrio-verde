@@ -170,7 +170,7 @@ function selectItem(item: SetupItem) {
 function placeInZone(zone: PlaceZone) {
   if (zone.filled) return
   if (!selectedItem.value) {
-    showFB('Primero selecciona una estacion de abajo', false)
+    showFB('Necesitas elegir una estación primero. 💡 Toca una del tray y luego toca la zona donde quieres colocarla.', false)
     return
   }
 
@@ -205,7 +205,7 @@ function placeInZone(zone: PlaceZone) {
       setTimeout(() => { showResult.value = true }, 1000)
     }
   } else {
-    showFB('Esa estacion no corresponde a este lugar. Piensa: que necesita esta zona?', false)
+    showFB('Esa estación no es adecuada aquí. 💡 💡 Fíjate qué actividad sustentable funcionaría aquí.', false)
     const zoneEl = document.querySelector(`[data-zone="${zone.id}"]`)
     if (zoneEl) shakeWrong(zoneEl)
   }

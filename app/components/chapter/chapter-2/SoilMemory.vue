@@ -145,7 +145,7 @@ function checkMatch() {
     }
   } else {
     // No match
-    showFB('No son pareja, intenta de nuevo', false)
+    showFB('Esas dos cartas no son pareja. 💡 Recuerda: cada problema del suelo tiene una solución específica.', false)
 
     nextTick(() => {
       const el1 = document.querySelector(`[data-card="${first.id}"]`)

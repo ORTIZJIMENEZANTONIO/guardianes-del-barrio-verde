@@ -167,7 +167,7 @@ function selectItem(item: CareItem) {
 function tryFulfill(stop: RouteStop, index: number) {
   if (stop.fulfilled || index !== currentStop.value) return
   if (!selectedItem.value) {
-    showFB('Selecciona algo del tray para darle a Bolillo', false)
+    showFB('Bolillo necesita algo aquí. 💡 Primero elige un objeto del tray de abajo y luego toca la parada.', false)
     return
   }
 
@@ -203,7 +203,7 @@ function tryFulfill(stop: RouteStop, index: number) {
       setTimeout(() => { currentStop.value++ }, 600)
     }
   } else {
-    showFB('Eso no es lo que Bolillo necesita aquí. Mira el ícono de la parada.', false)
+    showFB('Eso no es lo que Bolillo necesita en esta parada. 💡 Mira el ícono: ¿tiene sed, hambre, frío o necesita descansar?', false)
     const el = document.querySelector(`[data-stop="${stop.id}"]`)
     if (el) shakeWrong(el)
   }

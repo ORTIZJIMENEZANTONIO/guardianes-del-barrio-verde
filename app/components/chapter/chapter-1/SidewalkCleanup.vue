@@ -216,7 +216,7 @@ function checkSort(item: TrashItem, binId: string) {
     }
   } else {
     const correctBin = categoryLabel(item.category)
-    showFeedback(`¡Ese no va ahí! Es: ${correctBin}`, 'wrong')
+    showFeedback(`Ese residuo no va en ese contenedor. 💡 Fíjate en el material y el color del bote correcto.`, 'wrong')
     const binsEl = document.querySelector('.bins-area')
     if (binsEl) shakeWrong(binsEl)
   }

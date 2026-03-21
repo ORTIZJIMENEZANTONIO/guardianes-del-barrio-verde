@@ -182,7 +182,7 @@ function flipCard(card: MemoryCard) {
       }, 400)
     } else {
       // No match
-      showFB('No es pareja, intenta de nuevo', false)
+      showFB('Esas cartas no hacen pareja. 💡 Cada animal necesita algo especial para vivir en el parque.', false)
 
       nextTick(() => {
         const firstEl = document.querySelector(`[data-card="${first.id}"]`)

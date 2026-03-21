@@ -86,11 +86,11 @@ const allSpots: PollutionSpot[] = [
   { id: 's4', label: 'Tiradero ilegal', emoji: '🗑️', isPollution: true, x: 75, y: 30, w: 70, h: 55, tapped: false,
     message: 'Un tiradero clandestino contamina suelo, agua y aire.' },
   { id: 's5', label: 'Jardín limpio', emoji: '🌺', isPollution: false, x: 5, y: 25, w: 60, h: 50, tapped: false,
-    message: 'Este jardín está bien cuidado. No hay contaminación aquí.' },
+    message: 'Este lugar se ve bien, no hay contaminación aquí. 💡 Busca zonas con basura acumulada, agua sucia o tierra dañada.' },
   { id: 's6', label: 'Fuente activa', emoji: '⛲', isPollution: false, x: 45, y: 70, w: 60, h: 50, tapped: false,
-    message: 'La fuente funciona bien. El agua se ve limpia.' },
+    message: 'Este lugar se ve bien, no hay contaminación aquí. 💡 Busca zonas con basura acumulada, agua sucia o tierra dañada.' },
   { id: 's7', label: 'Pared pintada', emoji: '🎨', isPollution: false, x: 60, y: 10, w: 55, h: 50, tapped: false,
-    message: 'Un mural bonito, pero no es contaminación.' },
+    message: 'Este lugar se ve bien, no hay contaminación aquí. 💡 Busca zonas con basura acumulada, agua sucia o tierra dañada.' },
 ]
 
 const spots = ref<PollutionSpot[]>([])

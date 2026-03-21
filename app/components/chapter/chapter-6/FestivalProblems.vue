@@ -150,7 +150,7 @@ function checkMatch() {
       setTimeout(() => { showResult.value = true }, 1000)
     }
   } else {
-    showFB('No es pareja, intenta otra vez', false)
+    showFB('Esas cartas no son pareja. 💡 💡 Cada problema del festival tiene una solución sustentable.', false)
 
     nextTick(() => {
       const firstEl = document.querySelector(`[data-card="${first.id}"]`)

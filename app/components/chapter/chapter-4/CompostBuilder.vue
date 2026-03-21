@@ -164,7 +164,7 @@ function selectItem(item: CompostItem) {
 function placeInSlot(slot: CompostSlot) {
   if (slot.filled) return
   if (!selectedItem.value) {
-    showFB('Primero selecciona una capa de abajo', false)
+    showFB('Necesitas elegir una capa primero. 💡 Toca un material del tray y luego toca el nivel correcto.', false)
     return
   }
 
@@ -201,7 +201,7 @@ function placeInSlot(slot: CompostSlot) {
       setTimeout(() => { showResult.value = true }, 1000)
     }
   } else {
-    showFB('Esa capa no va ahi. Recuerda el orden: residuos → hojas secas → tierra → agua → tapar.', false)
+    showFB('Esa capa no va en ese nivel. 💡 El orden de abajo a arriba es: residuos → hojas → tierra → agua → tapar.', false)
     const slotEl = document.querySelector(`[data-slot="${slot.id}"]`)
     if (slotEl) shakeWrong(slotEl)
   }

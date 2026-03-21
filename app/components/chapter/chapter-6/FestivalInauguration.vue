@@ -243,7 +243,7 @@ function attemptPlace(item: DragItem, zoneId: string) {
       setTimeout(() => { showResult.value = true }, 1000)
     }
   } else {
-    showFB('Ese elemento no va en este lugar. Piensa donde quedaria mejor.', false)
+    showFB('Ese elemento no corresponde a esta zona. 💡 💡 Fíjate dónde quedaría mejor para la inauguración.', false)
     const zoneEl = document.querySelector(`[data-zone="${zoneId}"]`)
     if (zoneEl) shakeWrong(zoneEl)
   }

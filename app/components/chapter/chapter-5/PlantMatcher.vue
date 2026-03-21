@@ -145,7 +145,7 @@ function checkMatch() {
     }
   } else {
     // No match
-    showFB('No son pareja. Piensa qué planta aguanta esa condición.', false)
+    showFB('Esas cartas no son pareja. 💡 Cada planta tiene una condición favorita de sol, agua o viento.', false)
 
     nextTick(() => {
       const el1 = document.querySelector(`[data-card="${first.id}"]`)

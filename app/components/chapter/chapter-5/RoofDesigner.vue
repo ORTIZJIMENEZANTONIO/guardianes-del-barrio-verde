@@ -173,7 +173,7 @@ function selectItem(item: DesignItem) {
 function placeInZone(zone: PlaceZone) {
   if (zone.filled) return
   if (!selectedItem.value) {
-    showFB('Primero selecciona un elemento de abajo', false)
+    showFB('Necesitas elegir un elemento primero. 💡 Toca uno del tray y luego toca la zona donde quieres colocarlo.', false)
     return
   }
 
@@ -211,7 +211,7 @@ function placeInZone(zone: PlaceZone) {
     }
   } else {
     // Wrong zone for this item
-    showFB('Ese elemento no va en esta zona. Piensa: ¿qué necesita este espacio?', false)
+    showFB('Ese elemento no es adecuado para esta zona. 💡 Lee la descripción de la zona: ¿qué función necesita cumplir?', false)
     const zoneEl = document.querySelector(`[data-zone="${zone.id}"]`)
     if (zoneEl) shakeWrong(zoneEl)
   }

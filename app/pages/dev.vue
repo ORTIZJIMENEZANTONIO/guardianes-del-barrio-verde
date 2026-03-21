@@ -143,63 +143,83 @@
         <button class="skip-btn">{{ sections.testing ? 'Ocultar' : 'Mostrar' }}</button>
       </div>
       <div v-if="sections.testing" class="dev-section-body">
-        <p class="test-desc">Prueba que todos los minijuegos se pueden iniciar, jugar y completar sin jugarlos manualmente.</p>
+        <p class="test-desc">Verifica que cada minijuego se puede iniciar, jugar y completar. Corre tests por misión o por capítulo completo.</p>
+
+        <!-- Running state banner -->
+        <div v-if="runningTest" class="test-running">
+          🔄 {{ runningTest }}
+        </div>
 
         <!-- Global actions -->
         <div class="test-actions">
-          <button class="test-btn test-btn--green" @click="autoTestAll">
-            🤖 Auto-test TODOS los minijuegos
+          <button class="test-btn test-btn--green" :disabled="!!runningTest" @click="autoTestAll">
+            🤖 Verificar TODOS (datos)
+          </button>
+          <button class="test-btn test-btn--purple" :disabled="!!runningTest" @click="runAllChapters">
+            ▶ Correr TODOS los capítulos
           </button>
           <button class="test-btn test-btn--blue" @click="autoCompleteAll">
-            ⚡ Marcar TODO completado (progreso)
+            ⚡ Marcar TODO completado
           </button>
           <button class="test-btn test-btn--red" @click="resetAll">
-            🔄 Reset progreso completo
+            🔄 Reset progreso
           </button>
         </div>
 
-        <!-- Per-chapter auto-complete -->
-        <div class="test-chapters">
-          <div v-for="ch in chaptersData" :key="ch.id" class="test-chapter-row">
-            <span class="test-chapter-name">{{ ch.icon }} {{ ch.title }}</span>
-            <span class="test-chapter-status">
-              {{ playerStore.isChapterComplete(ch.id) ? '✅' : '⬜' }}
-              {{ ch.missionIds.filter(id => playerStore.isMissionComplete(id)).length }}/{{ ch.missionIds.length }}
-            </span>
-            <button class="test-btn test-btn--small test-btn--blue" @click="autoCompleteChapter(ch)">
-              ⚡ Completar
-            </button>
-            <button class="test-btn test-btn--small test-btn--green" @click="autoTestChapter(ch)">
-              🤖 Test
-            </button>
-          </div>
+        <!-- Summary bar -->
+        <div v-if="testSummary" class="test-summary" :class="testSummary.fail > 0 ? 'test-summary--fail' : 'test-summary--pass'">
+          {{ testSummary.pass }} PASS · {{ testSummary.fail }} FAIL · {{ testSummary.total }} total
         </div>
 
-        <!-- Per-mission auto-test -->
-        <div class="test-missions">
-          <div v-for="ch in allMissions" :key="ch.chapter" class="test-mission-group">
-            <h4>{{ ch.chapter }}</h4>
-            <div v-for="m in ch.missions" :key="m.id" class="test-mission-row">
-              <span class="test-mission-status">{{ playerStore.isMissionComplete(m.id) ? '✅' : '⬜' }}</span>
-              <span class="test-mission-name">{{ m.title }}</span>
-              <button class="test-btn test-btn--tiny test-btn--green" @click="autoTestMission(m)">
-                🤖 Test
-              </button>
-              <button class="test-btn test-btn--tiny test-btn--blue" @click="autoCompleteMission(m)">
-                ⚡ OK
-              </button>
-              <span v-if="testResults[m.id]" class="test-result" :class="testResults[m.id].ok ? 'test-result--pass' : 'test-result--fail'">
-                {{ testResults[m.id].ok ? '✅ PASS' : '❌ FAIL' }}: {{ testResults[m.id].message }}
+        <!-- Per-chapter -->
+        <div class="test-chapters">
+          <div v-for="(ch, ci) in chaptersData" :key="ch.id" class="test-chapter-card">
+            <div class="test-chapter-header">
+              <span class="test-chapter-name">{{ ch.icon }} {{ ch.title }}</span>
+              <span class="test-chapter-status" :class="playerStore.isChapterComplete(ch.id) ? 'status--done' : ''">
+                {{ ch.missionIds.filter(id => playerStore.isMissionComplete(id)).length }}/{{ ch.missionIds.length }}
               </span>
+            </div>
+            <div class="test-chapter-actions">
+              <button class="test-btn test-btn--small test-btn--green" :disabled="!!runningTest" @click="autoTestChapter(ch)">
+                🤖 Verificar
+              </button>
+              <button class="test-btn test-btn--small test-btn--purple" :disabled="!!runningTest" @click="runChapter(ch)">
+                ▶ Correr capítulo
+              </button>
+              <button class="test-btn test-btn--small test-btn--blue" @click="autoCompleteChapter(ch)">
+                ⚡ Completar
+              </button>
+            </div>
+            <!-- Missions in this chapter -->
+            <div class="test-chapter-missions">
+              <div v-for="m in getMissionsForChapter(ch)" :key="m.id" class="test-mission-row">
+                <span class="test-mission-status">{{ playerStore.isMissionComplete(m.id) ? '✅' : '⬜' }}</span>
+                <span class="test-mission-type" :class="'tag--' + m.type">{{ m.type }}</span>
+                <span class="test-mission-name">{{ m.title }}</span>
+                <div class="test-mission-btns">
+                  <button class="test-btn test-btn--tiny test-btn--green" @click="autoTestMission(m)">🤖</button>
+                  <button class="test-btn test-btn--tiny test-btn--purple" :disabled="!!runningTest" @click="runMission(m)">▶</button>
+                  <button class="test-btn test-btn--tiny test-btn--blue" @click="autoCompleteMission(m)">⚡</button>
+                </div>
+                <div v-if="testResults[m.id]" class="test-result" :class="testResults[m.id].ok ? 'test-result--pass' : 'test-result--fail'">
+                  {{ testResults[m.id].ok ? '✅' : '❌' }} {{ testResults[m.id].message }}
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Test log -->
         <div v-if="testLog.length" class="test-log">
-          <h4>📋 Log de pruebas</h4>
-          <div v-for="(entry, i) in testLog" :key="i" class="test-log-entry" :class="entry.ok ? 'log--pass' : 'log--fail'">
-            {{ entry.ok ? '✅' : '❌' }} {{ entry.message }}
+          <div class="test-log-header">
+            <h4>📋 Log ({{ testLog.length }})</h4>
+            <button class="test-btn test-btn--tiny test-btn--red" @click="testLog = []">Limpiar</button>
+          </div>
+          <div class="test-log-entries">
+            <div v-for="(entry, i) in testLog" :key="i" class="test-log-entry" :class="entry.ok ? 'log--pass' : 'log--fail'">
+              {{ entry.ok ? '✅' : '❌' }} {{ entry.message }}
+            </div>
           </div>
         </div>
       </div>
@@ -376,9 +396,20 @@ function stopPlaying() {
 }
 
 // ===== TESTING / AUTOBOTS =====
+import { chapter1Dialogues } from '~/data/chapters/chapter-1/dialogues'
+import { chapter2Dialogues } from '~/data/chapters/chapter-2/dialogues'
+import { chapter3Dialogues } from '~/data/chapters/chapter-3/dialogues'
+import { chapter4Dialogues } from '~/data/chapters/chapter-4/dialogues'
+import { chapter5Dialogues } from '~/data/chapters/chapter-5/dialogues'
+import { chapter6Dialogues } from '~/data/chapters/chapter-6/dialogues'
+
 interface TestResult { ok: boolean; message: string }
 const testResults = ref<Record<string, TestResult>>({})
 const testLog = ref<TestResult[]>([])
+const runningTest = ref<string | null>(null)
+const testSummary = ref<{ pass: number; fail: number; total: number } | null>(null)
+
+const dialogueSets = [chapter1Dialogues, chapter2Dialogues, chapter3Dialogues, chapter4Dialogues, chapter5Dialogues, chapter6Dialogues]
 
 function log(ok: boolean, message: string) {
   const entry = { ok, message }
@@ -386,110 +417,215 @@ function log(ok: boolean, message: string) {
   return entry
 }
 
-// Auto-test a single mission: verify component exists, can mount, has correct total
+function getMissionsForChapter(ch: ChapterConfig): MissionConfig[] {
+  return allMissions.find(a => a.missions.some(m => m.chapterId === ch.id))?.missions ?? []
+}
+
+// --- VERIFY (data integrity check) ---
 function autoTestMission(m: MissionConfig) {
-  const comp = missionComponentMap[m.id]
-  if (!comp) {
-    testResults.value[m.id] = log(false, `${m.title}: componente NO encontrado en missionComponentMap`)
+  const checks: string[] = []
+  let ok = true
+
+  // 1. Component exists
+  if (!missionComponentMap[m.id]) {
+    testResults.value[m.id] = log(false, `${m.title}: componente NO encontrado`)
     return
   }
+  checks.push('componente ✓')
 
-  // Check dialogues exist
-  const allDialogueIds = [m.introDialogueId, m.successDialogueId, m.failureDialogueId]
+  // 2. Icon exists
+  const iconMap = missionIconMapRef
+  if (!iconMap[m.id]) checks.push('icono ⚠️')
+  else checks.push('icono ✓')
+
+  // 3. Dialogues
   const chapterIdx = chaptersData.findIndex(ch => ch.missionIds.includes(m.id))
-  const dialogueSets = [chapter1Dialogues, chapter2Dialogues, chapter3Dialogues, chapter4Dialogues, chapter5Dialogues, chapter6Dialogues]
   const dialogues = chapterIdx >= 0 ? dialogueSets[chapterIdx] : null
 
   if (!dialogues) {
-    testResults.value[m.id] = log(false, `${m.title}: capítulo no encontrado para verificar diálogos`)
+    testResults.value[m.id] = log(false, `${m.title}: capítulo no encontrado`)
     return
   }
 
-  for (const dId of allDialogueIds) {
+  for (const dId of [m.introDialogueId, m.successDialogueId, m.failureDialogueId]) {
     if (!dialogues[dId]) {
       testResults.value[m.id] = log(false, `${m.title}: diálogo '${dId}' NO existe`)
       return
     }
   }
+  checks.push('diálogos ✓')
 
-  testResults.value[m.id] = log(true, `${m.title}: componente ✓, diálogos (intro/success/failure) ✓`)
+  // 4. Objectives
+  if (m.objectives.length === 0 || m.objectives.some(o => o.target <= 0)) {
+    checks.push('objectives ⚠️')
+    ok = false
+  } else {
+    checks.push(`objectives (${m.objectives[0].target}) ✓`)
+  }
+
+  // 5. Reward
+  if (m.reward.points <= 0) checks.push('reward ⚠️')
+  else checks.push(`${m.reward.points}pts ✓`)
+
+  testResults.value[m.id] = log(ok, `${m.title}: ${checks.join(', ')}`)
 }
 
-// Auto-complete mission: mark as done in playerStore
+// --- COMPLETE (mark done in store) ---
 function autoCompleteMission(m: MissionConfig) {
   playerStore.completeMission(m.id)
   playerStore.addScore(m.reward.points)
   if (m.reward.seeds) playerStore.addSeeds(m.reward.seeds)
   if (m.reward.badge) playerStore.awardBadge(m.reward.badge, m.reward.badgeTitle ?? '')
   playerStore.saveProgress()
-  log(true, `${m.title}: completada + ${m.reward.points}pts`)
+  log(true, `⚡ ${m.title}: completada +${m.reward.points}pts`)
 }
 
-// Auto-test all missions in a chapter
-function autoTestChapter(ch: ChapterConfig) {
-  const chMissions = allMissions.find(a => a.missions.some(m => m.chapterId === ch.id))?.missions ?? []
-  for (const m of chMissions) {
+// --- RUN MISSION (open, auto-complete after 2s, close) ---
+async function runMission(m: MissionConfig) {
+  runningTest.value = `Corriendo: ${m.title}...`
+
+  // Verify first
+  autoTestMission(m)
+  if (!testResults.value[m.id]?.ok) {
+    runningTest.value = null
+    return
+  }
+
+  // Open the minigame
+  playingMissionId.value = m.id
+  playingMissionTitle.value = m.title
+
+  // Wait 2s for it to mount and render
+  await new Promise(r => setTimeout(r, 2000))
+
+  // Auto-complete and close
+  autoCompleteMission(m)
+  playingMissionId.value = null
+  playingMissionTitle.value = ''
+
+  log(true, `▶ ${m.title}: abierta, renderizada, completada ✓`)
+  runningTest.value = null
+}
+
+// --- RUN CHAPTER (run all missions sequentially) ---
+async function runChapter(ch: ChapterConfig) {
+  const missions = getMissionsForChapter(ch)
+  runningTest.value = `Corriendo capítulo: ${ch.title} (0/${missions.length})...`
+
+  // Ensure profile exists
+  if (!playerStore.isRegistered) playerStore.setProfile('TestBot', 10)
+
+  for (let i = 0; i < missions.length; i++) {
+    const m = missions[i]
+    runningTest.value = `${ch.icon} ${ch.title}: ${m.title} (${i + 1}/${missions.length})...`
+
     autoTestMission(m)
-  }
-  log(true, `${ch.title}: ${chMissions.length} misiones testeadas`)
-}
+    if (!testResults.value[m.id]?.ok) {
+      log(false, `▶ ${ch.title}: falló en ${m.title}`)
+      runningTest.value = null
+      return
+    }
 
-// Auto-complete all missions in a chapter
-function autoCompleteChapter(ch: ChapterConfig) {
-  const chMissions = allMissions.find(a => a.missions.some(m => m.chapterId === ch.id))?.missions ?? []
-  for (const m of chMissions) {
+    // Open minigame
+    playingMissionId.value = m.id
+    playingMissionTitle.value = m.title
+    await new Promise(r => setTimeout(r, 1500))
+
+    // Complete and close
     autoCompleteMission(m)
+    playingMissionId.value = null
+    playingMissionTitle.value = ''
+    await new Promise(r => setTimeout(r, 300))
   }
+
+  // Complete chapter
   playerStore.completeChapter(ch.id)
   playerStore.addScore(ch.completionReward.points)
   playerStore.awardBadge(ch.completionReward.badge, ch.completionReward.badgeTitle)
   playerStore.saveProgress()
-  log(true, `${ch.title}: capítulo completo ✓`)
+  log(true, `▶ ${ch.icon} ${ch.title}: capítulo completo (${missions.length} misiones) ✓`)
+  runningTest.value = null
 }
 
-// Auto-test ALL missions across all chapters
+// --- RUN ALL CHAPTERS ---
+async function runAllChapters() {
+  if (!playerStore.isRegistered) playerStore.setProfile('TestBot', 10)
+  testLog.value = []
+  testResults.value = {}
+
+  for (const ch of chaptersData) {
+    await runChapter(ch)
+  }
+
+  updateSummary()
+  log(true, '=== TODOS LOS CAPÍTULOS CORRIDOS ===')
+}
+
+// --- VERIFY ALL ---
 function autoTestAll() {
   testLog.value = []
   testResults.value = {}
-  let pass = 0
-  let fail = 0
   for (const ch of allMissions) {
     for (const m of ch.missions) {
       autoTestMission(m)
-      if (testResults.value[m.id]?.ok) pass++
-      else fail++
     }
   }
-  log(true, `=== RESUMEN: ${pass} PASS, ${fail} FAIL de ${pass + fail} misiones ===`)
+  updateSummary()
 }
 
-// Auto-complete ALL chapters
+function autoTestChapter(ch: ChapterConfig) {
+  const missions = getMissionsForChapter(ch)
+  for (const m of missions) autoTestMission(m)
+  log(true, `🤖 ${ch.title}: ${missions.length} misiones verificadas`)
+}
+
+// --- COMPLETE ALL ---
 function autoCompleteAll() {
-  // Ensure player profile exists
-  if (!playerStore.isRegistered) {
-    playerStore.setProfile('TestBot', 10)
-  }
-  for (const ch of chaptersData) {
-    autoCompleteChapter(ch)
-  }
+  if (!playerStore.isRegistered) playerStore.setProfile('TestBot', 10)
+  for (const ch of chaptersData) autoCompleteChapter(ch)
   log(true, '=== TODO COMPLETADO ===')
 }
 
-// Reset all progress
+function autoCompleteChapter(ch: ChapterConfig) {
+  for (const m of getMissionsForChapter(ch)) autoCompleteMission(m)
+  playerStore.completeChapter(ch.id)
+  playerStore.addScore(ch.completionReward.points)
+  playerStore.awardBadge(ch.completionReward.badge, ch.completionReward.badgeTitle)
+  playerStore.saveProgress()
+  log(true, `⚡ ${ch.icon} ${ch.title}: completo ✓`)
+}
+
+// --- RESET ---
 function resetAll() {
   playerStore.resetProgress()
   testResults.value = {}
   testLog.value = []
+  testSummary.value = null
   log(true, '=== PROGRESO RESETEADO ===')
 }
 
-// Import dialogues for testing
-import { chapter1Dialogues } from '~/data/chapters/chapter-1/dialogues'
-import { chapter2Dialogues } from '~/data/chapters/chapter-2/dialogues'
-import { chapter3Dialogues } from '~/data/chapters/chapter-3/dialogues'
-import { chapter4Dialogues } from '~/data/chapters/chapter-4/dialogues'
-import { chapter5Dialogues } from '~/data/chapters/chapter-5/dialogues'
-import { chapter6Dialogues } from '~/data/chapters/chapter-6/dialogues'
+// --- SUMMARY ---
+function updateSummary() {
+  let pass = 0, fail = 0
+  for (const r of Object.values(testResults.value)) {
+    if (r.ok) pass++; else fail++
+  }
+  testSummary.value = { pass, fail, total: pass + fail }
+}
+
+// Icon map reference for testing
+const missionIconMapRef: Record<string, string> = {
+  'mission-1-clean': '🧹', 'mission-2-heat': '🌡️', 'mission-3-plant': '🌳',
+  'mission-4-leak': '🔧', 'mission-5-restore': '🎨',
+  'mission-1-paths': '🧹', 'mission-2-soil': '🌱', 'mission-3-water': '💧',
+  'mission-4-life': '🦋', 'mission-5-reactivate': '🎨', 'mission-6-bolillo-route': '🐕',
+  'mission-1-waste': '🚧', 'mission-2-wetland': '🌿', 'mission-3-repair': '🔧',
+  'mission-1-collect': '🧹', 'mission-2-separate': '♻️', 'mission-3-pollution': '🔍',
+  'mission-4-compost': '🌱', 'mission-5-recycle': '🔄',
+  'mission-0-greenroof': '🌿', 'mission-1-evaluate': '📋', 'mission-2-design': '🏗️',
+  'mission-3-plants': '🌱', 'mission-4-irrigation': '💧',
+  'mission-1-prepare': '🎪', 'mission-2-invite': '📣', 'mission-3-solve': '🧩', 'mission-4-inaugurate': '🎉',
+}
 
 function goToChapter(chapterId: string) {
   gameStore.setPhase('playing')
@@ -819,51 +955,79 @@ function goToChapter(chapterId: string) {
 .mechanic-desc { font-size: 12px; color: #64748b; margin: 6px 0; line-height: 1.4; }
 .mechanic-chapters { font-size: 11px; font-weight: 700; color: var(--color-green-mid); }
 /* ===== TESTING ===== */
-.test-desc { font-size: 13px; color: #64748b; margin-bottom: 16px; line-height: 1.4; }
+.test-desc { font-size: 13px; color: #64748b; margin-bottom: 12px; line-height: 1.4; }
 
-.test-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.test-running {
+  background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px;
+  padding: 10px 16px; font-size: 13px; font-weight: 700; color: #92400e;
+  margin-bottom: 12px; animation: pulse 1.5s ease-in-out infinite;
+}
+
+.test-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 
 .test-btn {
   padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 800;
   cursor: pointer; border: none; transition: all 150ms; white-space: nowrap;
 }
 .test-btn:active { transform: scale(0.95); }
+.test-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .test-btn--green { background: #22c55e; color: white; }
-.test-btn--green:hover { background: #16a34a; }
+.test-btn--green:hover:not(:disabled) { background: #16a34a; }
 .test-btn--blue { background: #3b82f6; color: white; }
-.test-btn--blue:hover { background: #2563eb; }
+.test-btn--blue:hover:not(:disabled) { background: #2563eb; }
+.test-btn--purple { background: #8b5cf6; color: white; }
+.test-btn--purple:hover:not(:disabled) { background: #7c3aed; }
 .test-btn--red { background: #ef4444; color: white; }
-.test-btn--red:hover { background: #dc2626; }
-.test-btn--small { padding: 4px 10px; font-size: 11px; }
+.test-btn--red:hover:not(:disabled) { background: #dc2626; }
+.test-btn--small { padding: 5px 10px; font-size: 11px; }
 .test-btn--tiny { padding: 3px 8px; font-size: 10px; }
 
-.test-chapters { margin-bottom: 16px; }
-.test-chapter-row {
-  display: flex; align-items: center; gap: 8px; padding: 8px 0;
-  border-bottom: 1px solid #f1f5f9;
+.test-summary {
+  padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 800;
+  margin-bottom: 12px; text-align: center;
 }
-.test-chapter-name { font-size: 13px; font-weight: 700; color: #1e293b; flex: 1; }
-.test-chapter-status { font-size: 12px; font-weight: 600; color: #64748b; min-width: 50px; }
+.test-summary--pass { background: #dcfce7; color: #16a34a; border: 2px solid #22c55e; }
+.test-summary--fail { background: #fee2e2; color: #dc2626; border: 2px solid #ef4444; }
 
-.test-missions { margin-bottom: 16px; }
-.test-mission-group { margin-bottom: 12px; }
-.test-mission-group h4 { font-size: 12px; font-weight: 800; color: #475569; margin-bottom: 6px; }
+.test-chapters { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+
+.test-chapter-card {
+  border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; background: white;
+}
+.test-chapter-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+}
+.test-chapter-name { font-size: 14px; font-weight: 800; color: #1e293b; }
+.test-chapter-status { font-size: 13px; font-weight: 700; color: #64748b; }
+.status--done { color: #16a34a; }
+.test-chapter-actions { display: flex; gap: 6px; margin-bottom: 8px; }
+
+.test-chapter-missions { display: flex; flex-direction: column; gap: 4px; }
+
 .test-mission-row {
-  display: flex; align-items: center; gap: 6px; padding: 4px 0;
-  border-bottom: 1px solid #f8fafc; flex-wrap: wrap;
+  display: flex; align-items: center; gap: 6px; padding: 4px 6px;
+  border-radius: 6px; background: #f8fafc; flex-wrap: wrap;
 }
-.test-mission-status { font-size: 12px; width: 20px; }
-.test-mission-name { font-size: 12px; font-weight: 600; color: #1e293b; flex: 1; min-width: 120px; }
+.test-mission-status { font-size: 12px; width: 18px; }
+.test-mission-type {
+  padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;
+  color: white; text-transform: uppercase;
+}
+.test-mission-name { font-size: 12px; font-weight: 600; color: #1e293b; flex: 1; min-width: 100px; }
+.test-mission-btns { display: flex; gap: 3px; }
 
-.test-result { font-size: 10px; font-weight: 700; }
+.test-result { font-size: 10px; font-weight: 700; width: 100%; margin-top: 2px; }
 .test-result--pass { color: #16a34a; }
 .test-result--fail { color: #dc2626; }
 
 .test-log {
-  background: #1e293b; border-radius: 8px; padding: 12px; max-height: 300px;
-  overflow-y: auto; margin-top: 12px;
+  background: #1e293b; border-radius: 8px; padding: 12px; margin-top: 12px;
 }
-.test-log h4 { color: #94a3b8; font-size: 12px; margin-bottom: 8px; }
+.test-log-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+}
+.test-log-header h4 { color: #94a3b8; font-size: 12px; margin: 0; }
+.test-log-entries { max-height: 250px; overflow-y: auto; }
 .test-log-entry { font-size: 11px; font-family: monospace; padding: 2px 0; }
 .log--pass { color: #4ade80; }
 .log--fail { color: #f87171; }

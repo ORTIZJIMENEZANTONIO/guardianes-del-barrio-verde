@@ -81,8 +81,8 @@ const allSpots: EvalSpot[] = [
   { id: 's2', label: 'Exposición solar', emoji: '☀️', isCritical: true, x: 55, y: 15, w: 75, h: 55, tapped: false, message: 'Esta zona recibe sol directo todo el día. Necesitamos plantas que aguanten el calor y crear zonas de sombra.' },
   { id: 's3', label: 'Acceso al agua', emoji: '🚰', isCritical: true, x: 65, y: 55, w: 70, h: 55, tapped: false, message: 'Hay una toma de agua cerca. Podemos conectar un sistema de captación de lluvia para regar sin desperdiciar.' },
   { id: 's4', label: 'Drenaje', emoji: '🕳️', isCritical: true, x: 30, y: 65, w: 75, h: 55, tapped: false, message: 'El desagüe necesita estar libre. Si se tapa, el agua se acumula y puede dañar la estructura.' },
-  { id: 's5', label: 'Muro perimetral', emoji: '🧱', isCritical: false, x: 10, y: 55, w: 65, h: 50, tapped: false, message: 'El muro perimetral está en buen estado. Protege del viento y es seguro.' },
-  { id: 's6', label: 'Antena', emoji: '📡', isCritical: false, x: 40, y: 10, w: 60, h: 50, tapped: false, message: 'La antena no estorba. Se puede diseñar alrededor de ella sin problema.' },
+  { id: 's5', label: 'Muro perimetral', emoji: '🧱', isCritical: false, x: 10, y: 55, w: 65, h: 50, tapped: false, message: 'Esta parte de la azotea se ve bien. 💡 Busca las zonas que necesitan revisión: peso, sol, agua y drenaje.' },
+  { id: 's6', label: 'Antena', emoji: '📡', isCritical: false, x: 40, y: 10, w: 60, h: 50, tapped: false, message: 'Esta parte de la azotea se ve bien. 💡 Busca las zonas que necesitan revisión: peso, sol, agua y drenaje.' },
 ]
 
 const spots = ref<EvalSpot[]>([])

@@ -146,7 +146,7 @@ function checkMatch() {
     }
   } else {
     // No match
-    showFB('No son pareja, intenta de nuevo', false)
+    showFB('Esas cartas no son pareja. 💡 Cada material se convierte en algo diferente al reciclarlo.', false)
 
     nextTick(() => {
       const el1 = document.querySelector(`[data-card="${first.id}"]`)

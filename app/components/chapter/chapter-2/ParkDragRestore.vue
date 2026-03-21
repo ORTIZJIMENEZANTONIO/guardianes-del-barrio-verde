@@ -248,7 +248,7 @@ function attemptPlace(item: DragItem, zoneId: string) {
     }
   } else {
     // Wrong placement — shake zone, item returns to tray
-    showFB('Ese elemento no va en este lugar', false)
+    showFB('Ese elemento no corresponde a esta zona. 💡 Fíjate en lo que dice cada zona: ¿qué falta ahí?', false)
     const zoneEl = document.querySelector(`[data-zone="${zoneId}"]`)
     if (zoneEl) shakeWrong(zoneEl)
   }

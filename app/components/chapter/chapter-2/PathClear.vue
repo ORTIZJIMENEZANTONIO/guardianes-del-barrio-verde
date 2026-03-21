@@ -211,7 +211,7 @@ function onPointerUp(e: PointerEvent) {
         clearObstacle(dragging.value)
       } else {
         // Return to original position — animate via resetting coords
-        showFB('Arrastra al lado derecho, a la zona de limpieza', false)
+        showFB('No soltaste en la zona correcta. 💡 Arrastra el obstáculo hasta la zona verde del lado derecho.', false)
         const sceneEl = document.querySelector('.scene-area')
         if (sceneEl) shakeWrong(sceneEl)
       }
