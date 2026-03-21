@@ -7,7 +7,8 @@ Juego educativo ambiental web para niños de 7-13 años en México.
 - **Nuxt 4** (SPA mode, `ssr: false`)
 - **Vue 3** (Composition API, `<script setup>`)
 - **Pinia** (state management)
-- **GSAP** (animaciones: confetti, bounce, shake, heartbeat, elastic)
+- **Phaser 3** (motor de minijuegos: canvas con drag & drop nativo, flip tween, particle effects)
+- **GSAP** (animaciones UI: confetti DOM, bounce, shake, heartbeat, elastic)
 - **TypeScript**
 - CSS puro con custom properties. Design system con glassmorphism, glow effects, spring animations.
 - Fuente: Nunito (Google Fonts, pesos 400-900)
@@ -39,33 +40,57 @@ ssh root@72.62.200.124 "cd /var/www/cercu-frontend/guardianes && tar -xzf guardi
 
 ```
 app/
-  assets/css/main.css         # Design tokens, animaciones, glassmorphism, glow
+  assets/css/main.css           # Design tokens, animaciones, glassmorphism, glow
   components/
-    ui/                       # GameButton, ProgressBar, Modal, ActionButton
-    hud/                      # GameHud (score, semillas, insignias con GSAP bounce)
-    dialogue/                 # DialogueBox, CharacterPortrait, CharacterFace, CharacterBody,
-                              #   ChoicePanel, DialogueScene
-    scene/                    # SceneSky (cielos SVG), SceneStreet (barrio SVG)
-    minigame/                 # MinigameShell (wrapper con timer adaptativo)
-    reward/                   # RewardPopup (con GSAP confetti)
-    chapter/chapter-1/        # 5 componentes de minijuegos del Cap.1
+    ui/                         # GameButton, ProgressBar, Modal, ActionButton
+    hud/                        # GameHud (score, semillas, insignias con GSAP bounce)
+    dialogue/                   # DialogueBox, CharacterPortrait, CharacterFace, CharacterBody,
+                                #   ChoicePanel, DialogueScene
+    scene/                      # SceneSky (cielos SVG), SceneStreet (barrio SVG)
+    minigame/                   # MinigameShell (wrapper con timer adaptativo)
+    reward/                     # RewardPopup (con GSAP confetti)
+    chapter/chapter-1/          # 5 minijuegos Vue + 5 Phaser wrappers (*Phaser.vue)
+    chapter/chapter-2/          # 5 minijuegos Vue + 5 Phaser wrappers (*Phaser.vue)
+    chapter/chapter-3/          # 3 minijuegos Vue + 3 Phaser wrappers (*Phaser.vue)
   composables/
-    useGameAnimations.ts      # GSAP helpers: popIn, shake, confetti, heartbeat, etc.
+    useGameAnimations.ts        # GSAP helpers: popIn, shake, confetti, heartbeat, etc.
+    usePhaserGame.ts            # Monta/destruye Phaser en lifecycle Vue (lazy import)
+  phaser/
+    types.ts                    # MinigameBridge, DragItemConfig, DropZoneConfig, etc.
+    BaseMinigameScene.ts        # Scene base con bridge + emoji helpers + animaciones
+    PhaserCanvas.vue            # Wrapper <div> que monta Phaser game con usePhaserGame
+    mechanics/
+      DragDropMechanic.ts       # Drag & drop reutilizable con zonas y hit detection
+      MemoramaMechanic.ts       # Grid de cartas con flip tween (scaleX), Fisher-Yates shuffle
+      TapPlacementMechanic.ts   # Seleccionar ítem de tray + tocar zona para colocar
+    effects/
+      ConfettiEmitter.ts        # Partículas emoji de celebración (burst central + posicional)
+    scenes/
+      chapter-1/                # SidewalkCleanupScene, HeatDetectorScene, ShadePlanterScene,
+                                #   LeakFixerScene, SpaceRestorerScene
+      chapter-2/                # PathClearScene, SoilMemoryScene, WaterDragDropScene,
+                                #   WildlifeMemoryScene, ParkDragRestoreScene
+      chapter-3/                # FloodDragClearScene, WetlandMemoryScene, PipeDragFitScene
   pages/
-    index.vue                 # Pantalla de inicio
-    registro.vue              # Registro nombre + edad (estilo Kahoot)
-    chapter/[chapterId].vue   # Motor del juego (escenas, diálogos, misiones)
+    index.vue                   # Pantalla de inicio
+    registro.vue                # Registro nombre + edad (estilo Kahoot)
+    capitulos.vue               # Selector de capítulos (todos desbloqueados)
+    chapter/[chapterId].vue     # Motor del juego (escenas, diálogos, misiones, toggle Phaser)
+    dev.vue                     # Catálogo dev (solo localhost): personajes, animaciones, capítulos
   stores/
-    useGameStore.ts           # Estado maestro (capítulo, escena, fase)
-    usePlayerStore.ts         # Perfil + progreso (nombre, edad, puntos, guardado)
-    useDialogueStore.ts       # Cola de diálogos, typewriter, {nombre}, filtro por edad
+    useGameStore.ts             # Estado maestro (capítulo, escena, fase)
+    usePlayerStore.ts           # Perfil + progreso (nombre, edad, puntos, guardado)
+    useDialogueStore.ts         # Cola de diálogos, typewriter, {nombre}, filtro por edad
   data/
-    characters/               # Definición de personajes
-    chapters/chapter-1/       # Datos del capítulo 1 (diálogos, misiones, escenas)
-  shared/types/               # Interfaces TypeScript
+    characters/                 # Definición de personajes (8 personajes)
+    chapters/chapter-1/         # Datos del capítulo 1 (diálogos, misiones, escenas)
+    chapters/chapter-2/         # Datos del capítulo 2 (diálogos, misiones, escenas)
+    chapters/chapter-3/         # Datos del capítulo 3 (diálogos, misiones, escenas)
+  shared/types/                 # Interfaces TypeScript (mission, chapter, character, game-state)
   plugins/
-    gsap.client.ts            # GSAP plugin (client-only)
-  deploy/                     # nginx.conf, ecosystem.config.cjs, DEPLOY.md
+    gsap.client.ts              # GSAP plugin (client-only)
+    phaser.client.ts            # Phaser safety net (client-only)
+  deploy/                       # nginx.conf, ecosystem.config.cjs, DEPLOY.md
 ```
 
 ## Configuración importante (nuxt.config.ts)
@@ -76,12 +101,17 @@ app/
 ## Flujo del usuario
 
 ```
-Home (/) → Registro (/registro) → Capítulo (/chapter/chapter-1)
-              ↓                         ↓
-        Nombre + Edad            12 escenas secuenciales
-        (personaliza timer       (cinemática → diálogos →
-         y diálogos)              exploración → 5 misiones →
-                                  transformación → resumen → hook)
+Home (/) → Registro (/registro) → Capítulos (/capitulos) → Capítulo (/chapter/chapter-N)
+              ↓                         ↓                         ↓
+        Nombre + Edad            Todos los capítulos        Escenas secuenciales
+        (personaliza timer       disponibles para           (cinemática → diálogos →
+         y diálogos)              elegir libremente          exploración → misiones →
+                                                            transformación → resumen → hook)
+
+Post-capítulo:
+  Hook → navega al siguiente capítulo en orden
+  Si es el último → busca el primer capítulo no completado (wrap-around)
+  Si todos completos → botón "Ver capítulos" con reflexión y agradecimiento
 ```
 
 ## Sistema de registro y personalización
@@ -90,7 +120,17 @@ Home (/) → Registro (/registro) → Capítulo (/chapter/chapter-1)
 3 pasos estilo Kahoot:
 1. Input de nombre (mínimo 2 caracteres)
 2. Grid de botones de edad (7-13)
-3. Bienvenida con Lila animada
+3. Bienvenida con Lila animada → redirige a `/capitulos`
+
+### Selector de capítulos (`/capitulos`)
+- Muestra todos los capítulos — **todos desbloqueados**, el jugador elige libremente
+- Marca capítulos completados con ✅
+- Si todos están completos: muestra mensaje de reflexión y agradecimiento con stats del jugador
+
+### Navegación post-capítulo
+- Al terminar un capítulo (escena hook): botón navega al **siguiente capítulo en orden**
+- Si estás en el **último capítulo**: navega al **primer capítulo no completado** (wrap-around)
+- Si **todos están completos**: botón "Ver capítulos" → muestra reflexión final
 
 ### Personalización por edad
 
@@ -112,10 +152,59 @@ Home (/) → Registro (/registro) → Capítulo (/chapter/chapter-1)
 
 ## Arquitectura del juego
 
+### Arquitectura híbrida Vue + Phaser
+
+```
+┌──────────────────────────────────────────┐
+│  Vue (z-index alto) — NO CAMBIA         │
+│  ├─ MinigameShell (timer, instrucciones) │
+│  ├─ Feedback toast (glassmorphism)       │
+│  ├─ DialogueScene, HUD, menús           │
+│  └─ SceneSky + SceneStreet (SVG fondo)  │
+├──────────────────────────────────────────┤
+│  Phaser Canvas (transparent, z-index 5)  │
+│  ├─ Emoji game objects (draggable)       │
+│  ├─ Drop zones con detección nativa      │
+│  ├─ Card flip tweens (memorama)          │
+│  ├─ Particle emitters (confetti)         │
+│  └─ Camera shake                         │
+├──────────────────────────────────────────┤
+│  Event Bridge (callbacks Vue ↔ Phaser)   │
+│  ├─ onItemCompleted → completed count    │
+│  ├─ onFeedback → toast overlay           │
+│  └─ onAllCompleted → result modal        │
+└──────────────────────────────────────────┘
+```
+
+- **`USE_PHASER` flag** en `[chapterId].vue` — `true` usa Phaser, `false` usa Vue originales
+- **Lazy import**: `defineAsyncComponent(() => import(...))` mantiene Phaser (~333KB gzip) fuera del bundle inicial
+- **Canvas transparente**: fondos SVG (SceneSky + SceneStreet) se renderizan debajo en Vue
+- **Event bridge**: Phaser scene → `MinigameBridge` callbacks → Vue refs (no Pinia directo en Phaser)
+- **Cleanup**: `usePhaserGame` destruye el game en `onUnmounted`
+- **Emoji como assets**: `Phaser.GameObjects.Text` con emoji, no spritesheets
+
+### Componentes clave de Phaser
+
+| Archivo | Propósito |
+|---------|-----------|
+| `usePhaserGame.ts` | Composable: monta/destruye Phaser, lazy import, resize |
+| `BaseMinigameScene.ts` | Scene base: bridge, createEmoji, createLabel, celebrateItem, shakeItem, cameraShake |
+| `PhaserCanvas.vue` | Wrapper Vue: `<div ref>`, pasa bridge al scene |
+| `DragDropMechanic.ts` | Crea items arrastrables + drop zones, gestiona eventos drag nativo Phaser |
+| `MemoramaMechanic.ts` | Grid de cartas, flip con `scaleX` tween, Fisher-Yates shuffle, match detection |
+| `TapPlacementMechanic.ts` | Tray de selección + zonas de colocación con pulse animation |
+| `ConfettiEmitter.ts` | Burst de emojis con tweens radiales (central + posicional) |
+
+### Patrón de cada minijuego Phaser
+
+1. **Scene** (`app/phaser/scenes/chapter-N/XxxScene.ts`): extiende `BaseMinigameScene`, usa mecánica reutilizable, llama callbacks del bridge
+2. **Wrapper** (`app/components/chapter/chapter-N/XxxPhaser.vue`): `MinigameShell` + `SceneSky` + `SceneStreet` + `PhaserCanvas` + feedback toast Vue
+3. **[chapterId].vue**: `defineAsyncComponent(() => import(...))` en `missionComponentMap` con ternario `USE_PHASER`
+
 ### Escenas visuales
 - **SceneSky** (`components/scene/SceneSky.vue`): cielos SVG con nubes, sol con rayos, pájaros, estrellas. Variantes: `hot`, `nice`, `sunset`.
 - **SceneStreet** (`components/scene/SceneStreet.vue`): barrio SVG con 6 edificios detallados (techos, ventanas iluminadas, puertas, tiendas), banqueta, calle con línea central, postes de luz. Variantes: `dirty`, `normal`, `clean`.
-- Ambos se usan en TODAS las pantallas: home, capítulo, y cada minijuego.
+- Ambos se usan en TODAS las pantallas: home, capítulo, y cada minijuego (debajo del canvas Phaser).
 
 ### Personajes
 
@@ -128,19 +217,40 @@ Home (/) → Registro (/registro) → Capítulo (/chapter/chapter-1)
 | Nube Gris | Antagonista | #6b7280 | Cuerpo de nube flotante, basura flotando |
 | Nico | Deportista | #3b82f6 | Jersey #7, headband, balón |
 | Vale | Comerciante | #fbbf24 | Delantal amarillo, aretes |
+| Bolillo | Perrito del barrio | #c89850 | Mestizo beige, ojos chicos con párpados pesados, hocico prominente, orejas semi-caídas asimétricas, paliacate rojo en pecho, placa "B", brazos animados, cola expresiva |
 
 Cada personaje tiene:
 - **CharacterFace** (SVG): cara con parpadeo automático, expresiones por emoción, boca que abre/cierra al hablar (180ms toggle)
 - **CharacterBody** (SVG): cuerpo completo con ropa, animaciones de brazos (idle swing + gesto al hablar), items en mano
 - **DialogueScene**: layout bottom-strip con personaje a la izquierda (28vw) y burbuja a la derecha, scrim oscuro para legibilidad
 
-### Minijuegos
-- `MinigameShell` envuelve todos: instrucciones, timer adaptativo, progreso, resultado
+**Bolillo** (vibra Cheempe — perro mestizo mexicano noble y memeable):
+- **Cara**: elipse `rx=33 ry=30` en `#c89850` (beige arenoso). Hocico prominente `rx=16 ry=13` con philtrum. Ojos pequeños `rx=4 ry=4` con párpados rellenos (fur-color ellipses que cubren ~35% superior, asimétricos: derecho más pesado). Boca ω amigable mínima. Orejas semi-caídas triangulares suaves, nacen de los lados, asimetría (derecha con fold). Mancha oscura sutil en ojo derecho.
+- **Cuerpo**: torso horizontal `rx=26 ry=17` (sentado, no bípedo). Brazos animados (`arm-left`/`arm-right` con idle sway + gesture). Patas cortas con deditos. Paliacate rojo + placa "B" sobre el pecho. Cola curva con wagging al hablar.
+- **foreignObject**: `y=26` (solo Bolillo — más abajo que humanos `y=20` para unir cabeza a cuerpo).
+- **Expresión default**: sonrisa ω suave, amigable. Párpados pesados dan calma natural.
+- **Narrativa Cap. 2**: no habla en escenas 0-1 y misión 1 (Xani interpreta). **A partir de misión 2 habla directamente** como narrador. Arco emocional: escondido → curioso → se acerca → bebe agua → mueve cola → echado tranquilo. Representa a los animales callejeros del barrio.
+- **Paleta**: `#c89850` (pelaje), `#d8b878`/`#dcc080`/`#e0c488` (crema claro), `#a07028` (sombras), `#dc2626` (paliacate), `#fbbf24` (placa).
+
+### Mecánicas de minijuegos
+
+| Mecánica | Implementación Phaser | Implementación Vue (fallback) | Capítulos |
+|----------|----------------------|-------------------------------|-----------|
+| **Drag & drop** | `DragDropMechanic.ts` — drag nativo Phaser, drop zones con `getBounds()` | Pointer events, `position: fixed`, `elementsFromPoint()` | Cap. 1, 2, 3 |
+| **Memorama** | `MemoramaMechanic.ts` — flip con `scaleX` tween (mejor en Android) | CSS 3D flip `rotateY(180deg)`, `backface-visibility` | Cap. 2, 3 |
+| **Tap-detect** | Custom en scene — containers interactivos con `pointerdown` | Click handlers en divs posicionados | Cap. 1 |
+| **Placement** | `TapPlacementMechanic.ts` — tray + zones con pulse | Botones en tray + divs posicionados con click | Cap. 1 |
+| **Pipe-fit** | `DragDropMechanic.ts` con piezas trampa + type matching | Select + tap en grid (variante de placement) | Cap. 1, 3 |
+
+Todas las mecánicas son de **dominio público** (sin copyright).
+
+### MinigameShell
+- `MinigameShell` envuelve todos los minijuegos (Vue y Phaser): instrucciones, timer adaptativo, progreso, resultado
 - Timer se detiene al completar objetivo (`completed >= total`)
 - Timer ajustado por edad con `playerStore.timerMultiplier`
 - Display en formato `m:ss` (ej: `1:30`)
 - GSAP: heartbeat cuando quedan <10s
-- Tipos: drag+tap, tap-detect, placement, pipe-fit
+- Tipos de misión: `drag-drop`, `tap-detect`, `placement`, `pipe-fit`, `scenario-choice`, `observation`, `memorama`
 
 ### Botones de acción
 - `ActionButton` componente con transiciones GSAP (elastic bounce in, fade out)
@@ -156,28 +266,100 @@ Cada personaje tiene:
 
 1. Crear `app/data/chapters/chapter-N/` con `index.ts`, `dialogues.ts`, `missions.ts`
 2. Usar `{nombre}` en textos de diálogos y `optional: true` en líneas prescindibles
-3. Crear componentes de minijuegos en `app/components/chapter/chapter-N/`
-4. En `pages/chapter/[chapterId].vue`: importar y registrar en `chapter` computed + `missionComponentMap`
-5. Última escena debe ser tipo `'hook'`
+3. Crear componentes de minijuegos:
+   - **Phaser scenes** en `app/phaser/scenes/chapter-N/` (extiende `BaseMinigameScene`, usa mecánicas reutilizables)
+   - **Vue wrappers** en `app/components/chapter/chapter-N/` (`*Phaser.vue`: MinigameShell + PhaserCanvas + feedback)
+   - (Opcional) **Vue fallback** en `app/components/chapter/chapter-N/` (sin Phaser, pointer events)
+4. En `pages/chapter/[chapterId].vue`:
+   - Importar datos (`chapterN`, `chapterNDialogues`, `chapterNMissions`)
+   - Importar componentes Vue fallback
+   - Agregar `defineAsyncComponent(() => import(...))` para wrappers Phaser
+   - Agregar a `chapter` computed, `chapterDialogues`, `chapterMissions`
+   - Agregar misiones a `missionComponentMap` (con ternario `USE_PHASER`) y `missionIconMap`
+   - Agregar datos específicos a `transformEmojis`, `summaryData`, `hookData`/`chapterMeta`, `cinematicFloats`
+   - Si tiene exploración: agregar spots en `defaultSpots`
+5. En `pages/capitulos.vue`: agregar entrada en `allChapters`
+6. En `[chapterId].vue`: agregar al array `chapterOrder` para navegación post-hook
+7. Última escena debe ser tipo `'hook'`
 
 ## Capítulo 1 — La Calle Caliente
 
-12 escenas, 5 misiones (timers base: 90s, ajustados por edad):
+12 escenas, 5 misiones (timers base: 90s, ajustados por edad).
+Tema: calor urbano, limpieza, sombra, fugas, recuperación del espacio.
 
-| # | Escena | Tipo | Notas |
-|---|--------|------|-------|
-| 0 | Cinemática | cinematic | Barrio deteriorado, cielo caliente |
-| 1 | Bienvenida | dialogue | "{nombre}! ¡Llegaste justo a tiempo!" + choices |
-| 2 | Observación | exploration | 5 spots, todos requeridos |
-| 3 | Tutorial | dialogue | EcoKit, nombre del jugador |
-| 4 | Limpiar banqueta | mission | Drag+tap: 10 residuos → 4 contenedores |
-| 5 | Detectar calor | mission | Tap: 3 superficies calientes de 6 |
-| 6 | Plantar sombra | mission | Placement: 4 de 7 spots |
-| 7 | Reparar fuga | mission | Pipe-fit: 5 piezas, timer |
-| 8 | Recuperar espacio | mission | Placement: 5 elementos |
-| 9 | Transformación | transformation | Cielo hot→nice dinámico |
-| 10 | Resumen | summary | Recompensas (idempotente) |
-| 11 | Gancho | hook | Preview Parque Dormido, cielo sunset |
+| # | Escena | Tipo | Componente Vue | Scene Phaser | Mecánica |
+|---|--------|------|----------------|--------------|----------|
+| 0 | Cinemática | cinematic | — | — | — |
+| 1 | Bienvenida | dialogue | — | — | — |
+| 2 | Observación | exploration | — | — | tap (5 spots) |
+| 3 | Tutorial | dialogue | — | — | — |
+| 4 | Limpiar banqueta | mission | `SidewalkCleanup` | `SidewalkCleanupScene` | drag (10→4 bins) |
+| 5 | Detectar calor | mission | `HeatDetector` | `HeatDetectorScene` | tap (3 hot de 6) |
+| 6 | Plantar sombra | mission | `ShadePlanter` | `ShadePlanterScene` | tap (4 de 7 slots) |
+| 7 | Reparar fuga | mission | `LeakFixer` | `LeakFixerScene` | pipe-fit (5 piezas) |
+| 8 | Recuperar espacio | mission | `SpaceRestorer` | `SpaceRestorerScene` | placement (5 items) |
+| 9 | Transformación | transformation | — | — | — |
+| 10 | Resumen | summary | — | — | — |
+| 11 | Gancho | hook | — | — | → Cap. 2 |
+
+Recompensa: 50 pts, "Guardián de la Calle Caliente".
+
+## Capítulo 2 — El Parque Dormido
+
+12 escenas, 5 misiones. Narrado por **Bolillo** (Xani interpreta).
+Tema: parques, biodiversidad, suelo, riego, animales callejeros, comunidad.
+
+| # | Escena | Tipo | Componente Vue | Scene Phaser | Mecánica |
+|---|--------|------|----------------|--------------|----------|
+| 0 | Cinemática | cinematic | — | — | — |
+| 1 | Llegada | dialogue | — | — | — |
+| 2 | Diagnóstico | exploration | — | — | tap (5 spots) |
+| 3 | Tutorial | dialogue | — | — | — |
+| 4 | Despejar senderos | mission | `PathClear` | `PathClearScene` | drag (6→zona limpieza) |
+| 5 | Cuidar el suelo | mission | `SoilMemory` | `SoilMemoryScene` | memorama (4 parejas) |
+| 6 | Regar con estrategia | mission | `WaterDragDrop` | `WaterDragDropScene` | drag (6 gotas→plantas) |
+| 7 | Vida en el parque | mission | `WildlifeMemory` | `WildlifeMemoryScene` | memorama (4 parejas) |
+| 8 | Reactivar parque | mission | `ParkDragRestore` | `ParkDragRestoreScene` | drag (5→zonas) |
+| 9 | Transformación | transformation | — | — | — |
+| 10 | Resumen | summary | — | — | — |
+| 11 | Gancho | hook | — | — | → Cap. 3 |
+
+Recompensa: 60 pts, "Guardián del Parque Dormido".
+
+### Bolillo como narrador
+- **Escenas 0-1 y Misión 1**: Bolillo NO habla. Xani interpreta su lenguaje corporal.
+- **A partir de Misión 2**: Bolillo **habla directamente** (`speaker: 'bolillo'`). Narra la historia, explica la problemática, guía al jugador.
+- Arco emocional: escondido/asustado → curioso → se acerca → bebe agua → mueve cola → echado tranquilo
+- Reflexión sobre animales callejeros: plato de agua, no forzar contacto, gruñido ≠ agresión, pedir ayuda a adulto
+- Spot de exploración: "Bolillo escondido" como punto de observación
+- Misión 3: "plato para Bolillo" como zona válida de riego
+- Misión 4: par Bolillo↔agua y sombra en memorama
+- Villanos (Nube Gris) siguen interviniendo con sus comentarios
+
+### Personajes que brillan
+Xani (ecología + animales), Nico (espacio público), Don Toño (memoria del barrio), Bolillo (hilo narrativo).
+
+## Capítulo 3 — La Fuga Infinita
+
+8 escenas, 3 misiones (capítulo corto, 12-18 min).
+Tema: desperdicio de agua, humedales urbanos, biodiversidad acuática, reparación.
+
+| # | Escena | Tipo | Componente Vue | Scene Phaser | Mecánica |
+|---|--------|------|----------------|--------------|----------|
+| 0 | Cinemática | cinematic | — | — | — |
+| 1 | Descubrimiento | dialogue | — | — | — |
+| 2 | Controlar desperdicio | mission | `FloodDragClear` | `FloodDragClearScene` | drag (5→zona segura) |
+| 3 | Proteger humedal | mission | `WetlandMemory` | `WetlandMemoryScene` | memorama (4 parejas) |
+| 4 | Reparar tubería | mission | `PipeDragFit` | `PipeDragFitScene` | drag (4+2 trampa→slots) |
+| 5 | Transformación | transformation | — | — | — |
+| 6 | Resumen | summary | — | — | — |
+| 7 | Gancho | hook | — | — | → Cap. 4 |
+
+Recompensa: 50 pts, "Guardián de la Fuga Infinita".
+
+Concepto educativo clave: "Un humedal es donde el agua y la tierra se encuentran. Puede guardar agua, filtrarla y dar hogar a plantas, aves e insectos." Presentado como "el rincón húmedo del barrio".
+
+Personajes que brillan: Timo (reparaciones), Xani (humedales y biodiversidad).
 
 ## Reglas de diseño
 
@@ -185,9 +367,12 @@ Cada personaje tiene:
 - **Glassmorphism**: `var(--glass-bg)` con `backdrop-filter: blur()` y border de vidrio.
 - **Botones**: gradientes 3 colores, sombra 3D, hover glow+shimmer, active hundimiento. `@media (hover: none)` para touch.
 - **Español mexicano**, tono optimista, nunca moralista. Incluir `{nombre}` del jugador.
-- **Touch-first** (mobile). Mínimo 44x44px en áreas tocables.
-- **Feedback GSAP**: confetti en éxito, shake en error, heartbeat en timer bajo, elastic bounce en entradas.
-- **Fondos SVG detallados**: SceneSky y SceneStreet en todas las pantallas, nunca gradientes planos solos.
+- **Touch-first** (mobile). Mínimo 44x44px en áreas tocables. `touch-action: none` en drag & drop.
+- **Feedback**: Phaser tweens para game objects (celebrate, shake, confetti particles). GSAP para UI Vue (heartbeat timer, bounce entries).
+- **Fondos SVG detallados**: SceneSky y SceneStreet en todas las pantallas, nunca gradientes planos solos. Se renderizan debajo del canvas Phaser.
+- **Phaser drag & drop**: drag nativo Phaser con `setInteractive({ draggable: true })`, drop zones con `getBounds().contains()`, bounce back con `Back.easeOut`.
+- **Phaser memorama**: flip con `scaleX` tween (0→1), mejor que CSS `rotateY` en Android. Fisher-Yates shuffle, max 2 cartas, lock board.
+- **Catálogo dev** (`/dev`): solo visible en localhost. Accesible desde botón en home. Muestra personajes con todas las emociones/animaciones, capítulos con escenas, misiones y mecánicas. Usa `position: fixed` + `overflow-y: scroll` para escapar del `body { overflow: hidden }` del juego.
 
 ## Bugs corregidos (historial)
 
@@ -206,6 +391,15 @@ Cada personaje tiene:
 ## Estado actual
 
 - Registro de jugador con personalización por edad
-- Capítulo 1 completo y jugable de inicio a fin
+- Selector de capítulos (`/capitulos`) — todos desbloqueados, el jugador elige libremente
+- Capítulo 1 "La Calle Caliente" completo y jugable (5 misiones: drag, tap, placement, pipe-fit)
+- Capítulo 2 "El Parque Dormido" completo y jugable (5 misiones: drag & drop + memorama, Bolillo narra)
+- Capítulo 3 "La Fuga Infinita" completo y jugable (3 misiones: drag & drop + memorama, humedales)
+- 13 minijuegos en total, 8 personajes, 3 mecánicas principales
+- **Integración Phaser.js completa**: 13 minijuegos con Phaser canvas (drag nativo, flip tween scaleX, confetti particles). Toggle `USE_PHASER` en `[chapterId].vue`. Componentes Vue originales preservados como fallback (`USE_PHASER = false`).
+- Phaser lazy-loaded (~333KB gzip) solo cuando se inicia un minijuego, no afecta carga inicial
+- Navegación post-capítulo: hook → siguiente capítulo → wrap-around al primero incompleto → selector si todos completos
+- Reflexión y agradecimiento cuando todos los capítulos están completos
+- Catálogo dev (`/dev`) con personajes, animaciones, capítulos y mecánicas — solo en localhost
 - Deploy en guardianes.cercu.com.mx
-- Capítulos 2-6 pendientes: El Parque Dormido, La Fuga Infinita, La Ruta de la Basura, Azoteas con Vida, El Gran Festival Verde
+- Capítulos 4-6 pendientes: La Ruta de la Basura, Azoteas con Vida, El Gran Festival Verde

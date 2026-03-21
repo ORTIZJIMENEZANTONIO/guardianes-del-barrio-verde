@@ -14,20 +14,13 @@
         <SceneSky variant="hot" />
         <SceneStreet variant="dirty" />
         <!-- Floating problems -->
-        <div class="floating-element" style="top: 12%; left: 15%; animation-delay: 0s;">
-          <span class="float-icon heat-wave">🌡️</span>
-        </div>
-        <div class="floating-element" style="top: 25%; right: 12%; animation-delay: 1.2s;">
-          <span class="float-icon">🛍️</span>
-        </div>
-        <div class="floating-element" style="top: 35%; left: 30%; animation-delay: 0.6s;">
-          <span class="float-icon">💧</span>
-        </div>
-        <div class="floating-element" style="top: 20%; left: 55%; animation-delay: 1.8s;">
-          <span class="float-icon">📄</span>
-        </div>
-        <div class="floating-element" style="top: 30%; right: 25%; animation-delay: 2.4s;">
-          <span class="float-icon">💨</span>
+        <div
+          v-for="(item, i) in cinematicFloats"
+          :key="i"
+          class="floating-element"
+          :style="item.style"
+        >
+          <span class="float-icon" :class="item.class">{{ item.emoji }}</span>
         </div>
         <DialogueScene />
         <ActionButton :visible="!dialogueStore.isDialogueActive && sceneReady">
@@ -56,7 +49,7 @@
         <div class="exploration-bg">
           <div class="explore-title">
             <span class="explore-title__icon">🔍</span>
-            Observa la calle. ¡Toca lo que notes!
+            {{ route.params.chapterId === 'chapter-2' ? 'Explora el parque. ¡Toca lo que notes!' : 'Observa la calle. ¡Toca lo que notes!' }}
           </div>
 
           <div
@@ -137,10 +130,10 @@
             <div class="transform-label">😰 Antes</div>
             <div class="transform-street transform-street--before">
               <div class="transform-row">
-                <span>🏚️</span><span>🌡️</span><span>🛍️</span>
+                <span v-for="(e, i) in transformEmojis.before[0]" :key="'b0-'+i">{{ e }}</span>
               </div>
               <div class="transform-row">
-                <span>💧</span><span>😓</span><span>📄</span>
+                <span v-for="(e, i) in transformEmojis.before[1]" :key="'b1-'+i">{{ e }}</span>
               </div>
             </div>
           </div>
@@ -149,10 +142,10 @@
             <div class="transform-label">🌟 Después</div>
             <div class="transform-street transform-street--after">
               <div class="transform-row">
-                <span>🏡</span><span>🌳</span><span>🌸</span>
+                <span v-for="(e, i) in transformEmojis.after[0]" :key="'a0-'+i">{{ e }}</span>
               </div>
               <div class="transform-row">
-                <span>🦋</span><span>😊</span><span>👨‍👩‍👧</span>
+                <span v-for="(e, i) in transformEmojis.after[1]" :key="'a1-'+i">{{ e }}</span>
               </div>
             </div>
           </div>
@@ -184,24 +177,20 @@
           <p class="summary-subtitle">¡Capítulo completado!</p>
 
           <div class="summary-learnings">
-            <h3>La calle cambió porque:</h3>
+            <h3>{{ summaryData.heading }}</h3>
             <ul>
-              <li>Se limpió la banqueta</li>
-              <li>Se detectaron zonas de mayor calor</li>
-              <li>Se plantó sombra</li>
-              <li>Se arregló una fuga</li>
-              <li>Se recuperó el espacio</li>
+              <li v-for="(item, i) in summaryData.learnings" :key="i">{{ item }}</li>
             </ul>
           </div>
 
           <div class="summary-message">
-            <p>"Más sombra, menos basura y mejor cuidado pueden cambiar cómo se vive una calle."</p>
+            <p>"{{ summaryData.message }}"</p>
           </div>
 
           <div class="summary-rewards">
-            <div class="summary-reward-item"><span>🏅</span><span>Guardián de la Calle Caliente</span></div>
-            <div class="summary-reward-item"><span>🌿</span><span>+50 puntos verdes</span></div>
-            <div class="summary-reward-item"><span>🔓</span><span>Zona 2: El Parque Dormido</span></div>
+            <div class="summary-reward-item"><span>🏅</span><span>{{ chapter?.completionReward.badgeTitle }}</span></div>
+            <div class="summary-reward-item"><span>🌿</span><span>+{{ chapter?.completionReward.points }} puntos verdes</span></div>
+            <div class="summary-reward-item"><span>🔓</span><span>{{ summaryData.unlockLabel }}</span></div>
           </div>
 
           <GameButton variant="primary" size="lg" @click="advanceScene">
@@ -215,15 +204,18 @@
         <SceneSky variant="sunset" />
         <div class="hook-bg">
           <div class="hook-preview animate-pop-in">
-            <span style="font-size: 72px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));">🏞️</span>
-            <h2>El Parque Dormido</h2>
+            <span style="font-size: 72px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));">{{ hookData.icon }}</span>
+            <h2>{{ hookData.title }}</h2>
             <p>Próximamente...</p>
           </div>
         </div>
         <DialogueScene />
         <ActionButton :visible="!dialogueStore.isDialogueActive && sceneReady">
-          <GameButton variant="secondary" size="lg" @click="goToMenu">
-            🏠 Volver al inicio
+          <GameButton v-if="nextChapterId" variant="primary" size="lg" @click="goToNextChapter">
+            ▶ {{ nextChapterLabel }}
+          </GameButton>
+          <GameButton v-else variant="secondary" size="lg" @click="goToChapterSelect">
+            🏆 Ver capítulos
           </GameButton>
         </ActionButton>
       </div>
@@ -258,13 +250,49 @@ import { useDialogueStore } from '~/stores/useDialogueStore'
 import { chapter1 } from '~/data/chapters/chapter-1'
 import { chapter1Dialogues } from '~/data/chapters/chapter-1/dialogues'
 import { chapter1Missions } from '~/data/chapters/chapter-1/missions'
+import { chapter2 } from '~/data/chapters/chapter-2'
+import { chapter2Dialogues } from '~/data/chapters/chapter-2/dialogues'
+import { chapter2Missions } from '~/data/chapters/chapter-2/missions'
+import { chapter3 } from '~/data/chapters/chapter-3'
+import { chapter3Dialogues } from '~/data/chapters/chapter-3/dialogues'
+import { chapter3Missions } from '~/data/chapters/chapter-3/missions'
 import type { MissionConfig } from '~/shared/types/mission'
+import type { DialoguePool } from '~/shared/types/character'
 
 import SidewalkCleanup from '~/components/chapter/chapter-1/SidewalkCleanup.vue'
 import HeatDetector from '~/components/chapter/chapter-1/HeatDetector.vue'
 import ShadePlanter from '~/components/chapter/chapter-1/ShadePlanter.vue'
 import LeakFixer from '~/components/chapter/chapter-1/LeakFixer.vue'
 import SpaceRestorer from '~/components/chapter/chapter-1/SpaceRestorer.vue'
+
+import PathClear from '~/components/chapter/chapter-2/PathClear.vue'
+import SoilMemory from '~/components/chapter/chapter-2/SoilMemory.vue'
+import WaterDragDrop from '~/components/chapter/chapter-2/WaterDragDrop.vue'
+import WildlifeMemory from '~/components/chapter/chapter-2/WildlifeMemory.vue'
+import ParkDragRestore from '~/components/chapter/chapter-2/ParkDragRestore.vue'
+
+// Phaser-based minigames (async to keep Phaser out of initial bundle)
+const USE_PHASER = true
+// Chapter 1
+const SidewalkCleanupPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-1/SidewalkCleanupPhaser.vue'))
+const HeatDetectorPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-1/HeatDetectorPhaser.vue'))
+const ShadePlanterPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-1/ShadePlanterPhaser.vue'))
+const LeakFixerPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-1/LeakFixerPhaser.vue'))
+const SpaceRestorerPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-1/SpaceRestorerPhaser.vue'))
+// Chapter 2
+const PathClearPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-2/PathClearPhaser.vue'))
+const SoilMemoryPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-2/SoilMemoryPhaser.vue'))
+const WaterDragDropPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-2/WaterDragDropPhaser.vue'))
+const WildlifeMemoryPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-2/WildlifeMemoryPhaser.vue'))
+const ParkDragRestorePhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-2/ParkDragRestorePhaser.vue'))
+// Chapter 3
+const FloodDragClearPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-3/FloodDragClearPhaser.vue'))
+const WetlandMemoryPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-3/WetlandMemoryPhaser.vue'))
+const PipeDragFitPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-3/PipeDragFitPhaser.vue'))
+
+import FloodDragClear from '~/components/chapter/chapter-3/FloodDragClear.vue'
+import WetlandMemory from '~/components/chapter/chapter-3/WetlandMemory.vue'
+import PipeDragFit from '~/components/chapter/chapter-3/PipeDragFit.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -281,7 +309,22 @@ const transformStep = ref(0)
 // Chapter data
 const chapter = computed(() => {
   if (route.params.chapterId === 'chapter-1') return chapter1
+  if (route.params.chapterId === 'chapter-2') return chapter2
+  if (route.params.chapterId === 'chapter-3') return chapter3
   return null
+})
+
+// Dialogue and mission lookups per chapter
+const chapterDialogues = computed<Record<string, DialoguePool>>(() => {
+  if (route.params.chapterId === 'chapter-2') return chapter2Dialogues
+  if (route.params.chapterId === 'chapter-3') return chapter3Dialogues
+  return chapter1Dialogues
+})
+
+const chapterMissions = computed<MissionConfig[]>(() => {
+  if (route.params.chapterId === 'chapter-2') return chapter2Missions
+  if (route.params.chapterId === 'chapter-3') return chapter3Missions
+  return chapter1Missions
 })
 
 const currentScene = computed(() => {
@@ -299,15 +342,26 @@ const showHud = computed(() => {
 const currentMissionConfig = computed<MissionConfig | null>(() => {
   const missionId = currentScene.value?.missionId
   if (!missionId) return null
-  return chapter1Missions.find(m => m.id === missionId) ?? null
+  return chapterMissions.value.find(m => m.id === missionId) ?? null
 })
 
 const missionComponentMap: Record<string, any> = {
-  'mission-1-clean': SidewalkCleanup,
-  'mission-2-heat': HeatDetector,
-  'mission-3-plant': ShadePlanter,
-  'mission-4-leak': LeakFixer,
-  'mission-5-restore': SpaceRestorer,
+  // Chapter 1
+  'mission-1-clean': USE_PHASER ? SidewalkCleanupPhaser : SidewalkCleanup,
+  'mission-2-heat': USE_PHASER ? HeatDetectorPhaser : HeatDetector,
+  'mission-3-plant': USE_PHASER ? ShadePlanterPhaser : ShadePlanter,
+  'mission-4-leak': USE_PHASER ? LeakFixerPhaser : LeakFixer,
+  'mission-5-restore': USE_PHASER ? SpaceRestorerPhaser : SpaceRestorer,
+  // Chapter 2
+  'mission-1-paths': USE_PHASER ? PathClearPhaser : PathClear,
+  'mission-2-soil': USE_PHASER ? SoilMemoryPhaser : SoilMemory,
+  'mission-3-water': USE_PHASER ? WaterDragDropPhaser : WaterDragDrop,
+  'mission-4-life': USE_PHASER ? WildlifeMemoryPhaser : WildlifeMemory,
+  'mission-5-reactivate': USE_PHASER ? ParkDragRestorePhaser : ParkDragRestore,
+  // Chapter 3
+  'mission-1-waste': USE_PHASER ? FloodDragClearPhaser : FloodDragClear,
+  'mission-2-wetland': USE_PHASER ? WetlandMemoryPhaser : WetlandMemory,
+  'mission-3-repair': USE_PHASER ? PipeDragFitPhaser : PipeDragFit,
 }
 
 const currentMissionComponent = computed(() => {
@@ -327,13 +381,28 @@ interface ObservationSpot {
   found: boolean
 }
 
-const observationSpots = ref<ObservationSpot[]>([
+const chapter1Spots: ObservationSpot[] = [
   { id: 'obs-trash', label: 'Basura', emoji: '🛍️', dialogueId: 'observation-trash', x: 20, y: 50, found: false },
   { id: 'obs-notrees', label: 'Sin árboles', emoji: '🌵', dialogueId: 'observation-notrees', x: 55, y: 30, found: false },
   { id: 'obs-bench', label: 'Banca caliente', emoji: '🪑', dialogueId: 'observation-bench', x: 40, y: 60, found: false },
   { id: 'obs-leak', label: 'Fuga', emoji: '💧', dialogueId: 'observation-leak', x: 75, y: 45, found: false },
   { id: 'obs-pavement', label: 'Pavimento', emoji: '🟫', dialogueId: 'observation-pavement', x: 30, y: 75, found: false },
-])
+]
+
+const chapter2Spots: ObservationSpot[] = [
+  { id: 'obs-trash', label: 'Basura en sendero', emoji: '🛍️', dialogueId: 'observation-trash', x: 20, y: 50, found: false },
+  { id: 'obs-swing', label: 'Columpio roto', emoji: '🎠', dialogueId: 'observation-swing', x: 55, y: 30, found: false },
+  { id: 'obs-planter', label: 'Jardinera seca', emoji: '🪴', dialogueId: 'observation-planter', x: 72, y: 55, found: false },
+  { id: 'obs-bolillo', label: 'Bolillo escondido', emoji: '🐕', dialogueId: 'observation-bolillo', x: 80, y: 35, found: false },
+  { id: 'obs-bench', label: 'Banca dañada', emoji: '🪑', dialogueId: 'observation-bench', x: 30, y: 70, found: false },
+]
+
+const defaultSpots = computed(() => {
+  if (route.params.chapterId === 'chapter-2') return chapter2Spots
+  return chapter1Spots
+})
+
+const observationSpots = ref<ObservationSpot[]>(defaultSpots.value.map(s => ({ ...s })))
 
 const observedCount = computed(() => observationSpots.value.filter(s => s.found).length)
 
@@ -341,12 +410,12 @@ function tapObservation(spot: ObservationSpot) {
   if (spot.found || dialogueStore.isDialogueActive) return
   spot.found = true
 
-  const pool = chapter1Dialogues[spot.dialogueId]
+  const pool = chapterDialogues.value[spot.dialogueId]
   if (pool) {
     dialogueStore.startDialogue(pool.lines, () => {
       // After last spot, show completion dialogue then enable button
       if (observedCount.value >= 5) {
-        const completePool = chapter1Dialogues['observation-complete']
+        const completePool = chapterDialogues.value['observation-complete']
         if (completePool) {
           dialogueStore.startDialogue(completePool.lines, () => {
             sceneReady.value = true
@@ -369,7 +438,7 @@ function startSceneDialogue() {
     missionPhase.value = 'intro'
     const mission = currentMissionConfig.value
     if (mission) {
-      const pool = chapter1Dialogues[mission.introDialogueId]
+      const pool = chapterDialogues.value[mission.introDialogueId]
       if (pool) {
         dialogueStore.startDialogue(pool.lines, () => {
           sceneReady.value = true
@@ -404,12 +473,12 @@ function startSceneDialogue() {
   }
 
   if (scene.type === 'exploration') {
-    observationSpots.value.forEach(s => { s.found = false })
+    observationSpots.value = defaultSpots.value.map(s => ({ ...s }))
   }
 
   if (scene.type === 'hook') {
     if (scene.dialoguePoolId) {
-      const pool = chapter1Dialogues[scene.dialoguePoolId]
+      const pool = chapterDialogues.value[scene.dialoguePoolId]
       if (pool) {
         dialogueStore.startDialogue(pool.lines, () => {
           sceneReady.value = true
@@ -422,7 +491,7 @@ function startSceneDialogue() {
   }
 
   if (scene.dialoguePoolId) {
-    const pool = chapter1Dialogues[scene.dialoguePoolId]
+    const pool = chapterDialogues.value[scene.dialoguePoolId]
     if (pool) {
       dialogueStore.startDialogue(pool.lines, () => {
         sceneReady.value = true
@@ -437,7 +506,7 @@ function startSceneDialogue() {
 function advanceScene() {
   const totalScenes = chapter.value?.scenes.length ?? 0
   if (gameStore.currentSceneIndex >= totalScenes - 1) {
-    goToMenu()
+    goToChapterSelect()
     return
   }
   sceneReady.value = false
@@ -459,7 +528,7 @@ function onMissionComplete() {
   playerStore.completeMission(mission.id)
   playerStore.saveProgress()
 
-  const pool = chapter1Dialogues[mission.successDialogueId]
+  const pool = chapterDialogues.value[mission.successDialogueId]
   if (pool) {
     dialogueStore.startDialogue(pool.lines, () => {
       showReward.value = true
@@ -474,6 +543,26 @@ function onRewardClaimed() {
   advanceScene()
 }
 
+// Ordered chapter list for navigation
+const chapterOrder = ['chapter-1', 'chapter-2', 'chapter-3']
+
+// Next chapter: the one right after current. If current is last, find first incomplete.
+const nextChapterId = computed(() => {
+  const currentId = route.params.chapterId as string
+  const idx = chapterOrder.indexOf(currentId)
+  // If there's a next chapter in order, go there
+  if (idx >= 0 && idx < chapterOrder.length - 1) return chapterOrder[idx + 1]
+  // Last chapter: find first incomplete chapter (wrap around)
+  const firstIncomplete = chapterOrder.find(id => id !== currentId && !playerStore.isChapterComplete(id))
+  return firstIncomplete ?? null
+})
+
+// Label for the hook button — shows target chapter name
+const nextChapterLabel = computed(() => {
+  if (!nextChapterId.value) return ''
+  return chapterMeta[nextChapterId.value]?.title ?? 'Siguiente capítulo'
+})
+
 function goToMenu() {
   showPauseModal.value = false
   playerStore.saveProgress()
@@ -481,15 +570,155 @@ function goToMenu() {
   router.push('/')
 }
 
+function goToChapterSelect() {
+  playerStore.saveProgress()
+  router.push('/capitulos')
+}
+
+function goToNextChapter() {
+  if (!nextChapterId.value) return
+  playerStore.saveProgress()
+  gameStore.setScene(0)
+  router.push(`/chapter/${nextChapterId.value}`)
+}
+
 // Mission icons
 const missionIconMap: Record<string, string> = {
+  // Chapter 1
   'mission-1-clean': '🧹',
   'mission-2-heat': '🌡️',
   'mission-3-plant': '🌳',
   'mission-4-leak': '🔧',
   'mission-5-restore': '🎨',
+  // Chapter 2
+  'mission-1-paths': '🧹',
+  'mission-2-soil': '🌱',
+  'mission-3-water': '💧',
+  'mission-4-life': '🦋',
+  'mission-5-reactivate': '🎨',
+  // Chapter 3
+  'mission-1-waste': '🚧',
+  'mission-2-wetland': '🌿',
+  'mission-3-repair': '🔧',
 }
 const missionIcon = computed(() => missionIconMap[currentScene.value?.missionId ?? ''] ?? '⭐')
+
+// Chapter-specific transformation emojis
+const transformEmojis = computed(() => {
+  if (route.params.chapterId === 'chapter-2') {
+    return {
+      before: [['🍂', '🪴', '🎠'], ['😔', '🐕', '🪑']],
+      after: [['🌳', '🌸', '🎠'], ['🦋', '🐕', '👨‍👩‍👧']],
+    }
+  }
+  if (route.params.chapterId === 'chapter-3') {
+    return {
+      before: [['💧', '🛍️', '🧱'], ['😰', '🪵', '🥤']],
+      after: [['💧', '🌿', '🐸'], ['🪷', '🦆', '😊']],
+    }
+  }
+  return {
+    before: [['🏚️', '🌡️', '🛍️'], ['💧', '😓', '📄']],
+    after: [['🏡', '🌳', '🌸'], ['🦋', '😊', '👨‍👩‍👧']],
+  }
+})
+
+// Chapter-specific summary data
+const summaryData = computed(() => {
+  if (route.params.chapterId === 'chapter-2') {
+    return {
+      heading: 'El Parque Dormido cambió porque:',
+      learnings: [
+        'Se limpiaron senderos y zonas de juego',
+        'Se recuperó el suelo de las jardineras',
+        'Se regó con cuidado y estrategia',
+        'Volvieron flores y pequeños visitantes',
+        'Se reparó para que la comunidad lo use otra vez',
+      ],
+      message: 'Un parque cuidado da sombra, vida, descanso y alegría al barrio.',
+      unlockLabel: 'Zona 3: La Fuga Infinita',
+    }
+  }
+  if (route.params.chapterId === 'chapter-3') {
+    return {
+      heading: 'La Fuga Infinita cambió porque:',
+      learnings: [
+        'Se controló el desperdicio de agua',
+        'Se limpió y protegió una zona húmeda',
+        'Se reparó la fuga principal',
+        'El agua volvió a su camino correcto',
+      ],
+      message: 'El agua debe cuidarse. Y los humedales ayudan a guardarla, filtrarla y darle vida al barrio.',
+      unlockLabel: 'Zona 4: La Ruta de la Basura',
+    }
+  }
+  return {
+    heading: 'La calle cambió porque:',
+    learnings: [
+      'Se limpió la banqueta',
+      'Se detectaron zonas de mayor calor',
+      'Se plantó sombra',
+      'Se arregló una fuga',
+      'Se recuperó el espacio',
+    ],
+    message: 'Más sombra, menos basura y mejor cuidado pueden cambiar cómo se vive una calle.',
+    unlockLabel: 'Zona 2: El Parque Dormido',
+  }
+})
+
+// Hook data: shows preview of the next chapter (or wrap-around target)
+const chapterMeta: Record<string, { icon: string; title: string }> = {
+  'chapter-1': { icon: '🌡️', title: 'La Calle Caliente' },
+  'chapter-2': { icon: '🏞️', title: 'El Parque Dormido' },
+  'chapter-3': { icon: '💧', title: 'La Fuga Infinita' },
+}
+// What chapter comes next in the story (for the hook preview text/icon)
+const storyNextMap: Record<string, string> = {
+  'chapter-1': 'chapter-2',
+  'chapter-2': 'chapter-3',
+  'chapter-3': 'chapter-4', // future
+}
+const hookData = computed(() => {
+  const storyNext = storyNextMap[route.params.chapterId as string]
+  // If story-next exists in meta, show it
+  if (storyNext && chapterMeta[storyNext]) return chapterMeta[storyNext]
+  // If nextChapterId is a wrap-around to an incomplete chapter, show that
+  if (nextChapterId.value && chapterMeta[nextChapterId.value]) return chapterMeta[nextChapterId.value]
+  // Fallback for future chapters
+  const futureHooks: Record<string, { icon: string; title: string }> = {
+    'chapter-3': { icon: '🗑️', title: 'La Ruta de la Basura' },
+  }
+  return futureHooks[route.params.chapterId as string] ?? { icon: '🌿', title: 'Siguiente aventura' }
+})
+
+// Chapter-specific cinematic floating elements
+const cinematicFloats = computed(() => {
+  if (route.params.chapterId === 'chapter-2') {
+    return [
+      { emoji: '🍂', style: 'top: 12%; left: 15%; animation-delay: 0s;', class: '' },
+      { emoji: '🎠', style: 'top: 25%; right: 12%; animation-delay: 1.2s;', class: '' },
+      { emoji: '🪴', style: 'top: 35%; left: 30%; animation-delay: 0.6s;', class: '' },
+      { emoji: '🐕', style: 'top: 20%; left: 55%; animation-delay: 1.8s;', class: '' },
+      { emoji: '🪑', style: 'top: 30%; right: 25%; animation-delay: 2.4s;', class: '' },
+    ]
+  }
+  if (route.params.chapterId === 'chapter-3') {
+    return [
+      { emoji: '💧', style: 'top: 12%; left: 15%; animation-delay: 0s;', class: '' },
+      { emoji: '🛍️', style: 'top: 25%; right: 12%; animation-delay: 1.2s;', class: '' },
+      { emoji: '🧱', style: 'top: 35%; left: 30%; animation-delay: 0.6s;', class: '' },
+      { emoji: '🌊', style: 'top: 20%; left: 55%; animation-delay: 1.8s;', class: '' },
+      { emoji: '🪵', style: 'top: 30%; right: 25%; animation-delay: 2.4s;', class: '' },
+    ]
+  }
+  return [
+    { emoji: '🌡️', style: 'top: 12%; left: 15%; animation-delay: 0s;', class: 'heat-wave' },
+    { emoji: '🛍️', style: 'top: 25%; right: 12%; animation-delay: 1.2s;', class: '' },
+    { emoji: '💧', style: 'top: 35%; left: 30%; animation-delay: 0.6s;', class: '' },
+    { emoji: '📄', style: 'top: 20%; left: 55%; animation-delay: 1.8s;', class: '' },
+    { emoji: '💨', style: 'top: 30%; right: 25%; animation-delay: 2.4s;', class: '' },
+  ]
+})
 
 // Celebration particles
 function particleStyle(i: number) {
@@ -510,7 +739,7 @@ watch(() => gameStore.currentSceneIndex, () => {
 // Start transformation dialogue when step changes
 watch(transformStep, (step) => {
   if (step === 1) {
-    const pool = chapter1Dialogues[currentScene.value?.dialoguePoolId ?? '']
+    const pool = chapterDialogues.value[currentScene.value?.dialoguePoolId ?? '']
     if (pool) {
       sceneReady.value = false
       dialogueStore.startDialogue(pool.lines, () => {

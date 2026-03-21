@@ -190,6 +190,82 @@
       <circle cx="76" cy="52" r="2.5" fill="#fbbf24" />
     </template>
 
+    <!-- BOLILLO v4 — mestizo mexicano real caricaturizado -->
+    <!-- Clave Cheempe: ojos PEQUEÑOS + cara GRANDE + hocico PROMINENTE = magia memeable -->
+    <template v-else-if="characterId === 'bolillo'">
+
+      <!-- EARS: bajas, suaves, más de perro mestizo que de zorro -->
+      <!-- Left ear: semi-erect, base ancha, punta redondeada -->
+      <path d="M18 38 Q10 24 14 14 Q16 10 20 18 L30 34 Z" fill="#a07028" />
+      <path d="M20 36 Q16 28 18 20 L28 34 Z" fill="#c8a060" />
+      <!-- Right ear: más caída, punta dobla — asimetría clara -->
+      <path d="M82 40 Q90 26 86 16 Q84 12 80 20 L70 36 Z" fill="#a07028" />
+      <path d="M80 38 Q84 30 82 22 L72 36 Z" fill="#c8a060" />
+      <!-- Fold en punta derecha (más visible) -->
+      <path d="M86 16 Q83 22 80 18" fill="#886020" />
+
+      <!-- HEAD: elipse única, sin cachetes extra -->
+      <ellipse cx="50" cy="42" rx="33" ry="30" fill="#c89850" />
+
+      <!-- DARK PATCH: mancha ojo derecho -->
+      <ellipse cx="62" cy="39" rx="10" ry="9" fill="#a07028" opacity="0.2" />
+
+      <!-- FOREHEAD: marca clara sutil -->
+      <ellipse cx="48" cy="30" rx="8" ry="5" fill="#d8b878" opacity="0.6" />
+
+      <!-- MUZZLE: grande, ancho, prominente — perruno de verdad -->
+      <ellipse cx="50" cy="56" rx="16" ry="13" fill="#d8b878" />
+      <!-- Muzzle inner (más claro, volumen suave) -->
+      <ellipse cx="50" cy="58" rx="12" ry="8" fill="#e0c488" />
+
+      <!-- NOSE: grande, negro, protagonista -->
+      <ellipse cx="50" cy="51" rx="5.5" ry="4" fill="#1a0e08" />
+      <ellipse cx="48" cy="50" rx="1.5" ry="1" fill="rgba(255,255,255,0.18)" />
+
+      <!-- PHILTRUM: línea nariz→boca — detalle que dice "esto es un perro" -->
+      <line x1="50" y1="55" x2="50" y2="58.5" stroke="#a08050" stroke-width="0.8" stroke-linecap="round" />
+
+      <!-- EYES: pequeños + PÁRPADOS RELLENOS que cubren el ~35% superior -->
+      <!-- El párpado pesado es LA clave del look Cheempe -->
+      <!-- Eye whites -->
+      <ellipse v-if="!isBlinking" cx="38" cy="42" rx="4" ry="4" fill="white" />
+      <ellipse v-if="!isBlinking" cx="62" cy="42" rx="4" ry="4" fill="white" />
+      <!-- FILLED EYELIDS — fur-color shapes that COVER the top of the eye -->
+      <!-- Left eyelid: covers top ~35% -->
+      <ellipse v-if="!isBlinking" cx="38" cy="39.8" rx="5" ry="2.3" fill="#c89850" />
+      <!-- Right eyelid: covers ~40% — SLIGHTLY heavier (asymmetry) -->
+      <ellipse v-if="!isBlinking" cx="62" cy="40" rx="5" ry="2.5" fill="#c89850" />
+      <!-- Lid edge (thin dark line at the bottom edge of the lid) -->
+      <path v-if="!isBlinking" d="M34 41 Q38 39.5 42 41" fill="none" stroke="#8a6420" stroke-width="0.8" stroke-linecap="round" />
+      <path v-if="!isBlinking" d="M58 41.2 Q62 39.8 66 41.2" fill="none" stroke="#8a6420" stroke-width="0.8" stroke-linecap="round" />
+      <!-- Pupils: en la parte VISIBLE (inferior) del ojo — mira ligeramente arriba -->
+      <circle v-if="!isBlinking" :cx="eyeX(38)" :cy="eyeY(43)" r="2.8" fill="#1a0e05" />
+      <circle v-if="!isBlinking" :cx="eyeX(62)" :cy="eyeY(43)" r="2.8" fill="#1a0e05" />
+      <!-- Glint mínimo -->
+      <circle v-if="!isBlinking" :cx="eyeX(38)+0.7" :cy="eyeY(42)" r="0.7" fill="white" />
+      <circle v-if="!isBlinking" :cx="eyeX(62)+0.7" :cy="eyeY(42)" r="0.7" fill="white" />
+      <!-- Blink -->
+      <line v-if="isBlinking" x1="34" y1="42" x2="42" y2="42" stroke="#1a0e05" stroke-width="2" stroke-linecap="round" />
+      <line v-if="isBlinking" x1="58" y1="42" x2="66" y2="42" stroke="#1a0e05" stroke-width="2" stroke-linecap="round" />
+
+      <!-- EYEBROWS: mínimas, sutilmente asimétricas -->
+      <path :d="`M34 ${browY(37.5)} Q37 ${browY(35.5)} 41 ${browY(38.5)}`" fill="none" stroke="#907030" stroke-width="1.2" stroke-linecap="round" />
+      <path :d="`M59 ${browY(39)} Q63 ${browY(36)} 66 ${browY(38)}`" fill="none" stroke="#907030" stroke-width="1.2" stroke-linecap="round" />
+
+      <!-- MOUTH: mínimo, bajo el hocico grande -->
+      <path :d="mouthPathBolillo" :fill="mouthFillBolillo" stroke="#806030" stroke-width="1.2" stroke-linecap="round" />
+
+      <!-- Tongue (happy/excited/proud) -->
+      <g v-if="emotion === 'happy' || emotion === 'excited' || emotion === 'proud'">
+        <ellipse cx="52" cy="66" rx="3" ry="4.5" fill="#e06060" />
+        <ellipse cx="52" cy="65" rx="2" ry="2.8" fill="#f09090" />
+      </g>
+
+      <!-- PELAJE: mínimo, solo textura -->
+      <path d="M24 38 Q26 36 28 38" fill="none" stroke="rgba(130,90,30,0.1)" stroke-width="0.7" />
+      <path d="M72 38 Q74 36 76 38" fill="none" stroke="rgba(130,90,30,0.1)" stroke-width="0.7" />
+    </template>
+
     <!-- FALLBACK -->
     <template v-else>
       <circle cx="50" cy="45" r="30" fill="#9ca3af" />
@@ -307,6 +383,23 @@ const mouthColor = computed(() => {
   if (e === 'happy' || e === 'excited' || e === 'proud') return '#d14444'
   if (props.characterId === 'nube-gris') return '#4b5563'
   return '#8b4513'
+})
+
+// Bolillo mouth — positions adjusted for the prominent muzzle (lower on face)
+const mouthPathBolillo = computed(() => {
+  if (mouthOpen.value) return 'M45 60 Q48 66 50 62 Q52 66 55 60'
+  const e = props.emotion
+  if (e === 'happy' || e === 'excited' || e === 'proud') return 'M44 60 Q47 64 50 62 Q53 64 56 60'
+  if (e === 'sad' || e === 'worried') return 'M46 62 Q50 59 54 62'
+  if (e === 'angry') return 'M46 61 L54 61'
+  if (e === 'surprised') return 'M47 60 Q50 64 53 60'
+  // Neutral — sonrisa suave, amigable. "Aquí ando, todo bien."
+  return 'M44 59 Q47 63 50 61 Q53 63 56 59'
+})
+
+const mouthFillBolillo = computed(() => {
+  if (mouthOpen.value) return '#6b2020'
+  return 'none'
 })
 </script>
 

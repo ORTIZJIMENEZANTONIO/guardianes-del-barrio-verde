@@ -110,7 +110,7 @@ function goToStep3() {
 
 function startGame() {
   gameStore.startGame()
-  router.push('/chapter/chapter-1')
+  router.push('/capitulos')
 }
 
 onMounted(() => {

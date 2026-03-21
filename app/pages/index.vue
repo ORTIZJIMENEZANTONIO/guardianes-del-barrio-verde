@@ -7,9 +7,12 @@
     <!-- Main content -->
     <div class="home-content">
       <div class="logo-area animate-slide-up">
-        <div class="logo-badge">
+        <div class="logo-badge" @click="onLogoTap">
           <span class="logo-icon">🌿</span>
         </div>
+        <Transition name="fade">
+          <p v-if="showEasterEgg" class="easter-egg">by Antonio Ortiz</p>
+        </Transition>
         <h1 class="game-title">Guardianes del<br>Barrio Verde</h1>
         <p class="game-subtitle">Transforma tu colonia. Cuida el agua.<br>Planta vida. Cambia tu barrio.</p>
       </div>
@@ -25,6 +28,10 @@
 
         <GameButton variant="ghost" size="md" @click="showCreditsModal = true">
           Acerca de
+        </GameButton>
+
+        <GameButton v-if="isLocal" variant="ghost" size="md" @click="router.push('/dev')">
+          🛠 Catálogo dev
         </GameButton>
       </div>
 
@@ -64,9 +71,26 @@ const playerStore = usePlayerStore()
 const showCreditsModal = ref(false)
 
 const hasSave = ref(false)
+const showEasterEgg = ref(false)
+const isLocal = ref(false)
+let tapCount = 0
+let tapTimer: ReturnType<typeof setTimeout> | null = null
+
+function onLogoTap() {
+  tapCount++
+  if (tapTimer) clearTimeout(tapTimer)
+  tapTimer = setTimeout(() => { tapCount = 0 }, 1500)
+  if (tapCount >= 5) {
+    showEasterEgg.value = true
+    tapCount = 0
+    setTimeout(() => { showEasterEgg.value = false }, 3000)
+  }
+}
 
 onMounted(() => {
   hasSave.value = playerStore.loadProgress()
+  const host = window.location.hostname
+  isLocal.value = host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168')
 })
 
 function startNewGame() {
@@ -76,14 +100,23 @@ function startNewGame() {
 
 function continueGame() {
   gameStore.continueGame()
-  const lastChapter = playerStore.completedChapters.length > 0
-    ? `chapter-${playerStore.completedChapters.length + 1}`
-    : 'chapter-1'
-  router.push(`/chapter/${lastChapter}`)
+  router.push('/capitulos')
 }
 </script>
 
 <style scoped>
+.easter-egg {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  letter-spacing: 0.05em;
+}
+
+.fade-enter-active { transition: opacity 0.4s ease; }
+.fade-leave-active { transition: opacity 0.6s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
 .home-screen {
   width: 100%;
   height: 100%;

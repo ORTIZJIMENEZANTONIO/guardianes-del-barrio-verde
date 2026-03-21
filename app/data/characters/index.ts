@@ -71,4 +71,14 @@ export const characters: Record<string, Character> = {
     emoji: '⚽',
     voiceStyle: 'Enérgico, directo',
   },
+  bolillo: {
+    id: 'bolillo',
+    name: 'Bolillo',
+    role: 'Perrito del barrio',
+    age: '???',
+    personality: ['desconfiado', 'leal', 'juguetón', 'valiente'],
+    color: '#b8863a',
+    emoji: '🐕',
+    voiceStyle: 'Cálido, sencillo, callejero pero noble. Habla desde su experiencia de vivir en la calle.',
+  },
 }

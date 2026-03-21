@@ -1,0 +1,48 @@
+import type { MissionConfig } from '~/shared/types/mission'
+
+export const chapter3Missions: MissionConfig[] = [
+  {
+    id: 'mission-1-waste',
+    chapterId: 'chapter-3',
+    title: 'Controlar el desperdicio',
+    description: 'Arrastra los obstáculos fuera del agua para despejar el paso',
+    type: 'drag-drop',
+    objectives: [
+      { id: 'control-waste', description: 'Retirar 5 obstáculos', target: 5, current: 0 },
+    ],
+    timeLimit: 90,
+    reward: { points: 20, seeds: 1, badge: 'waste-stop', badgeTitle: 'Alto al Desperdicio' },
+    introDialogueId: 'mission-1-intro',
+    successDialogueId: 'mission-1-success',
+    failureDialogueId: 'mission-1-failure',
+  },
+  {
+    id: 'mission-2-wetland',
+    chapterId: 'chapter-3',
+    title: 'Proteger el humedal',
+    description: 'Encuentra las parejas para aprender sobre el humedal y cómo cuidarlo',
+    type: 'memorama',
+    objectives: [
+      { id: 'wetland-pairs', description: 'Encontrar 4 parejas', target: 4, current: 0 },
+    ],
+    reward: { points: 25, seeds: 2, badge: 'wetland-friend', badgeTitle: 'Amigo del Humedal', visualUnlock: 'wetland-plants' },
+    introDialogueId: 'mission-2-intro',
+    successDialogueId: 'mission-2-success',
+    failureDialogueId: 'mission-2-failure',
+  },
+  {
+    id: 'mission-3-repair',
+    chapterId: 'chapter-3',
+    title: 'Reparar y redirigir el agua',
+    description: 'Arrastra las piezas de tubería al lugar correcto para reparar la fuga',
+    type: 'drag-drop',
+    objectives: [
+      { id: 'repair-pipe', description: 'Colocar 4 piezas correctas', target: 4, current: 0 },
+    ],
+    timeLimit: 90,
+    reward: { points: 30, badge: 'water-guardian', badgeTitle: 'Guardián del Agua' },
+    introDialogueId: 'mission-3-intro',
+    successDialogueId: 'mission-3-success',
+    failureDialogueId: 'mission-3-failure',
+  },
+]

@@ -1,0 +1,76 @@
+import type { MissionConfig } from '~/shared/types/mission'
+
+export const chapter2Missions: MissionConfig[] = [
+  {
+    id: 'mission-1-paths',
+    chapterId: 'chapter-2',
+    title: 'Despejar los senderos',
+    description: 'Arrastra los obstáculos fuera del camino para abrir los senderos del parque',
+    type: 'drag-drop',
+    objectives: [
+      { id: 'clear-paths', description: 'Despejar 6 obstáculos del camino', target: 6, current: 0 },
+    ],
+    timeLimit: 90,
+    reward: { points: 20, seeds: 2, badge: 'clean-path', badgeTitle: 'Ruta Limpia' },
+    introDialogueId: 'mission-1-intro',
+    successDialogueId: 'mission-1-success',
+    failureDialogueId: 'mission-1-failure',
+  },
+  {
+    id: 'mission-2-soil',
+    chapterId: 'chapter-2',
+    title: 'Cuidar el suelo',
+    description: 'Encuentra las parejas para aprender a restaurar el suelo del parque',
+    type: 'memorama',
+    objectives: [
+      { id: 'soil-pairs', description: 'Encontrar 4 parejas', target: 4, current: 0 },
+    ],
+    reward: { points: 20, badge: 'earth-hands', badgeTitle: 'Manos de Tierra' },
+    introDialogueId: 'mission-2-intro',
+    successDialogueId: 'mission-2-success',
+    failureDialogueId: 'mission-2-failure',
+  },
+  {
+    id: 'mission-3-water',
+    chapterId: 'chapter-2',
+    title: 'Regar con estrategia',
+    description: 'Arrastra las gotas de agua a las plantas que las necesitan',
+    type: 'drag-drop',
+    objectives: [
+      { id: 'water-plants', description: 'Regar 4 zonas correctamente', target: 4, current: 0 },
+    ],
+    timeLimit: 90,
+    reward: { points: 25, seeds: 1, badge: 'water-keeper', badgeTitle: 'Guardagotas' },
+    introDialogueId: 'mission-3-intro',
+    successDialogueId: 'mission-3-success',
+    failureDialogueId: 'mission-3-failure',
+  },
+  {
+    id: 'mission-4-life',
+    chapterId: 'chapter-2',
+    title: 'Vida en el parque',
+    description: 'Encuentra las parejas de animales y lo que necesitan para volver al parque',
+    type: 'memorama',
+    objectives: [
+      { id: 'wildlife-pairs', description: 'Encontrar 4 parejas', target: 4, current: 0 },
+    ],
+    reward: { points: 30, seeds: 2, badge: 'park-butterfly', badgeTitle: 'Mariposa del Parque', visualUnlock: 'park-flowers' },
+    introDialogueId: 'mission-4-intro',
+    successDialogueId: 'mission-4-success',
+    failureDialogueId: 'mission-4-failure',
+  },
+  {
+    id: 'mission-5-reactivate',
+    chapterId: 'chapter-2',
+    title: 'Reactivar el parque',
+    description: 'Arrastra cada elemento al lugar correcto para restaurar el parque',
+    type: 'drag-drop',
+    objectives: [
+      { id: 'reactivate', description: 'Colocar 5 elementos', target: 5, current: 0 },
+    ],
+    reward: { points: 30, seeds: 2, badge: 'park-architect', badgeTitle: 'Arquitecto del Parque', visualUnlock: 'reactivated-park' },
+    introDialogueId: 'mission-5-intro',
+    successDialogueId: 'mission-5-success',
+    failureDialogueId: 'mission-5-failure',
+  },
+]

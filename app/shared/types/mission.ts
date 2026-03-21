@@ -1,4 +1,4 @@
-export type MissionType = 'drag-drop' | 'tap-detect' | 'pipe-fit' | 'placement' | 'observation'
+export type MissionType = 'drag-drop' | 'tap-detect' | 'pipe-fit' | 'placement' | 'observation' | 'scenario-choice' | 'memorama'
 
 export type MissionPhase = 'locked' | 'available' | 'intro' | 'playing' | 'success' | 'failure' | 'complete'
 
