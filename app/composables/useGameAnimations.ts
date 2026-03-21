@@ -70,10 +70,11 @@ export function useGameAnimations() {
     )
   }
 
-  /** Pulsing glow effect for interactive elements */
+  /** Pulsing glow effect — uses scale+opacity instead of box-shadow for GPU performance */
   function pulseGlow(el: Element | string) {
     return gsap.to(el, {
-      boxShadow: '0 0 20px rgba(251,191,36,0.6), 0 0 40px rgba(251,191,36,0.2)',
+      scale: 1.06,
+      opacity: 0.85,
       duration: 0.8,
       repeat: -1,
       yoyo: true,

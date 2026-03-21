@@ -2,6 +2,40 @@
   <div class="street" :class="`street--${variant}`">
     <!-- Buildings SVG -->
     <svg class="buildings-svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <!-- Texture patterns -->
+      <defs>
+        <!-- Brick pattern (for walls) -->
+        <pattern id="brick" width="12" height="6" patternUnits="userSpaceOnUse">
+          <rect width="12" height="6" fill="transparent" />
+          <line x1="0" y1="3" x2="12" y2="3" stroke="rgba(0,0,0,0.06)" stroke-width="0.4" />
+          <line x1="6" y1="0" x2="6" y2="3" stroke="rgba(0,0,0,0.06)" stroke-width="0.4" />
+          <line x1="0" y1="0" x2="0" y2="3" stroke="rgba(0,0,0,0.04)" stroke-width="0.3" />
+          <line x1="3" y1="3" x2="3" y2="6" stroke="rgba(0,0,0,0.06)" stroke-width="0.4" />
+          <line x1="9" y1="3" x2="9" y2="6" stroke="rgba(0,0,0,0.06)" stroke-width="0.4" />
+        </pattern>
+        <!-- Concrete / stucco (for modern buildings) -->
+        <pattern id="stucco" width="8" height="8" patternUnits="userSpaceOnUse">
+          <rect width="8" height="8" fill="transparent" />
+          <circle cx="2" cy="3" r="0.4" fill="rgba(0,0,0,0.03)" />
+          <circle cx="6" cy="1" r="0.3" fill="rgba(0,0,0,0.04)" />
+          <circle cx="4" cy="6" r="0.5" fill="rgba(0,0,0,0.03)" />
+          <circle cx="7" cy="5" r="0.3" fill="rgba(0,0,0,0.02)" />
+          <circle cx="1" cy="7" r="0.4" fill="rgba(0,0,0,0.03)" />
+        </pattern>
+        <!-- Tile / teja pattern (for roofs) -->
+        <pattern id="teja" width="10" height="5" patternUnits="userSpaceOnUse">
+          <rect width="10" height="5" fill="transparent" />
+          <path d="M0 5 Q5 2 10 5" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="0.5" />
+          <path d="M5 0 Q10 -3 15 0" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="0.4" />
+        </pattern>
+        <!-- Sidewalk tiles -->
+        <pattern id="baldosa" width="10" height="10" patternUnits="userSpaceOnUse">
+          <rect width="10" height="10" fill="transparent" />
+          <rect x="0" y="0" width="10" height="10" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="0.3" />
+          <line x1="5" y1="0" x2="5" y2="10" stroke="rgba(0,0,0,0.03)" stroke-width="0.2" />
+        </pattern>
+      </defs>
+
       <!-- Far buildings (silhouette) -->
       <g class="far-buildings" opacity="0.2">
         <rect x="10" y="60" width="50" height="140" rx="2" fill="#6b7280" />
@@ -16,7 +50,9 @@
       <!-- Building 1: Casa rosa con techo -->
       <g>
         <rect x="5" y="100" width="65" height="100" :fill="variant === 'clean' ? '#fda4af' : '#e8a0a0'" />
+        <rect x="5" y="100" width="65" height="100" fill="url(#brick)" />
         <polygon x="5" points="5,100 37,75 70,100" :fill="variant === 'clean' ? '#fb7185' : '#d07070'" />
+        <polygon points="5,100 37,75 70,100" fill="url(#teja)" />
         <rect x="5" y="195" width="65" height="5" fill="#a8a29e" />
         <!-- Windows -->
         <rect x="14" y="112" width="11" height="13" rx="1" :fill="windowFill(1)" :stroke="windowStroke" stroke-width="0.8" />
@@ -35,6 +71,7 @@
       <!-- Building 2: Edificio amarillo -->
       <g>
         <rect x="75" y="85" width="55" height="115" :fill="variant === 'clean' ? '#fde047' : '#e8d07a'" />
+        <rect x="75" y="85" width="55" height="115" fill="url(#stucco)" />
         <rect x="75" y="85" width="55" height="6" :fill="variant === 'clean' ? '#eab308' : '#c4a850'" />
         <rect x="75" y="195" width="55" height="5" fill="#a8a29e" />
         <!-- Windows (grid) -->
@@ -50,6 +87,7 @@
       <!-- Building 3: Edificio azul alto -->
       <g>
         <rect x="135" y="55" width="60" height="145" :fill="variant === 'clean' ? '#93c5fd' : '#8da8c4'" />
+        <rect x="135" y="55" width="60" height="145" fill="url(#stucco)" />
         <rect x="135" y="55" width="60" height="5" :fill="variant === 'clean' ? '#3b82f6' : '#6080a0'" />
         <rect x="135" y="195" width="60" height="5" fill="#a8a29e" />
         <!-- Windows grid -->
@@ -63,7 +101,9 @@
       <!-- Building 4: Casa verde baja -->
       <g>
         <rect x="200" y="120" width="55" height="80" :fill="variant === 'clean' ? '#86efac' : '#8ec0a0'" />
+        <rect x="200" y="120" width="55" height="80" fill="url(#brick)" />
         <polygon points="200,120 227,95 255,120" :fill="variant === 'clean' ? '#22c55e' : '#5a9070'" />
+        <polygon points="200,120 227,95 255,120" fill="url(#teja)" />
         <rect x="200" y="195" width="55" height="5" fill="#a8a29e" />
         <!-- Windows -->
         <rect x="210" y="132" width="12" height="14" rx="1.5" :fill="windowFill(4)" :stroke="windowStroke" stroke-width="0.8" />
@@ -80,6 +120,7 @@
       <!-- Building 5: Edificio naranja -->
       <g>
         <rect x="260" y="90" width="50" height="110" :fill="variant === 'clean' ? '#fdba74' : '#d0a878'" />
+        <rect x="260" y="90" width="50" height="110" fill="url(#brick)" />
         <rect x="260" y="90" width="50" height="5" :fill="variant === 'clean' ? '#f97316' : '#b08050'" />
         <rect x="260" y="195" width="50" height="5" fill="#a8a29e" />
         <!-- Windows -->
@@ -97,7 +138,9 @@
       <!-- Building 6: Casa pequeña morada -->
       <g>
         <rect x="315" y="115" width="45" height="85" :fill="variant === 'clean' ? '#d8b4fe' : '#b8a0c8'" />
+        <rect x="315" y="115" width="45" height="85" fill="url(#stucco)" />
         <polygon points="315,115 337,90 360,115" :fill="variant === 'clean' ? '#a855f7' : '#8868a8'" />
+        <polygon points="315,115 337,90 360,115" fill="url(#teja)" />
         <rect x="315" y="195" width="45" height="5" fill="#a8a29e" />
         <rect x="325" y="130" width="10" height="12" rx="1" :fill="windowFill(5)" :stroke="windowStroke" stroke-width="0.8" />
         <rect x="345" y="130" width="10" height="12" rx="1" :fill="windowFill(1)" :stroke="windowStroke" stroke-width="0.8" />
@@ -107,6 +150,7 @@
 
       <!-- Sidewalk line -->
       <rect x="0" y="195" width="400" height="5" :fill="variant === 'dirty' ? '#b8b5b0' : variant === 'clean' ? '#e7e5e4' : '#d6d3d1'" />
+      <rect x="0" y="195" width="400" height="5" fill="url(#baldosa)" />
 
       <!-- Sidewalk details -->
       <line v-for="i in 15" :key="'sw'+i" :x1="i*28" y1="195" :x2="i*28" y2="200" stroke="rgba(0,0,0,0.06)" stroke-width="0.5" />

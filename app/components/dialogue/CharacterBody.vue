@@ -173,8 +173,7 @@
             'bolillo--idle': !isSpeaking && !bolilloPetted,
             'bolillo--petted': bolilloPetted,
           }"
-          @click="petBolillo"
-          @touchstart.passive="petBolillo"
+          @pointerdown.prevent="petBolillo"
         >
           <!-- Tail -->
           <img :src="bolilloPetted ? bolilloTailUp : bolilloTailSrc" alt="" class="bolillo-part bolillo-tail" :class="{ 'tail--wagging': isSpeaking || bolilloPetted, 'tail--super-wag': bolilloPetted }" />
@@ -268,13 +267,14 @@ const bolilloMouthOpenState = ref(false)
 let bolilloTalkInterval: ReturnType<typeof setInterval> | null = null
 
 watch(() => props.isSpeaking, (speaking) => {
+  // Always clear first to prevent accumulation
+  if (bolilloTalkInterval) { clearInterval(bolilloTalkInterval); bolilloTalkInterval = null }
   if (speaking) {
     bolilloMouthOpenState.value = true
     bolilloTalkInterval = setInterval(() => {
       bolilloMouthOpenState.value = !bolilloMouthOpenState.value
     }, 180)
   } else {
-    if (bolilloTalkInterval) { clearInterval(bolilloTalkInterval); bolilloTalkInterval = null }
     bolilloMouthOpenState.value = false
   }
 }, { immediate: true })
@@ -309,9 +309,15 @@ const bolilloPetCount = ref(0)
 const bolilloPetted = ref(false)
 let bolilloPetTimer: ReturnType<typeof setTimeout> | null = null
 let bolilloPetResetTimer: ReturnType<typeof setTimeout> | null = null
+let lastPetTime = 0
 
 function petBolillo() {
   if (bolilloPetted.value) return
+
+  // Debounce 100ms to prevent double-fire from pointer+touch
+  const now = Date.now()
+  if (now - lastPetTime < 100) return
+  lastPetTime = now
 
   bolilloPetCount.value++
 
@@ -324,6 +330,7 @@ function petBolillo() {
     bolilloPetCount.value = 0
 
     // Return to normal after 3s
+    if (bolilloPetTimer) clearTimeout(bolilloPetTimer)
     bolilloPetTimer = setTimeout(() => {
       bolilloPetted.value = false
     }, 3000)
@@ -429,6 +436,10 @@ const bolilloTailSrc = computed(() => {
   justify-content: center;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .bolillo-base-img {
@@ -448,7 +459,7 @@ const bolilloTailSrc = computed(() => {
 
 /* Eyes: ~47% wide, positioned at ~26% left, ~26% top of base */
 .bolillo-eyes {
-  width: 44%;
+  width: 40%;
   left: 20%;
   top: 29%;
   z-index: 3;

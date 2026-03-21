@@ -770,6 +770,8 @@ onMounted(() => {
 watch(
   () => props.isSpeaking,
   (speaking) => {
+    // Always clear first to prevent accumulation
+    if (talkInterval) { clearInterval(talkInterval); talkInterval = null; }
     if (speaking) {
       mouthOpen.value = true;
       talkInterval = setInterval(() => {

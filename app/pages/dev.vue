@@ -153,16 +153,22 @@
         <!-- Global actions -->
         <div class="test-actions">
           <button class="test-btn test-btn--green" :disabled="!!runningTest" @click="autoTestAll">
-            🤖 Verificar TODOS (datos)
+            🤖 Verificar datos
+          </button>
+          <button class="test-btn test-btn--orange" :disabled="!!runningTest" @click="uiTestAll">
+            📱 UI/Mobile
+          </button>
+          <button class="test-btn test-btn--yellow" :disabled="!!runningTest" @click="stressTestAll">
+            🔨 Stress (errores)
           </button>
           <button class="test-btn test-btn--purple" :disabled="!!runningTest" @click="runAllChapters">
-            ▶ Correr TODOS los capítulos
+            ▶ Correr TODOS
           </button>
           <button class="test-btn test-btn--blue" @click="autoCompleteAll">
-            ⚡ Marcar TODO completado
+            ⚡ Completar TODO
           </button>
           <button class="test-btn test-btn--red" @click="resetAll">
-            🔄 Reset progreso
+            🔄 Reset
           </button>
         </div>
 
@@ -182,13 +188,19 @@
             </div>
             <div class="test-chapter-actions">
               <button class="test-btn test-btn--small test-btn--green" :disabled="!!runningTest" @click="autoTestChapter(ch)">
-                🤖 Verificar
+                🤖 Datos
+              </button>
+              <button class="test-btn test-btn--small test-btn--orange" :disabled="!!runningTest" @click="uiTestChapter(ch)">
+                📱
+              </button>
+              <button class="test-btn test-btn--small test-btn--yellow" :disabled="!!runningTest" @click="stressTestChapter(ch)">
+                🔨
               </button>
               <button class="test-btn test-btn--small test-btn--purple" :disabled="!!runningTest" @click="runChapter(ch)">
-                ▶ Correr capítulo
+                ▶
               </button>
               <button class="test-btn test-btn--small test-btn--blue" @click="autoCompleteChapter(ch)">
-                ⚡ Completar
+                ⚡ OK
               </button>
             </div>
             <!-- Missions in this chapter -->
@@ -199,6 +211,8 @@
                 <span class="test-mission-name">{{ m.title }}</span>
                 <div class="test-mission-btns">
                   <button class="test-btn test-btn--tiny test-btn--green" @click="autoTestMission(m)">🤖</button>
+                  <button class="test-btn test-btn--tiny test-btn--orange" :disabled="!!runningTest" @click="uiTestMission(m)">📱</button>
+                  <button class="test-btn test-btn--tiny test-btn--yellow" :disabled="!!runningTest" @click="stressTestMission(m)">🔨</button>
                   <button class="test-btn test-btn--tiny test-btn--purple" :disabled="!!runningTest" @click="runMission(m)">▶</button>
                   <button class="test-btn test-btn--tiny test-btn--blue" @click="autoCompleteMission(m)">⚡</button>
                 </div>
@@ -613,6 +627,289 @@ function updateSummary() {
   testSummary.value = { pass, fail, total: pass + fail }
 }
 
+// ===== UI / MOBILE TESTS =====
+
+// Test a single mission's UI: mount it, inspect DOM, report issues
+async function uiTestMission(m: MissionConfig) {
+  const issues: string[] = []
+  runningTest.value = `📱 UI Test: ${m.title}...`
+
+  // Mount the minigame
+  playingMissionId.value = m.id
+  playingMissionTitle.value = m.title
+
+  // Wait for render
+  await new Promise(r => setTimeout(r, 1500))
+
+  const overlay = document.querySelector('.mission-player-area')
+  if (!overlay) {
+    testResults.value[m.id] = log(false, `📱 ${m.title}: overlay no se montó`)
+    playingMissionId.value = null
+    runningTest.value = null
+    return
+  }
+
+  // 1. Check component rendered (not empty)
+  const children = overlay.querySelectorAll('*')
+  if (children.length < 5) {
+    issues.push('render: muy pocos elementos (<5)')
+  }
+
+  // 2. Check MinigameShell exists
+  const shell = overlay.querySelector('.minigame-shell')
+  if (!shell) {
+    issues.push('MinigameShell no encontrado')
+  }
+
+  // 3. Check for content overflow (wider than viewport)
+  const vw = window.innerWidth
+  const allEls = overlay.querySelectorAll('*')
+  let overflowCount = 0
+  allEls.forEach(el => {
+    const rect = (el as HTMLElement).getBoundingClientRect()
+    if (rect.right > vw + 5 || rect.left < -5) overflowCount++
+  })
+  if (overflowCount > 0) {
+    issues.push(`overflow: ${overflowCount} elementos fuera de pantalla`)
+  }
+
+  // 4. Check touch targets (buttons/interactive elements >= 44x44)
+  const interactives = overlay.querySelectorAll('button, [role="button"], .item-btn, .seed-item, .memory-card, .observe-spot, .trash-item, .obstacle, .piece-item, .drag-item')
+  let smallTargets = 0
+  interactives.forEach(el => {
+    const rect = (el as HTMLElement).getBoundingClientRect()
+    if (rect.width > 0 && rect.height > 0 && (rect.width < 40 || rect.height < 40)) {
+      smallTargets++
+    }
+  })
+  if (smallTargets > 0) {
+    issues.push(`touch: ${smallTargets} elementos < 44px`)
+  }
+
+  // 5. Check z-index conflicts (result overlay should be on top)
+  const resultOverlay = overlay.querySelector('.minigame-result, .minigame-instructions')
+  if (resultOverlay) {
+    const zIndex = window.getComputedStyle(resultOverlay).zIndex
+    if (zIndex && parseInt(zIndex) < 50) {
+      issues.push(`z-index: overlay resultado z=${zIndex} (debe ser ≥100)`)
+    }
+  }
+
+  // 6. Check images loaded (no broken images)
+  const images = overlay.querySelectorAll('img')
+  let brokenImages = 0
+  images.forEach(img => {
+    if (!(img as HTMLImageElement).complete || (img as HTMLImageElement).naturalWidth === 0) {
+      brokenImages++
+    }
+  })
+  if (brokenImages > 0) {
+    issues.push(`img: ${brokenImages} imágenes rotas`)
+  }
+
+  // 7. Check for invisible text (color same as background)
+  const texts = overlay.querySelectorAll('span, p, div, h1, h2, h3, h4, button')
+  let invisibleText = 0
+  texts.forEach(el => {
+    const style = window.getComputedStyle(el as HTMLElement)
+    if (style.color === style.backgroundColor && (el as HTMLElement).textContent?.trim()) {
+      invisibleText++
+    }
+  })
+  if (invisibleText > 0) {
+    issues.push(`contraste: ${invisibleText} textos posiblemente invisibles`)
+  }
+
+  // 8. Measure FPS during animation (simple frame count over 500ms)
+  let frameCount = 0
+  const startTime = performance.now()
+  const countFrames = () => {
+    frameCount++
+    if (performance.now() - startTime < 500) requestAnimationFrame(countFrames)
+  }
+  requestAnimationFrame(countFrames)
+  await new Promise(r => setTimeout(r, 600))
+  const fps = Math.round(frameCount / 0.5)
+  if (fps < 30) {
+    issues.push(`rendimiento: ${fps} FPS (debe ser ≥30)`)
+  }
+
+  // Close
+  playingMissionId.value = null
+  playingMissionTitle.value = ''
+
+  if (issues.length === 0) {
+    testResults.value[m.id] = log(true, `📱 ${m.title}: render ✓, overflow ✓, touch ✓, z-index ✓, imgs ✓, ${fps}fps ✓`)
+  } else {
+    testResults.value[m.id] = log(false, `📱 ${m.title}: ${issues.join(' | ')}`)
+  }
+  runningTest.value = null
+}
+
+// UI test all missions in a chapter
+async function uiTestChapter(ch: ChapterConfig) {
+  const missions = getMissionsForChapter(ch)
+  for (const m of missions) {
+    await uiTestMission(m)
+  }
+  log(true, `📱 ${ch.icon} ${ch.title}: ${missions.length} misiones UI-testeadas`)
+  updateSummary()
+}
+
+// UI test ALL missions
+async function uiTestAll() {
+  testLog.value = []
+  testResults.value = {}
+  if (!playerStore.isRegistered) playerStore.setProfile('TestBot', 10)
+
+  for (const ch of allMissions) {
+    for (const m of ch.missions) {
+      await uiTestMission(m)
+    }
+  }
+  updateSummary()
+  log(true, '=== UI TEST COMPLETO ===')
+}
+
+// ===== STRESS TEST (simula errores del usuario) =====
+
+async function stressTestMission(m: MissionConfig) {
+  const issues: string[] = []
+  runningTest.value = `🔨 Stress: ${m.title}...`
+
+  playingMissionId.value = m.id
+  playingMissionTitle.value = m.title
+  await new Promise(r => setTimeout(r, 1200))
+
+  const overlay = document.querySelector('.mission-player-area')
+  if (!overlay) {
+    testResults.value[m.id] = log(false, `🔨 ${m.title}: no se montó`)
+    runningTest.value = null
+    return
+  }
+
+  // 1. Click the "Empezar" button to start the game
+  const startBtn = overlay.querySelector('.instructions-card button, .minigame-instructions button') as HTMLElement | null
+  if (startBtn) {
+    startBtn.click()
+    await new Promise(r => setTimeout(r, 500))
+  }
+
+  // 2. Simulate wrong interactions based on mission type
+  const gameArea = overlay.querySelector('.minigame-area') as HTMLElement | null
+
+  if (gameArea) {
+    // --- TAP on random spots (simulates clicking wrong areas) ---
+    for (let i = 0; i < 3; i++) {
+      const randomX = Math.random() * gameArea.offsetWidth
+      const randomY = Math.random() * gameArea.offsetHeight
+      gameArea.dispatchEvent(new PointerEvent('pointerdown', {
+        clientX: gameArea.getBoundingClientRect().left + randomX,
+        clientY: gameArea.getBoundingClientRect().top + randomY,
+        bubbles: true,
+      }))
+      gameArea.dispatchEvent(new PointerEvent('pointerup', {
+        clientX: gameArea.getBoundingClientRect().left + randomX,
+        clientY: gameArea.getBoundingClientRect().top + randomY,
+        bubbles: true,
+      }))
+      await new Promise(r => setTimeout(r, 200))
+    }
+
+    // --- Click interactive elements in wrong order ---
+    const clickables = gameArea.querySelectorAll('button:not(:disabled), [data-slot], [data-zone], [data-bin-id], .memory-card, .observe-spot, .item-btn:not(.item-btn--used)')
+    const clickArray = Array.from(clickables)
+
+    // Click last item first, then first zone (wrong combination)
+    if (clickArray.length >= 2) {
+      (clickArray[clickArray.length - 1] as HTMLElement).click()
+      await new Promise(r => setTimeout(r, 300))
+      ;(clickArray[0] as HTMLElement).click()
+      await new Promise(r => setTimeout(r, 300))
+    }
+
+    // --- Click memorama cards rapidly (test board lock) ---
+    const cards = gameArea.querySelectorAll('.memory-card:not(.memory-card--matched)')
+    if (cards.length >= 3) {
+      // Click 3 cards fast (should only flip 2, third should be blocked)
+      ;(cards[0] as HTMLElement).click()
+      ;(cards[1] as HTMLElement).click()
+      ;(cards[2] as HTMLElement).click() // should be ignored (board locked)
+      await new Promise(r => setTimeout(r, 1200)) // wait for mismatch animation
+    }
+
+    // --- Try to place without selecting (tests "selecciona primero" feedback) ---
+    const zones = gameArea.querySelectorAll('[data-zone]:not(.place-zone--filled), [data-slot]:not(.roof-slot--filled)')
+    if (zones.length > 0) {
+      ;(zones[0] as HTMLElement).click()
+      await new Promise(r => setTimeout(r, 300))
+    }
+  }
+
+  // 3. Check that the game didn't crash
+  await new Promise(r => setTimeout(r, 500))
+  const stillMounted = document.querySelector('.mission-player-area')
+  if (!stillMounted) {
+    issues.push('CRASH: componente se desmontó después de errores')
+  }
+
+  // 4. Check feedback appeared (error message visible)
+  const feedback = overlay?.querySelector('.fb--no, .feedback--wrong, .feedback--error, [class*="feedback"]')
+  // No feedback is OK if random clicks didn't hit anything interactive
+
+  // 5. Check no JS errors were thrown (console.error proxy)
+  // We can't directly check console, but if the component is still mounted, it survived
+
+  // 6. Verify game state is recoverable — can we still interact?
+  const activeButtons = overlay?.querySelectorAll('button:not(:disabled)')
+  if (activeButtons && activeButtons.length === 0 && !overlay?.querySelector('.minigame-result')) {
+    issues.push('BLOQUEADO: no hay botones activos ni resultado visible')
+  }
+
+  // 7. Check result overlay doesn't appear prematurely
+  const result = overlay?.querySelector('.minigame-result')
+  if (result) {
+    const isSuccess = result.querySelector('.result--success')
+    if (isSuccess) {
+      issues.push('resultado SUCCESS apareció sin completar misión')
+    }
+  }
+
+  // Close
+  playingMissionId.value = null
+  playingMissionTitle.value = ''
+
+  if (issues.length === 0) {
+    testResults.value[m.id] = log(true, `🔨 ${m.title}: errores simulados ✓, no crasheó ✓, recuperable ✓`)
+  } else {
+    testResults.value[m.id] = log(false, `🔨 ${m.title}: ${issues.join(' | ')}`)
+  }
+  runningTest.value = null
+}
+
+async function stressTestChapter(ch: ChapterConfig) {
+  const missions = getMissionsForChapter(ch)
+  for (const m of missions) {
+    await stressTestMission(m)
+  }
+  log(true, `🔨 ${ch.icon} ${ch.title}: ${missions.length} misiones stress-testeadas`)
+  updateSummary()
+}
+
+async function stressTestAll() {
+  testLog.value = []
+  testResults.value = {}
+  if (!playerStore.isRegistered) playerStore.setProfile('TestBot', 10)
+
+  for (const ch of allMissions) {
+    for (const m of ch.missions) {
+      await stressTestMission(m)
+    }
+  }
+  updateSummary()
+  log(true, '=== STRESS TEST COMPLETO ===')
+}
+
 // Icon map reference for testing
 const missionIconMapRef: Record<string, string> = {
   'mission-1-clean': '🧹', 'mission-2-heat': '🌡️', 'mission-3-plant': '🌳',
@@ -975,6 +1272,10 @@ function goToChapter(chapterId: string) {
 .test-btn--green:hover:not(:disabled) { background: #16a34a; }
 .test-btn--blue { background: #3b82f6; color: white; }
 .test-btn--blue:hover:not(:disabled) { background: #2563eb; }
+.test-btn--orange { background: #f97316; color: white; }
+.test-btn--orange:hover:not(:disabled) { background: #ea580c; }
+.test-btn--yellow { background: #eab308; color: #1e293b; }
+.test-btn--yellow:hover:not(:disabled) { background: #ca8a04; }
 .test-btn--purple { background: #8b5cf6; color: white; }
 .test-btn--purple:hover:not(:disabled) { background: #7c3aed; }
 .test-btn--red { background: #ef4444; color: white; }

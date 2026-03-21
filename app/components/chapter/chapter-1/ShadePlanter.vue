@@ -119,6 +119,7 @@ let feedbackTimer: ReturnType<typeof setTimeout> | null = null
 const dragging = ref<Seed | null>(null)
 const dragPos = ref({ x: 0, y: 0 })
 const dragStarted = ref(false)
+let rafPending = false
 const hoveredSlot = ref<string | null>(null)
 
 const dragStyle = computed(() => ({
@@ -146,6 +147,10 @@ function onPointerMove(e: PointerEvent) {
   if (!dragging.value) return
   dragStarted.value = true
   dragPos.value = { x: e.clientX, y: e.clientY }
+  if (rafPending) return
+  rafPending = true
+  requestAnimationFrame(() => {
+    rafPending = false
 
   // Detect hovered slot
   const els = document.elementsFromPoint(e.clientX, e.clientY)
@@ -155,6 +160,7 @@ function onPointerMove(e: PointerEvent) {
     if (slotEl) { foundSlot = slotEl.dataset.slot ?? null; break }
   }
   hoveredSlot.value = foundSlot
+  })
 }
 
 function onPointerUp(e: PointerEvent) {

@@ -138,6 +138,7 @@ const dropsRemaining = computed(() => drops.value.filter(d => !d.used).length)
 const dragging = ref<WaterDrop | null>(null)
 const dragPos = ref({ x: 0, y: 0 })
 const dragStarted = ref(false)
+let rafPending = false
 const hoveredPlant = ref<string | null>(null)
 const wellRef = ref<HTMLElement | null>(null)
 const plantsAreaRef = ref<HTMLElement | null>(null)
@@ -164,11 +165,16 @@ function onPointerMove(e: PointerEvent) {
   if (!dragging.value) return
   dragStarted.value = true
   dragPos.value = { x: e.clientX, y: e.clientY }
+  if (rafPending) return
+  rafPending = true
+  requestAnimationFrame(() => {
+    rafPending = false
 
   // Check if hovering over a plant zone
   const el = document.elementFromPoint(e.clientX, e.clientY)
   const plantEl = el?.closest('[data-plant-id]') as HTMLElement | null
   hoveredPlant.value = plantEl?.dataset.plantId ?? null
+  })
 }
 
 function onPointerUp(e: PointerEvent) {

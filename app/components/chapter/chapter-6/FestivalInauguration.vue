@@ -145,6 +145,7 @@ const showResult = ref(false)
 const dragging = ref<DragItem | null>(null)
 const dragPos = ref({ x: 0, y: 0 })
 const dragStarted = ref(false)
+let rafPending = false
 const hoveredZone = ref<string | null>(null)
 
 const dragStyle = computed(() => ({
@@ -183,6 +184,10 @@ function onPointerMove(e: PointerEvent) {
   if (!dragging.value) return
   dragStarted.value = true
   dragPos.value = { x: e.clientX, y: e.clientY }
+  if (rafPending) return
+  rafPending = true
+  requestAnimationFrame(() => {
+    rafPending = false
 
   const els = document.elementsFromPoint(e.clientX, e.clientY)
   let foundZone: string | null = null
@@ -194,6 +199,7 @@ function onPointerMove(e: PointerEvent) {
     }
   }
   hoveredZone.value = foundZone
+  })
 }
 
 function onPointerUp(e: PointerEvent) {

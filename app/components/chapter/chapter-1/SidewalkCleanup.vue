@@ -120,6 +120,7 @@ let feedbackTimer: ReturnType<typeof setTimeout> | null = null
 const dragging = ref<TrashItem | null>(null)
 const dragPos = ref({ x: 0, y: 0 })
 const dragStarted = ref(false)
+let rafPending = false
 const hoveredBin = ref<string | null>(null)
 const trashAreaRef = ref<HTMLElement | null>(null)
 
@@ -151,10 +152,15 @@ function onPointerMove(e: PointerEvent) {
   if (!dragging.value) return
   dragStarted.value = true
   dragPos.value = { x: e.clientX, y: e.clientY }
+  if (rafPending) return
+  rafPending = true
+  requestAnimationFrame(() => {
+    rafPending = false
 
   const el = document.elementFromPoint(e.clientX, e.clientY)
   const binEl = el?.closest('[data-bin-id]') as HTMLElement | null
   hoveredBin.value = binEl?.dataset.binId ?? null
+  })
 }
 
 function onPointerUp(e: PointerEvent) {
