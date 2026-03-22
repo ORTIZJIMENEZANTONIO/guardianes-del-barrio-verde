@@ -11,7 +11,6 @@ export const chapter2: ChapterConfig = {
     { id: 'cinematic', type: 'cinematic', dialoguePoolId: 'cinematic-intro' },
     { id: 'welcome', type: 'dialogue', dialoguePoolId: 'welcome' },
     { id: 'observation', type: 'exploration', dialoguePoolId: 'observation' },
-    { id: 'tutorial', type: 'dialogue', dialoguePoolId: 'tutorial' },
     { id: 'mission-1', type: 'mission', missionId: 'mission-1-paths' },
     { id: 'mission-2', type: 'mission', missionId: 'mission-2-soil' },
     { id: 'mission-3', type: 'mission', missionId: 'mission-3-water' },

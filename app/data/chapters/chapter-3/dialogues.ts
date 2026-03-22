@@ -6,11 +6,8 @@ export const chapter3Dialogues: Record<string, DialoguePool> = {
     id: 'cinematic-intro',
     context: 'Cinemática — calle con fuga enorme, charco, basura flotando, zona húmeda cercana',
     lines: [
-      { id: 'ci-1', speaker: 'timo', emotion: 'worried', text: 'Eso ya no es una fuga pequeña…' },
-      { id: 'ci-2', speaker: 'lila', emotion: 'sad', text: 'Se está desperdiciando muchísima agua.' },
-      { id: 'ci-3', speaker: 'xani', emotion: 'thinking', text: 'Y además está llegando mal a esta zona.', optional: true },
-      { id: 'ci-4', speaker: 'don-tono', emotion: 'sad', text: 'Antes aquí siempre había un rincón húmedo con plantas raritas y pajaritos.' },
-      { id: 'ci-5', speaker: 'nube-gris', emotion: 'mischievous', text: 'Agua tirándose, lodo, basura… qué bonito desastre.' },
+      { id: 'ci-1', speaker: 'nube-gris', emotion: 'mischievous', text: 'Agua tirándose, lodo, basura… qué bonito desastre.' },
+      { id: 'ci-2', speaker: 'lila', emotion: 'sad', text: 'Se está desperdiciando muchísima agua. ¡Hay que actuar ya!' },
     ],
   },
 
@@ -19,14 +16,9 @@ export const chapter3Dialogues: Record<string, DialoguePool> = {
     id: 'discovery',
     context: 'El equipo descubre el humedal urbano, Xani explica',
     lines: [
-      { id: 'd-1', speaker: 'nico', emotion: 'surprised', text: '¿Qué es este lugar? Parece un charco con plantas.' },
-      { id: 'd-2', speaker: 'xani', emotion: 'neutral', text: 'No es solo un charco. Es una zona húmeda que ayuda al agua y a la vida.' },
-      { id: 'd-3', speaker: 'timo', emotion: 'thinking', text: 'Como una esponja natural.' },
-      { id: 'd-4', speaker: 'xani', emotion: 'happy', text: 'Sí. Lugares así pueden retener agua, ayudar a filtrarla y servir de hogar para plantas y animales.' },
-      { id: 'd-5', speaker: 'lila', emotion: 'thinking', text: 'Entonces si la fuga y la basura lo dañan, perdemos más que solo agua.', optional: true },
-      { id: 'd-6', speaker: 'xani', emotion: 'neutral', text: 'Exacto. Un humedal es donde el agua y la tierra se encuentran. Puede guardar agua, filtrarla y dar hogar a muchas formas de vida.' },
+      { id: 'd-1', speaker: 'xani', emotion: 'neutral', text: 'Esa zona húmeda no es un simple charco. Un humedal guarda agua, la filtra y da hogar a plantas y animales.' },
       {
-        id: 'd-7',
+        id: 'd-2',
         speaker: 'lila',
         emotion: 'excited',
         text: '{nombre}, ¿nos ayudas a cuidar el agua y este rincón húmedo?',
@@ -36,6 +28,7 @@ export const chapter3Dialogues: Record<string, DialoguePool> = {
           { id: 'help-3', text: '¡Claro que sí!' },
         ],
       },
+      { id: 'd-3', speaker: 'timo', emotion: 'thinking', text: 'Es como una esponja natural. Si la fuga y la basura lo dañan, perdemos más que solo agua.' },
     ],
   },
 
@@ -54,8 +47,7 @@ export const chapter3Dialogues: Record<string, DialoguePool> = {
     context: 'Éxito misión 1 — charco baja, paso despejado',
     lines: [
       { id: 'm1s-1', speaker: 'lila', emotion: 'happy', text: 'Bien, {nombre}. Ahora ya podemos arreglar lo importante.' },
-      { id: 'm1s-2', speaker: 'xani', emotion: 'happy', text: 'Y el rincón húmedo ya no está recibiendo tanta suciedad.' },
-      { id: 'm1s-3', speaker: 'timo', emotion: 'excited', text: '¡Se ve mucho mejor por aquí!', optional: true },
+      { id: 'm1s-2', speaker: 'xani', emotion: 'happy', text: 'Y el rincón húmedo ya no está recibiendo tanta suciedad.', optional: true },
     ],
   },
   'mission-1-failure': {
@@ -71,10 +63,9 @@ export const chapter3Dialogues: Record<string, DialoguePool> = {
     id: 'mission-2-intro',
     context: 'Intro misión 2 — cuidar el humedal',
     lines: [
-      { id: 'm2i-1', speaker: 'xani', emotion: 'excited', text: '{nombre}, ahora vamos a cuidar esta parte.' },
-      { id: 'm2i-2', speaker: 'nico', emotion: 'surprised', text: '¿De verdad un lugar así ayuda?', optional: true },
-      { id: 'm2i-3', speaker: 'xani', emotion: 'neutral', text: 'Sí. Aunque sea pequeño, puede guardar humedad, ayudar a limpiar el agua y dar vida al barrio.' },
-      { id: 'm2i-4', speaker: 'timo', emotion: 'happy', text: 'En resumen: no es un lodito inútil.', optional: true },
+      { id: 'm2i-1', speaker: 'xani', emotion: 'excited', text: '{nombre}, ahora vamos a cuidar el humedal.' },
+      { id: 'm2i-2', speaker: 'xani', emotion: 'neutral', text: 'Aunque sea pequeño, puede guardar humedad, limpiar el agua y dar vida al barrio.' },
+      { id: 'm2i-3', speaker: 'timo', emotion: 'happy', text: 'En resumen: no es un lodito inútil.', optional: true },
     ],
   },
   'mission-2-success': {
@@ -82,8 +73,7 @@ export const chapter3Dialogues: Record<string, DialoguePool> = {
     context: 'Éxito misión 2 — humedal sano, aves e insectos aparecen',
     lines: [
       { id: 'm2s-1', speaker: 'xani', emotion: 'proud', text: 'Mucho mejor, {nombre}. Un humedal sano ayuda al agua y a la vida.' },
-      { id: 'm2s-2', speaker: 'lila', emotion: 'happy', text: 'Entonces no solo cuidamos una fuga. También protegimos un espacio importante.' },
-      { id: 'm2s-3', speaker: 'nico', emotion: 'excited', text: '¡Mira, ya se ve mejor!', optional: true },
+      { id: 'm2s-2', speaker: 'lila', emotion: 'happy', text: 'No solo cuidamos una fuga. También protegimos un espacio importante.', optional: true },
     ],
   },
   'mission-2-failure': {
@@ -109,9 +99,7 @@ export const chapter3Dialogues: Record<string, DialoguePool> = {
     context: 'Éxito misión 3 — fuga reparada, agua controlada',
     lines: [
       { id: 'm3s-1', speaker: 'timo', emotion: 'proud', text: '¡Listo, {nombre}! Agua bajo control. 💧' },
-      { id: 'm3s-2', speaker: 'xani', emotion: 'happy', text: 'Ahora el agua está donde debe estar.' },
-      { id: 'm3s-3', speaker: 'don-tono', emotion: 'happy', text: 'Y ese rinconcito volvió a verse vivo.', optional: true },
-      { id: 'm3s-4', speaker: 'nube-gris', emotion: 'angry', text: 'Cada vez me dejan menos caos…' },
+      { id: 'm3s-2', speaker: 'xani', emotion: 'happy', text: 'Ahora el agua está donde debe estar.', optional: true },
     ],
   },
   'mission-3-failure': {
@@ -127,13 +115,9 @@ export const chapter3Dialogues: Record<string, DialoguePool> = {
     id: 'chapter-3-ending',
     context: 'Cierre del capítulo 3 — antes y después',
     lines: [
-      { id: 'e-1', speaker: 'lila', emotion: 'proud', text: '¡Lo logramos, {nombre}!' },
-      { id: 'e-2', speaker: 'timo', emotion: 'happy', text: 'Arreglamos la fuga y salvamos agua.' },
-      { id: 'e-3', speaker: 'xani', emotion: 'happy', text: 'Y también cuidamos un pequeño humedal.' },
-      { id: 'e-4', speaker: 'nico', emotion: 'surprised', text: 'Yo pensé que era un charco raro…', optional: true },
-      { id: 'e-5', speaker: 'xani', emotion: 'proud', text: 'Muchos lugares importantes parecen pequeños. Pero ayudan mucho.' },
-      { id: 'e-6', speaker: 'don-tono', emotion: 'happy', text: 'Pues ya aprendimos algo nuevo todos, {nombre}.', optional: true },
-      { id: 'e-7', speaker: 'nube-gris', emotion: 'angry', text: 'Todavía me quedan calles y azoteas…' },
+      { id: 'e-1', speaker: 'lila', emotion: 'proud', text: '¡Lo logramos, {nombre}! Arreglamos la fuga y cuidamos el humedal.' },
+      { id: 'e-2', speaker: 'xani', emotion: 'proud', text: 'Muchos lugares importantes parecen pequeños. Pero ayudan mucho.' },
+      { id: 'e-3', speaker: 'nube-gris', emotion: 'angry', text: 'Todavía me quedan calles y azoteas…' },
     ],
   },
 

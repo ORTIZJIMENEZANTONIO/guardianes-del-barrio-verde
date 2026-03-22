@@ -6,15 +6,8 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
     id: 'cinematic-intro',
     context: 'Cinematica — el barrio transformado, todos los personajes reunidos, ambiente festivo',
     lines: [
-      { id: 'ci-1', speaker: 'lila', emotion: 'proud', text: 'Miren nuestro barrio. Ya no es el mismo.' },
-      { id: 'ci-2', speaker: 'don-tono', emotion: 'happy', text: 'La calle ya no quema, el parque tiene vida, el agua corre por donde debe.' },
-      { id: 'ci-3', speaker: 'xani', emotion: 'happy', text: 'Las plantas crecieron, los animales volvieron. Hasta Bolillo se ve tranquilo.' },
-      { id: 'ci-4', speaker: 'bolillo', emotion: 'happy', text: '*mueve la cola contento*' },
-      { id: 'ci-5', speaker: 'timo', emotion: 'excited', text: 'Oigan, y si hacemos algo para celebrar. Algo grande.' },
-      { id: 'ci-6', speaker: 'vale', emotion: 'excited', text: 'Un festival. Uno donde todo el barrio participe.' },
-      { id: 'ci-7', speaker: 'lila', emotion: 'excited', text: 'El Gran Festival Verde. Para celebrar lo que logramos y seguir aprendiendo juntos.' },
-      { id: 'ci-8', speaker: 'nube-gris', emotion: 'worried', text: 'Un festival... asi nada mas. Seguro sale mal.', optional: true },
-      { id: 'ci-9', speaker: 'nico', emotion: 'excited', text: 'No si lo organizamos bien.' },
+      { id: 'ci-1', speaker: 'nube-gris', emotion: 'worried', text: 'Un festival... asi nada mas. Seguro sale mal.' },
+      { id: 'ci-2', speaker: 'lila', emotion: 'excited', text: 'El barrio ya no es el mismo. Es hora del Gran Festival Verde.' },
     ],
   },
 
@@ -24,15 +17,8 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
     context: 'Todos los personajes se presentan con su aportacion al festival',
     lines: [
       { id: 'w-1', speaker: 'lila', emotion: 'excited', text: '{nombre}, hoy es el dia. Vamos a organizar el primer festival verde del barrio.' },
-      { id: 'w-2', speaker: 'timo', emotion: 'happy', text: 'Yo traje paneles solares portatiles para la energia del evento. Nada de generadores ruidosos.' },
-      { id: 'w-3', speaker: 'xani', emotion: 'proud', text: 'Yo prepare plantas del vivero comunitario. Cada visitante puede llevarse una.' },
-      { id: 'w-4', speaker: 'don-tono', emotion: 'happy', text: 'Yo voy a contar la historia del barrio. Como era antes, como es ahora, gracias a ustedes.' },
-      { id: 'w-5', speaker: 'vale', emotion: 'excited', text: 'Mi puesto tendra agua de frutas en vasos reutilizables. Nada de plastico.' },
-      { id: 'w-6', speaker: 'nico', emotion: 'excited', text: 'Y yo organice juegos al aire libre para los ninos. Futbol, saltar la cuerda, carreras de costales.' },
-      { id: 'w-7', speaker: 'bolillo', emotion: 'happy', text: '*ladra emocionado y da vueltas*', optional: true },
-      { id: 'w-8', speaker: 'xani', emotion: 'happy', text: 'Bolillo tambien esta listo. Ya no se esconde. Este barrio tambien es su hogar.', optional: true },
       {
-        id: 'w-9',
+        id: 'w-2',
         speaker: 'lila',
         emotion: 'excited',
         text: '{nombre}, necesitamos tu ayuda para que todo salga perfecto. Eres quien hizo posible todo esto.',
@@ -42,6 +28,7 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
           { id: 'help-3', text: 'Estoy listo!' },
         ],
       },
+      { id: 'w-3', speaker: 'timo', emotion: 'happy', text: 'Paneles solares, plantas, vasos reutilizables, juegos al aire libre... todo el equipo esta listo.' },
     ],
   },
 
@@ -50,10 +37,9 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
     id: 'mission-1-intro',
     context: 'Intro mision 1 — preparar las estaciones del festival',
     lines: [
-      { id: 'm1i-1', speaker: 'lila', emotion: 'thinking', text: '{nombre}, primero hay que preparar el espacio. Necesitamos 5 estaciones educativas.' },
-      { id: 'm1i-2', speaker: 'timo', emotion: 'excited', text: 'Cada estacion ensena algo sobre sustentabilidad. Elige bien: no todas las opciones sirven.' },
+      { id: 'm1i-1', speaker: 'lila', emotion: 'thinking', text: '{nombre}, necesitamos 5 estaciones educativas. Elige bien: no todas las opciones sirven.' },
+      { id: 'm1i-2', speaker: 'timo', emotion: 'excited', text: 'Cada estacion ensena algo sobre sustentabilidad.' },
       { id: 'm1i-3', speaker: 'nube-gris', emotion: 'mischievous', text: 'Pongan un puesto de comida chatarra. Eso si atrae gente.', optional: true },
-      { id: 'm1i-4', speaker: 'xani', emotion: 'neutral', text: 'Ni hablar. Este festival es para aprender y celebrar, no para contaminar mas.' },
     ],
   },
   'mission-1-success': {
@@ -61,8 +47,7 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
     context: 'Exito mision 1 — estaciones listas',
     lines: [
       { id: 'm1s-1', speaker: 'lila', emotion: 'happy', text: 'Perfecto, {nombre}. Las estaciones estan listas.' },
-      { id: 'm1s-2', speaker: 'timo', emotion: 'proud', text: 'Cada una ensena algo importante. El barrio va a aprender mucho hoy.' },
-      { id: 'm1s-3', speaker: 'vale', emotion: 'excited', text: 'Ya se ve como un festival de verdad!', optional: true },
+      { id: 'm1s-2', speaker: 'timo', emotion: 'proud', text: 'El barrio va a aprender mucho hoy.', optional: true },
     ],
   },
   'mission-1-failure': {
@@ -88,8 +73,7 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
     context: 'Exito mision 2 — vecinos invitados',
     lines: [
       { id: 'm2s-1', speaker: 'lila', emotion: 'proud', text: 'Todos confirmaron, {nombre}. El barrio entero va a estar aqui.' },
-      { id: 'm2s-2', speaker: 'don-tono', emotion: 'happy', text: 'Hace mucho que no veia tanta gente emocionada por algo en el barrio.' },
-      { id: 'm2s-3', speaker: 'bolillo', emotion: 'happy', text: '*mueve la cola al ver tanta gente*', optional: true },
+      { id: 'm2s-2', speaker: 'don-tono', emotion: 'happy', text: 'Hace mucho que no veia tanta gente emocionada por algo en el barrio.', optional: true },
     ],
   },
   'mission-2-failure': {
@@ -105,10 +89,9 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
     id: 'mission-3-intro',
     context: 'Intro mision 3 — problemas inesperados en el festival',
     lines: [
-      { id: 'm3i-1', speaker: 'timo', emotion: 'worried', text: 'Ay no, {nombre}. Surgieron algunos problemas de ultimo momento.' },
-      { id: 'm3i-2', speaker: 'xani', emotion: 'thinking', text: 'Nada que no se pueda resolver con ingenio verde. Cada problema tiene una solucion sustentable.' },
+      { id: 'm3i-1', speaker: 'timo', emotion: 'worried', text: '{nombre}, surgieron problemas de ultimo momento.' },
+      { id: 'm3i-2', speaker: 'lila', emotion: 'neutral', text: 'Cada problema tiene una solucion sustentable. Encuentra las parejas, {nombre}.' },
       { id: 'm3i-3', speaker: 'nube-gris', emotion: 'mischievous', text: 'Ja! Yo sabia que algo iba a salir mal.', optional: true },
-      { id: 'm3i-4', speaker: 'lila', emotion: 'neutral', text: 'No es salir mal. Es resolver con creatividad. Encuentra las parejas, {nombre}.' },
     ],
   },
   'mission-3-success': {
@@ -116,8 +99,7 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
     context: 'Exito mision 3 — problemas resueltos',
     lines: [
       { id: 'm3s-1', speaker: 'timo', emotion: 'proud', text: 'Todos los problemas resueltos, {nombre}. Y con soluciones sustentables!' },
-      { id: 'm3s-2', speaker: 'xani', emotion: 'happy', text: 'Eso es lo que hace un verdadero guardian: no se rinde ante los problemas.' },
-      { id: 'm3s-3', speaker: 'nube-gris', emotion: 'worried', text: 'Hmm... resolvieron todo. Eso no me lo esperaba.', optional: true },
+      { id: 'm3s-2', speaker: 'xani', emotion: 'happy', text: 'Eso es lo que hace un verdadero guardian: no se rinde ante los problemas.', optional: true },
     ],
   },
   'mission-3-failure': {
@@ -134,9 +116,8 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
     context: 'Intro mision 4 — colocar los elementos de inauguracion',
     lines: [
       { id: 'm4i-1', speaker: 'lila', emotion: 'excited', text: '{nombre}, es el momento. Vamos a inaugurar el Gran Festival Verde.' },
-      { id: 'm4i-2', speaker: 'vale', emotion: 'happy', text: 'Todo esta casi listo. Solo faltan los toques finales en la entrada.' },
+      { id: 'm4i-2', speaker: 'nico', emotion: 'excited', text: 'Arrastra cada elemento a su lugar. Ya casi es hora!' },
       { id: 'm4i-3', speaker: 'don-tono', emotion: 'proud', text: 'Que bonito dia. Nunca pense que veria algo asi en nuestro barrio.', optional: true },
-      { id: 'm4i-4', speaker: 'nico', emotion: 'excited', text: 'Arrastra cada elemento a su lugar, {nombre}. Ya casi es hora!' },
     ],
   },
   'mission-4-success': {
@@ -144,10 +125,7 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
     context: 'Exito mision 4 — festival inaugurado',
     lines: [
       { id: 'm4s-1', speaker: 'lila', emotion: 'proud', text: 'El Gran Festival Verde esta oficialmente inaugurado!' },
-      { id: 'm4s-2', speaker: 'vale', emotion: 'excited', text: 'Miren cuanta gente vino. El barrio entero esta aqui.' },
-      { id: 'm4s-3', speaker: 'timo', emotion: 'happy', text: 'Los paneles solares estan funcionando perfecto. Energia limpia para todo el evento.' },
-      { id: 'm4s-4', speaker: 'bolillo', emotion: 'happy', text: '*ladra feliz y corre entre la gente*' },
-      { id: 'm4s-5', speaker: 'nube-gris', emotion: 'sad', text: 'Bueno... admito que se ve... bonito.', optional: true },
+      { id: 'm4s-2', speaker: 'nube-gris', emotion: 'sad', text: 'Bueno... admito que se ve... bonito.', optional: true },
     ],
   },
   'mission-4-failure': {
@@ -163,21 +141,10 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
     id: 'chapter-6-ending',
     context: 'Cierre emocional del capitulo 6 y del juego completo — todos agradecen al jugador',
     lines: [
-      { id: 'e-1', speaker: 'lila', emotion: 'proud', text: '{nombre}... mira lo que logramos.' },
-      { id: 'e-2', speaker: 'don-tono', emotion: 'happy', text: 'Yo vi este barrio nacer. Vi como se fue apagando. Y hoy lo vi renacer gracias a ustedes.' },
-      { id: 'e-3', speaker: 'timo', emotion: 'proud', text: '{nombre}, gracias a ti aprendi que la tecnologia sirve cuando la usas para ayudar a los demas.' },
-      { id: 'e-4', speaker: 'xani', emotion: 'happy', text: 'Tu me ayudaste a cuidar el humedal, las plantas y a Bolillo. La naturaleza te lo agradece, {nombre}.' },
-      { id: 'e-5', speaker: 'bolillo', emotion: 'happy', text: '*mueve la cola feliz*' },
-      { id: 'e-6', speaker: 'nico', emotion: 'excited', text: '{nombre}, contigo aprendi que cuidar el barrio tambien es un deporte de equipo.' },
-      { id: 'e-7', speaker: 'vale', emotion: 'happy', text: 'Mi puesto ahora es cien por ciento sustentable. Eso fue gracias a lo que aprendi contigo, {nombre}.' },
-      { id: 'e-8', speaker: 'nube-gris', emotion: 'sad', text: 'El barrio ya no me necesita... pero tal vez eso esta bien.' },
-      { id: 'e-9', speaker: 'lila', emotion: 'thinking', text: 'Nube Gris, siempre habra problemas. Pero ahora sabemos como enfrentarlos.', optional: true },
-      { id: 'e-10', speaker: 'nube-gris', emotion: 'neutral', text: 'Supongo que... me toca buscar otro barrio. Uno sin guardianes.', optional: true },
-      { id: 'e-11', speaker: 'lila', emotion: 'proud', text: '{nombre}, tu demostraste que una persona puede cambiar todo un barrio.' },
-      { id: 'e-12', speaker: 'don-tono', emotion: 'proud', text: 'No solo lo cambiaste. Lo despertaste. Le devolviste la vida.' },
-      { id: 'e-13', speaker: 'xani', emotion: 'proud', text: 'Y lo mas importante: le ensenaste a la gente que vale la pena cuidar donde vivimos.' },
-      { id: 'e-14', speaker: 'bolillo', emotion: 'happy', text: '*se echa a los pies de {nombre}, tranquilo y feliz*' },
-      { id: 'e-15', speaker: 'lila', emotion: 'excited', text: 'Guardianes del Barrio Verde... para siempre.' },
+      { id: 'e-1', speaker: 'don-tono', emotion: 'proud', text: 'Yo vi este barrio nacer y apagarse. Hoy lo vi renacer gracias a ti, {nombre}.' },
+      { id: 'e-2', speaker: 'nube-gris', emotion: 'sad', text: 'El barrio ya no me necesita... me toca buscar otro. Uno sin guardianes.' },
+      { id: 'e-3', speaker: 'bolillo', emotion: 'happy', text: '*se echa a los pies de {nombre}, tranquilo y feliz*' },
+      { id: 'e-4', speaker: 'lila', emotion: 'excited', text: '{nombre}, tu demostraste que una persona puede cambiar todo un barrio. Guardianes del Barrio Verde... para siempre.' },
     ],
   },
 

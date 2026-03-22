@@ -1,7 +1,7 @@
 <template>
   <div class="street" :class="`street--${variant}`">
     <!-- Buildings SVG -->
-    <svg class="buildings-svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+    <svg class="buildings-svg" viewBox="0 0 400 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <!-- Texture patterns -->
       <defs>
         <!-- Brick pattern (for walls) -->

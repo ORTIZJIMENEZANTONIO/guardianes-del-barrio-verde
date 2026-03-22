@@ -152,7 +152,7 @@ onMounted(() => {
 .chapters-subtitle {
   font-size: 15px;
   font-weight: 600;
-  color: rgba(255,255,255,0.95);
+  color: rgba(255,255,255,0.80);
   text-shadow: 0 1px 8px rgba(0,0,0,0.3);
   margin-top: 6px;
 }

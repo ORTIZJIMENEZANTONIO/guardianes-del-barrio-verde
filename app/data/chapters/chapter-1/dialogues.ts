@@ -119,19 +119,16 @@ export const chapter1Dialogues: Record<string, DialoguePool> = {
     id: 'mission-1-intro',
     context: 'Intro misión 1',
     lines: [
-      { id: 'm1i-1', speaker: 'lila', emotion: 'excited', text: '{nombre}, primero vamos a despejar esta banqueta.' },
-      { id: 'm1i-2', speaker: 'don-tono', emotion: 'sad', text: 'Hace tiempo que nadie le entra a esta parte.', optional: true },
-      { id: 'm1i-3', speaker: 'timo', emotion: 'excited', text: '¡Pues hoy sí!' },
-      { id: 'm1i-4', speaker: 'nube-gris', emotion: 'mischievous', text: '¿De verdad van a recoger todo eso? ¡Qué obsesión con el orden!' },
+      { id: 'm1i-1', speaker: 'lila', emotion: 'excited', text: '{nombre}, vamos a despejar esta banqueta. ¡Arrastra cada residuo al bote correcto!' },
+      { id: 'm1i-2', speaker: 'nube-gris', emotion: 'mischievous', text: '¿De verdad van a recoger todo eso?', optional: true },
     ],
   },
   'mission-1-success': {
     id: 'mission-1-success',
     context: 'Éxito misión 1',
     lines: [
-      { id: 'm1s-1', speaker: 'don-tono', emotion: 'surprised', text: '¡Mira nada más, {nombre}… ya hasta se ve la banqueta!' },
-      { id: 'm1s-2', speaker: 'lila', emotion: 'happy', text: 'Un espacio limpio ya invita a quedarse.' },
-      { id: 'm1s-3', speaker: 'xani', emotion: 'happy', text: 'Y también se cuida más fácil.', optional: true },
+      { id: 'm1s-1', speaker: 'don-tono', emotion: 'surprised', text: '¡Ya hasta se ve la banqueta, {nombre}!' },
+      { id: 'm1s-2', speaker: 'lila', emotion: 'happy', text: 'Un espacio limpio invita a quedarse.' },
     ],
   },
   'mission-1-failure': {
@@ -156,9 +153,7 @@ export const chapter1Dialogues: Record<string, DialoguePool> = {
     id: 'mission-2-success',
     context: 'Éxito misión 2',
     lines: [
-      { id: 'm2s-1', speaker: 'nico', emotion: 'surprised', text: '¡Con razón nadie quiere estar aquí!' },
-      { id: 'm2s-2', speaker: 'xani', emotion: 'happy', text: 'La sombra y las plantas ayudan a enfriar los espacios.' },
-      { id: 'm2s-3', speaker: 'lila', emotion: 'excited', text: '¡Entonces ya sabemos qué hacer, {nombre}!', optional: true },
+      { id: 'm2s-1', speaker: 'xani', emotion: 'happy', text: 'La sombra y las plantas enfrían los espacios. ¡Ya sabemos dónde actuar!' },
     ],
   },
   'mission-2-failure': {
@@ -183,11 +178,8 @@ export const chapter1Dialogues: Record<string, DialoguePool> = {
     id: 'mission-3-success',
     context: 'Éxito misión 3',
     lines: [
-      { id: 'm3s-1', speaker: 'nico', emotion: 'happy', text: '¡Ahora sí se ve mejor!' },
-      { id: 'm3s-2', speaker: 'don-tono', emotion: 'surprised', text: 'Hace años que no veía plantas nuevas por aquí.', optional: true },
-      { id: 'm3s-3', speaker: 'xani', emotion: 'happy', text: 'Tomará tiempo crecer, pero ya empezaron a cambiar la calle, {nombre}.' },
-      { id: 'm3s-4', speaker: 'nube-gris', emotion: 'angry', text: 'Pff… unas plantitas no me preocupan.', optional: true },
-      { id: 'm3s-5', speaker: 'timo', emotion: 'happy', text: 'Creo que una mariposa opina lo contrario. 🦋' },
+      { id: 'm3s-1', speaker: 'xani', emotion: 'happy', text: 'Tomará tiempo crecer, pero ya cambió la calle, {nombre}. 🦋' },
+      { id: 'm3s-2', speaker: 'nube-gris', emotion: 'angry', text: 'Pff… unas plantitas no me preocupan.', optional: true },
     ],
   },
   'mission-3-failure': {
@@ -203,20 +195,17 @@ export const chapter1Dialogues: Record<string, DialoguePool> = {
     id: 'mission-4-intro',
     context: 'Intro misión 4 — sorpresa narrativa',
     lines: [
-      { id: 'm4i-1', speaker: 'timo', emotion: 'surprised', text: '¡¡{nombre}, ESPERA!! ¿Oyes eso? 💧💧💧' },
-      { id: 'm4i-2', speaker: 'lila', emotion: 'worried', text: '¡Una fuga! ¡No estaba en el plan!' },
-      { id: 'm4i-3', speaker: 'nube-gris', emotion: 'mischievous', text: 'Jajaja… ¿creyeron que iba a ser fácil?', optional: true },
-      { id: 'm4i-4', speaker: 'don-tono', emotion: 'sad', text: 'Esa fuga lleva días. Nadie la había arreglado.' },
-      { id: 'm4i-5', speaker: 'timo', emotion: 'excited', text: '¡Pues hoy se acaba! {nombre}, necesito tu ayuda AHORA.' },
+      { id: 'm4i-1', speaker: 'timo', emotion: 'surprised', text: '¡¡{nombre}, ESPERA!! ¿Oyes eso? 💧💧💧 ¡Una fuga!' },
+      { id: 'm4i-2', speaker: 'timo', emotion: 'excited', text: '¡Hay que repararla ya! Coloca las piezas en los huecos.' },
+      { id: 'm4i-3', speaker: 'nube-gris', emotion: 'mischievous', text: '¿Creyeron que iba a ser fácil?', optional: true },
     ],
   },
   'mission-4-success': {
     id: 'mission-4-success',
     context: 'Éxito misión 4',
     lines: [
-      { id: 'm4s-1', speaker: 'timo', emotion: 'happy', text: '¡Listo, {nombre}! Agua salvada. 💧' },
-      { id: 'm4s-2', speaker: 'xani', emotion: 'happy', text: 'Cuidar el agua también ayuda a cuidar el barrio.', optional: true },
-      { id: 'm4s-3', speaker: 'lila', emotion: 'excited', text: 'Nada está aislado. Todo se conecta.' },
+      { id: 'm4s-1', speaker: 'timo', emotion: 'happy', text: '¡Agua salvada, {nombre}! 💧' },
+      { id: 'm4s-2', speaker: 'lila', emotion: 'excited', text: 'Cuidar el agua es cuidar el barrio.', optional: true },
     ],
   },
   'mission-4-failure': {
@@ -232,25 +221,17 @@ export const chapter1Dialogues: Record<string, DialoguePool> = {
     id: 'mission-5-intro',
     context: 'Intro misión 5',
     lines: [
-      { id: 'm5i-1', speaker: 'lila', emotion: 'happy', text: '{nombre}, ya limpiamos, detectamos el calor, plantamos y arreglamos la fuga.' },
-      { id: 'm5i-2', speaker: 'don-tono', emotion: 'thinking', text: 'Pero la calle todavía se siente vacía. Nadie quiere estar aquí.' },
-      { id: 'm5i-3', speaker: 'xani', emotion: 'neutral', text: 'Cada punto de esta calle tiene un problema diferente. Oscuridad, basura, falta de sombra…' },
-      { id: 'm5i-4', speaker: 'timo', emotion: 'excited', text: '¡Y para cada problema hay una solución! Pero hay que pensar cuál va dónde.' },
-      { id: 'm5i-5', speaker: 'lila', emotion: 'excited', text: '{nombre}, observa cada lugar y elige la solución correcta. ¡Ojo con las que no sirven!' },
-      { id: 'm5i-6', speaker: 'nube-gris', emotion: 'mischievous', text: '¿Una banca? ¿Un mural? Eso no cambia nada.', optional: true },
-      { id: 'm5i-7', speaker: 'vale', emotion: 'happy', text: 'Te sorprendería lo que un buen cambio puede hacer en una cuadra, Nube.', optional: true },
+      { id: 'm5i-1', speaker: 'lila', emotion: 'happy', text: '{nombre}, cada punto tiene un problema. Elige la solución correcta para cada uno.' },
+      { id: 'm5i-2', speaker: 'timo', emotion: 'excited', text: '¡Ojo con las que no sirven!' },
+      { id: 'm5i-3', speaker: 'nube-gris', emotion: 'mischievous', text: 'Eso no cambia nada.', optional: true },
     ],
   },
   'mission-5-success': {
     id: 'mission-5-success',
     context: 'Éxito misión 5',
     lines: [
-      { id: 'm5s-1', speaker: 'nico', emotion: 'excited', text: '¡Ahora sí me quedo a jugar!' },
-      { id: 'm5s-2', speaker: 'don-tono', emotion: 'surprised', text: 'Cada solución resolvió algo real. No fue poner cosas por poner.' },
-      { id: 'm5s-3', speaker: 'xani', emotion: 'happy', text: 'Luz donde estaba oscuro, sombra donde quemaba, un lugar para sentarse, para tirar basura…', optional: true },
-      { id: 'm5s-4', speaker: 'vale', emotion: 'happy', text: 'Así hasta dan ganas de caminar más por aquí, {nombre}.' },
-      { id: 'm5s-5', speaker: 'nube-gris', emotion: 'angry', text: 'Esto ya no se siente nada cómodo para mí.' },
-      { id: 'm5s-6', speaker: 'lila', emotion: 'proud', text: 'Un espacio cuidado cambia cómo la gente se siente en su barrio.', optional: true },
+      { id: 'm5s-1', speaker: 'vale', emotion: 'happy', text: '¡Hasta dan ganas de caminar por aquí, {nombre}!' },
+      { id: 'm5s-2', speaker: 'nube-gris', emotion: 'angry', text: 'Esto ya no se siente cómodo para mí.', optional: true },
     ],
   },
   'mission-5-failure': {
@@ -301,13 +282,9 @@ export const chapter1Dialogues: Record<string, DialoguePool> = {
     id: 'chapter-1-ending',
     context: 'Cierre del capítulo 1',
     lines: [
-      { id: 'e-1', speaker: 'lila', emotion: 'proud', text: '¡Lo logramos, {nombre}!' },
-      { id: 'e-2', speaker: 'timo', emotion: 'happy', text: 'Y eso que empezamos con una banqueta hecha un desastre.', optional: true },
-      { id: 'e-3', speaker: 'xani', emotion: 'happy', text: 'Todavía puede mejorar más… pero ya volvió a respirar.' },
-      { id: 'e-4', speaker: 'don-tono', emotion: 'happy', text: 'Hace mucho que esta calle no se sentía así, {nombre}.', optional: true },
-      { id: 'e-5', speaker: 'nico', emotion: 'excited', text: '¡Ahora sí se puede estar aquí!' },
-      { id: 'e-6', speaker: 'nube-gris', emotion: 'angry', text: 'Está bien… ganaron esta parte. Pero el barrio todavía tiene otras zonas descuidadas.' },
-      { id: 'e-7', speaker: 'lila', emotion: 'excited', text: '¡Entonces iremos una por una, {nombre}!' },
+      { id: 'e-1', speaker: 'lila', emotion: 'proud', text: '¡Lo logramos, {nombre}! La calle volvió a respirar.' },
+      { id: 'e-2', speaker: 'nube-gris', emotion: 'angry', text: 'Ganaron esta parte… pero el barrio tiene más zonas descuidadas.' },
+      { id: 'e-3', speaker: 'lila', emotion: 'excited', text: '¡Entonces iremos una por una!' },
     ],
   },
 

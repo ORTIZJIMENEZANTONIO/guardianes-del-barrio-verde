@@ -6,9 +6,8 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
     id: 'cinematic-intro',
     context: 'Cinemática breve — Vale nota basura por todos lados, Nube Gris se burla',
     lines: [
-      { id: 'ci-1', speaker: 'vale', emotion: 'worried', text: 'Mira nada más esta calle... bolsas rotas, botellas, cartón mojado. Todo revuelto.' },
-      { id: 'ci-2', speaker: 'timo', emotion: 'thinking', text: 'Y huele a que nadie ha separado nada en mucho tiempo.' },
-      { id: 'ci-3', speaker: 'nube-gris', emotion: 'mischievous', text: 'Basura por aquí, basura por allá... mi tipo de decoración.' },
+      { id: 'ci-1', speaker: 'nube-gris', emotion: 'mischievous', text: 'Basura por aquí, basura por allá... mi tipo de decoración.' },
+      { id: 'ci-2', speaker: 'vale', emotion: 'worried', text: 'Bolsas rotas, botellas, cartón mojado. Todo revuelto y nadie ha separado nada.' },
     ],
   },
 
@@ -17,12 +16,9 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
     id: 'welcome',
     context: 'Lila invita al jugador, Vale explica el problema, choices',
     lines: [
-      { id: 'w-1', speaker: 'lila', emotion: 'excited', text: '¡{nombre}! Necesitamos tu ayuda. Esta calle tiene un problema serio con la basura.' },
-      { id: 'w-2', speaker: 'vale', emotion: 'sad', text: 'Yo tengo mi tienda aquí al lado. La gente deja bolsas en la banqueta y todo se mezcla: orgánico, plástico, papel...' },
-      { id: 'w-3', speaker: 'vale', emotion: 'thinking', text: 'Cuando la basura se revuelve, ya nadie la puede reciclar. Se va toda al mismo lugar y contamina más.', optional: true },
-      { id: 'w-4', speaker: 'timo', emotion: 'excited', text: '¡Pero si aprendemos a separarla, podemos darle una segunda vida a muchas cosas!' },
+      { id: 'w-1', speaker: 'lila', emotion: 'excited', text: '¡{nombre}! Esta calle tiene un problema serio con la basura.' },
       {
-        id: 'w-5',
+        id: 'w-2',
         speaker: 'lila',
         emotion: 'excited',
         text: '{nombre}, ¿nos ayudas a limpiar esta calle y armar la ruta de la basura?',
@@ -32,7 +28,7 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
           { id: 'join-3', text: '¡Claro que sí!' },
         ],
       },
-      { id: 'w-6', speaker: 'vale', emotion: 'happy', text: '¡Así me gusta, {nombre}! Primero hay que ver qué tan grave está la situación.' },
+      { id: 'w-3', speaker: 'timo', emotion: 'excited', text: 'Si aprendemos a separar la basura, ¡podemos darle una segunda vida a muchas cosas!' },
     ],
   },
 
@@ -127,7 +123,6 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
       { id: 'm1i-1', speaker: 'vale', emotion: 'excited', text: '{nombre}, antes de separar hay que recoger. ¡Toca cada residuo para recolectarlo!' },
       { id: 'm1i-2', speaker: 'timo', emotion: 'happy', text: 'Botellas, bolsas, cartón, cáscaras... todo lo que veas tirado en la calle.' },
       { id: 'm1i-3', speaker: 'nube-gris', emotion: 'mischievous', text: '¿De verdad van a recoger todo eso? ¡Si está perfecto donde está!', optional: true },
-      { id: 'm1i-4', speaker: 'lila', emotion: 'excited', text: '¡Manos a la obra, {nombre}!' },
     ],
   },
   'mission-1-success': {
@@ -135,8 +130,7 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
     context: 'Éxito misión 1',
     lines: [
       { id: 'm1s-1', speaker: 'vale', emotion: 'happy', text: '¡Muy bien, {nombre}! La calle ya se ve diferente.' },
-      { id: 'm1s-2', speaker: 'timo', emotion: 'excited', text: 'Ahora viene lo importante: separar todo esto.' },
-      { id: 'm1s-3', speaker: 'don-tono', emotion: 'surprised', text: 'Qué bonito se ve cuando alguien sí le entra a la limpieza.', optional: true },
+      { id: 'm1s-2', speaker: 'timo', emotion: 'excited', text: 'Ahora viene lo importante: separar todo esto.', optional: true },
     ],
   },
   'mission-1-failure': {
@@ -152,11 +146,9 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
     id: 'mission-2-intro',
     context: 'Intro misión 2 — separar en 4 contenedores',
     lines: [
-      { id: 'm2i-1', speaker: 'vale', emotion: 'thinking', text: '{nombre}, ahora sí: cada residuo tiene su lugar. ¡Nada de mezclar!' },
-      { id: 'm2i-2', speaker: 'timo', emotion: 'excited', text: 'Verde para orgánico, azul para reciclable, amarillo para papel y gris para lo que no se recicla.' },
-      { id: 'm2i-3', speaker: 'vale', emotion: 'happy', text: 'Si lo haces bien, cada material puede tener una segunda vida.', optional: true },
-      { id: 'm2i-4', speaker: 'nube-gris', emotion: 'mischievous', text: '¡Todo a la misma bolsa! ¿Para qué complicarse?' },
-      { id: 'm2i-5', speaker: 'lila', emotion: 'excited', text: 'Porque así funciona el reciclaje, Nube. ¡Arrastra cada cosa a su contenedor, {nombre}!' },
+      { id: 'm2i-1', speaker: 'vale', emotion: 'thinking', text: '{nombre}, cada residuo tiene su lugar. ¡Nada de mezclar!' },
+      { id: 'm2i-2', speaker: 'timo', emotion: 'excited', text: 'Verde para orgánico, azul para reciclable, amarillo para papel y gris para no reciclable. ¡Arrastra cada cosa!' },
+      { id: 'm2i-3', speaker: 'nube-gris', emotion: 'mischievous', text: '¡Todo a la misma bolsa! ¿Para qué complicarse?', optional: true },
     ],
   },
   'mission-2-success': {
@@ -164,9 +156,7 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
     context: 'Éxito misión 2',
     lines: [
       { id: 'm2s-1', speaker: 'vale', emotion: 'proud', text: '¡{nombre}, lo lograste! Cada residuo en su lugar.' },
-      { id: 'm2s-2', speaker: 'timo', emotion: 'happy', text: 'Cuando separas, le das una oportunidad al planeta. Nada de eso se desperdicia.' },
-      { id: 'm2s-3', speaker: 'xani', emotion: 'happy', text: 'Los orgánicos pueden volverse composta, y los reciclables pueden ser algo nuevo.', optional: true },
-      { id: 'm2s-4', speaker: 'nube-gris', emotion: 'angry', text: 'Esto ya no huele a desorden... no me gusta.' },
+      { id: 'm2s-2', speaker: 'timo', emotion: 'happy', text: 'Cuando separas, le das una oportunidad al planeta.', optional: true },
     ],
   },
   'mission-2-failure': {
@@ -192,9 +182,7 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
     context: 'Éxito misión 3',
     lines: [
       { id: 'm3s-1', speaker: 'timo', emotion: 'proud', text: '¡Bien, {nombre}! Detectaste los 4 focos de contaminación.' },
-      { id: 'm3s-2', speaker: 'xani', emotion: 'sad', text: 'Suelo contaminado, coladera tapada, quema de basura y tiradero clandestino. Todo conectado.' },
-      { id: 'm3s-3', speaker: 'vale', emotion: 'thinking', text: 'Si la basura se maneja bien desde el principio, nada de esto pasa.', optional: true },
-      { id: 'm3s-4', speaker: 'lila', emotion: 'excited', text: '¡Ahora sabemos dónde están los problemas, {nombre}! Siguiente paso: la ruta.' },
+      { id: 'm3s-2', speaker: 'vale', emotion: 'thinking', text: 'Si la basura se maneja bien desde el principio, nada de esto pasa.', optional: true },
     ],
   },
   'mission-3-failure': {
@@ -210,20 +198,17 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
     id: 'mission-4-intro',
     context: 'Intro misión 4 — armar las capas de la composta',
     lines: [
-      { id: 'm4i-1', speaker: 'vale', emotion: 'excited', text: '{nombre}, ¿sabías que los restos de comida y hojas se convierten en tierra fértil? ¡Eso es la composta!' },
-      { id: 'm4i-2', speaker: 'timo', emotion: 'thinking', text: 'Una composta tiene capas: residuos orgánicos, hojas secas, tierra, agua y una tapa. El orden importa.' },
-      { id: 'm4i-3', speaker: 'vale', emotion: 'neutral', text: 'Pero ojo: no todo puede ir en la composta. Nada de plástico, carne ni metal.', optional: true },
-      { id: 'm4i-4', speaker: 'lila', emotion: 'excited', text: '¡Arma la composta capa por capa, {nombre}!' },
-      { id: 'm4i-5', speaker: 'nube-gris', emotion: 'mischievous', text: '¿Tierra de basura? ¡Qué asco! Mejor tiren todo al mismo bote.', optional: true },
+      { id: 'm4i-1', speaker: 'vale', emotion: 'excited', text: '{nombre}, los restos de comida y hojas se convierten en tierra fértil. ¡Eso es la composta!' },
+      { id: 'm4i-2', speaker: 'lila', emotion: 'excited', text: '¡Arma la composta capa por capa! Residuos, hojas secas, tierra, agua y tapa.' },
+      { id: 'm4i-3', speaker: 'nube-gris', emotion: 'mischievous', text: '¿Tierra de basura? ¡Qué asco!', optional: true },
     ],
   },
   'mission-4-success': {
     id: 'mission-4-success',
     context: 'Éxito misión 4',
     lines: [
-      { id: 'm4s-1', speaker: 'vale', emotion: 'proud', text: '¡Excelente, {nombre}! La composta tarda 2-3 meses. Cuando está lista, huele a tierra mojada y es el mejor alimento para las plantas.' },
-      { id: 'm4s-2', speaker: 'timo', emotion: 'happy', text: 'Con composta, los residuos orgánicos no van al basurero. ¡Se convierten en nutrientes!' },
-      { id: 'm4s-3', speaker: 'xani', emotion: 'excited', text: 'Las lombrices y los microorganismos hacen el trabajo. ¡La naturaleza recicla sola!', optional: true },
+      { id: 'm4s-1', speaker: 'vale', emotion: 'proud', text: '¡Excelente, {nombre}! En 2-3 meses esa composta será el mejor alimento para las plantas.' },
+      { id: 'm4s-2', speaker: 'timo', emotion: 'happy', text: 'Los residuos orgánicos no van al basurero. ¡Se convierten en nutrientes!', optional: true },
     ],
   },
   'mission-4-failure': {
@@ -239,11 +224,9 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
     id: 'mission-5-intro',
     context: 'Intro misión 5 — parejas de material y producto reciclado',
     lines: [
-      { id: 'm5i-1', speaker: 'timo', emotion: 'excited', text: '¡{nombre}, ahora viene lo mejor! ¿Sabías que la basura puede convertirse en algo nuevo?' },
-      { id: 'm5i-2', speaker: 'vale', emotion: 'happy', text: 'Una botella de plástico puede ser una playera. Una lata puede ser parte de una bicicleta.' },
-      { id: 'm5i-3', speaker: 'timo', emotion: 'thinking', text: 'Encuentra las parejas: cada material con el producto que se puede hacer con él.', optional: true },
-      { id: 'm5i-4', speaker: 'nube-gris', emotion: 'mischievous', text: '¿Basura que se transforma? Eso suena a cuento de hadas.' },
-      { id: 'm5i-5', speaker: 'vale', emotion: 'excited', text: '¡Es ciencia, Nube! ¡Vamos, {nombre}, demuéstrale cómo funciona!' },
+      { id: 'm5i-1', speaker: 'timo', emotion: 'excited', text: '¡{nombre}, la basura puede convertirse en algo nuevo! Botellas en playeras, latas en bicis.' },
+      { id: 'm5i-2', speaker: 'vale', emotion: 'excited', text: '¡Encuentra las parejas: cada material con lo que se puede hacer con él!' },
+      { id: 'm5i-3', speaker: 'nube-gris', emotion: 'mischievous', text: '¿Basura que se transforma? Eso suena a cuento de hadas.', optional: true },
     ],
   },
   'mission-5-success': {
@@ -251,10 +234,7 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
     context: 'Éxito misión 5',
     lines: [
       { id: 'm5s-1', speaker: 'timo', emotion: 'proud', text: '¡{nombre}, lo hiciste! Cada material tiene una segunda vida.' },
-      { id: 'm5s-2', speaker: 'vale', emotion: 'happy', text: 'PET en playeras, cartón en cajas nuevas, latas en bicicletas, vidrio en frascos, orgánicos en composta.' },
-      { id: 'm5s-3', speaker: 'xani', emotion: 'excited', text: 'Cuando separas y reciclas, cierras el ciclo. Nada se desperdicia.', optional: true },
-      { id: 'm5s-4', speaker: 'nube-gris', emotion: 'angry', text: '¡Ahora hasta la basura les sirve! Ya no me queda nada...' },
-      { id: 'm5s-5', speaker: 'lila', emotion: 'proud', text: '¡Eso es porque no era basura, Nube! Eran recursos esperando una segunda oportunidad.' },
+      { id: 'm5s-2', speaker: 'lila', emotion: 'proud', text: 'No era basura, Nube. Eran recursos esperando una segunda oportunidad.', optional: true },
     ],
   },
   'mission-5-failure': {
@@ -271,13 +251,8 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
     context: 'Cierre del capítulo 4 — calle limpia, reciclaje funcionando',
     lines: [
       { id: 'e-1', speaker: 'lila', emotion: 'proud', text: '¡Lo logramos, {nombre}! La ruta de la basura está funcionando.' },
-      { id: 'e-2', speaker: 'vale', emotion: 'happy', text: 'La calle huele diferente. Ya no hay montones de basura en las esquinas.' },
-      { id: 'e-3', speaker: 'timo', emotion: 'excited', text: 'Y lo mejor: ahora sabemos que separar no es difícil. Solo hay que saber dónde va cada cosa.' },
-      { id: 'e-4', speaker: 'xani', emotion: 'happy', text: 'El suelo, el agua y el aire lo agradecen. Menos contaminación, más vida.', optional: true },
-      { id: 'e-5', speaker: 'don-tono', emotion: 'happy', text: 'Yo ya puse mis contenedores en la tienda. Si Vale puede, yo también.', optional: true },
-      { id: 'e-6', speaker: 'vale', emotion: 'proud', text: 'Cada vez que alguien separa su basura, {nombre}, está eligiendo cuidar el barrio.' },
-      { id: 'e-7', speaker: 'nube-gris', emotion: 'angry', text: 'Pfff... todavía me quedan azoteas y festivales.' },
-      { id: 'e-8', speaker: 'lila', emotion: 'excited', text: '¡Pues ahí te alcanzamos, Nube! ¿Verdad, {nombre}?' },
+      { id: 'e-2', speaker: 'vale', emotion: 'proud', text: 'Cada vez que alguien separa su basura, está eligiendo cuidar el barrio.' },
+      { id: 'e-3', speaker: 'nube-gris', emotion: 'angry', text: 'Pfff... todavía me quedan azoteas y festivales.' },
     ],
   },
 

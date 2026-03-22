@@ -278,7 +278,7 @@ function resetGame() {
 
 /* Items tray */
 .items-tray {
-  padding: 10px 12px; background: rgba(255,255,255,0.95);
+  padding: 10px 12px; background: rgba(255,255,255,0.80);
   position: relative; z-index: 10;
   border-top: 3px solid rgba(0,0,0,0.08);
 }

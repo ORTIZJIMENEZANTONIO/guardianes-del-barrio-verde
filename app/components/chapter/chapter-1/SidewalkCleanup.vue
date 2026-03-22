@@ -262,7 +262,7 @@ function resetGame() {
   top: 8px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255,255,255,0.95);
+  background: rgba(255,255,255,0.80);
   padding: 8px 18px;
   border-radius: var(--radius-full);
   font-size: 13px;
@@ -325,7 +325,7 @@ function resetGame() {
   display: flex;
   gap: 6px;
   padding: 10px 6px 8px;
-  background: rgba(255,255,255,0.95);
+  background: rgba(255,255,255,0.80);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   justify-content: center;

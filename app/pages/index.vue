@@ -62,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { useGameStore } from '~/stores/useGameStore'
 import { usePlayerStore } from '~/stores/usePlayerStore'
 
@@ -183,7 +184,7 @@ function continueGame() {
 .game-subtitle {
   font-size: 15px;
   font-weight: 600;
-  color: rgba(255,255,255,0.95);
+  color: rgba(255,255,255,0.80);
   text-shadow: 0 1px 8px rgba(0,0,0,0.3);
   max-width: 340px;
   line-height: 1.5;
