@@ -373,17 +373,19 @@ const dialogueStore = useDialogueStore()
 const showPauseModal = ref(false)
 
 // Infinite scroll loop for exploration
+let isScrollAdjusting = false
 function onExplorationScroll() {
+  if (isScrollAdjusting) return
   const el = explorationScrollRef.value
   if (!el) return
   const panelWidth = el.scrollWidth / 2
-  // If scrolled past panel B start → jump back to same position in panel A
+  if (panelWidth <= 0) return
+
+  // Scrolled past panel B → jump back to equivalent in panel A
   if (el.scrollLeft >= panelWidth) {
+    isScrollAdjusting = true
     el.scrollLeft -= panelWidth
-  }
-  // If scrolled before panel A start → jump forward to same position in panel B
-  if (el.scrollLeft <= 0) {
-    el.scrollLeft += panelWidth
+    requestAnimationFrame(() => { isScrollAdjusting = false })
   }
 }
 const showScrollHint = ref(true)
