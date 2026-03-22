@@ -263,7 +263,7 @@ Patrón: **"Por qué estuvo mal. 💡 Consejo suave."**
 
 **Gesto secreto**: tocar **3 veces cada una de las 4 esquinas** de la pantalla (zonas de 80x80px) **en 6 segundos** desde cualquier página → navega a `/admin`. El orden de las esquinas no importa, solo que las 4 acumulen 3 taps dentro de la ventana de tiempo.
 
-- `/admin` — Login con contraseña → Dashboard de estadísticas. Password hasheada con SHA-256 en `admin.vue` (`ADMIN_HASH`). Para cambiar: `echo -n "nueva-password" | shasum -a 256` y pegar el hash. Default: `barrio-verde-admin`. Sesión en `sessionStorage` (se resetea al cerrar pestaña).
+- `/admin` — **Requiere gesto previo**. Si se accede por URL directa sin gesto, redirige a `/`. Tras el gesto muestra login con contraseña (SHA-256 en `admin.vue`, const `ADMIN_HASH`). Para cambiar: `echo -n "nueva-password" | shasum -a 256` y pegar el hash. Default: `barrio-verde-admin`. Cerrar sesión limpia el flag del gesto y navega a `/` (hay que repetir el gesto para volver a entrar).
 - `/dev` — Catálogo de desarrollo, **solo accesible en localhost/127.0.0.1/192.168.x.x**
 - No hay botón visible ni URL pública para acceder a ninguno
 

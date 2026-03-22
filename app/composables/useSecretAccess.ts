@@ -3,7 +3,10 @@
  * Pattern: tap 3 times in each of the 4 screen corners within 6 seconds.
  * Corner zones are 80x80px from each edge.
  * Order doesn't matter — just need 3 taps per corner within the time window.
+ * Sets a sessionStorage flag so /admin knows the gesture was used.
  */
+
+const GESTURE_KEY = 'guardianes-gesture-ok'
 
 type Corner = 'tl' | 'tr' | 'bl' | 'br'
 
@@ -52,12 +55,26 @@ export function useSecretAccess() {
     if (cornerTaps.tl >= 3 && cornerTaps.tr >= 3 && cornerTaps.bl >= 3 && cornerTaps.br >= 3) {
       resetTaps()
       if (resetTimer) clearTimeout(resetTimer)
+      sessionStorage.setItem(GESTURE_KEY, 'true')
       triggered.value = true
     }
+  }
+
+  /** Check if the gesture was performed this session */
+  function wasGestureUsed(): boolean {
+    if (import.meta.server) return false
+    return sessionStorage.getItem(GESTURE_KEY) === 'true'
+  }
+
+  /** Clear the gesture flag (on logout) */
+  function clearGesture() {
+    sessionStorage.removeItem(GESTURE_KEY)
   }
 
   return {
     triggered,
     handleTap,
+    wasGestureUsed,
+    clearGesture,
   }
 }

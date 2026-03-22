@@ -188,6 +188,7 @@
 
 <script setup lang="ts">
 import { useAnalytics } from '~/composables/useAnalytics'
+import { useSecretAccess } from '~/composables/useSecretAccess'
 import { chapter1 } from '~/data/chapters/chapter-1'
 import { chapter1Missions } from '~/data/chapters/chapter-1/missions'
 import { chapter2 } from '~/data/chapters/chapter-2'
@@ -235,7 +236,9 @@ async function attemptLogin() {
 
 function logout() {
   sessionStorage.removeItem(AUTH_KEY)
-  isAuthenticated.value = false
+  const { clearGesture } = useSecretAccess()
+  clearGesture()
+  router.replace('/')
 }
 
 // --- Dashboard state ---
@@ -310,6 +313,13 @@ async function initDashboard() {
 }
 
 onMounted(async () => {
+  // Block direct URL access — gesture must have been used this session
+  const { wasGestureUsed } = useSecretAccess()
+  if (!wasGestureUsed()) {
+    router.replace('/')
+    return
+  }
+
   // Restore session if already authenticated
   if (sessionStorage.getItem(AUTH_KEY) === 'true') {
     isAuthenticated.value = true
