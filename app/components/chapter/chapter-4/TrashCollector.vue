@@ -14,9 +14,8 @@
       <SceneSky variant="hot" />
       <SceneStreet variant="dirty" />
 
-      <!-- Hint -->
-      <div class="collector-hint">
-        {{ collected > 0 ? `Recolectados: ${collected}/8` : '👆 Toca cada residuo para recogerlo' }}
+      <div class="game-hint">
+        👆 Toca cada basura para recogerla · Recolectados: {{ collected }}/8
       </div>
 
       <!-- Trash items scattered on the scene -->

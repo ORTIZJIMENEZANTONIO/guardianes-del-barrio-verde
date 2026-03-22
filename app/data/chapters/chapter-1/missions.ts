@@ -21,7 +21,7 @@ export const chapter1Missions: MissionConfig[] = [
     id: 'mission-2-heat',
     chapterId: 'chapter-1',
     title: 'Detectar puntos de calor',
-    description: 'Toca las superficies y encuentra las más calientes',
+    description: 'Toca cada zona de la calle para medir su temperatura. Encuentra las 3 más calientes. ¡No todas queman!',
     type: 'tap-detect',
     difficulty: 1,
     objectives: [

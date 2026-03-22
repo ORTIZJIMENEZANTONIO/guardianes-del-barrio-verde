@@ -305,8 +305,6 @@ function resetGame() {
   font-size: 13px; z-index: 50; animation: scaleIn 0.3s ease;
   text-align: center; max-width: 300px; box-shadow: var(--shadow-lg);
 }
-.fb--ok { background: rgba(82,183,136,0.95); color: white; }
-.fb--no { background: rgba(249,65,68,0.95); color: white; }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

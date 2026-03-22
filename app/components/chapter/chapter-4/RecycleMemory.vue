@@ -280,25 +280,7 @@ function resetGame() {
   cursor: default;
 }
 
-.memory-feedback {
-  position: absolute;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: 13px;
-  max-width: 280px;
-  text-align: center;
-  animation: slideUp 0.3s ease;
-  z-index: 5;
-  white-space: nowrap;
-}
-
-.fb--ok { background: rgba(82, 183, 136, 0.95); color: white; }
-.fb--no { background: rgba(249, 65, 68, 0.95); color: white; }
-
+/* feedback handled by .game-feedback */
 @keyframes slideUp {
   from { opacity: 0; transform: translateX(-50%) translateY(10px); }
   to { opacity: 1; transform: translateX(-50%) translateY(0); }

@@ -544,8 +544,6 @@ function resetGame() {
   box-shadow: var(--shadow-lg);
 }
 
-.fb--ok { background: rgba(82, 183, 136, 0.95); color: white; }
-.fb--no { background: rgba(249, 65, 68, 0.95); color: white; }
 
 /* ── Pieces tray ── */
 .pieces-tray {

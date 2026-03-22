@@ -13,6 +13,9 @@
     <div class="invite-game">
       <SceneSky variant="nice" />
       <SceneStreet variant="clean" />
+      <div class="game-hint">
+        👆 Toca a cada vecino para invitarlo · Invitados: {{ neighborsInvited }}/6
+      </div>
       <div class="street-scene">
         <div
           v-for="neighbor in neighbors"
@@ -191,23 +194,7 @@ function resetGame() {
 .counter-label { font-size: 10px; font-weight: 800; color: var(--color-text); }
 .counter-value { font-size: 18px; font-weight: 800; color: #8b5cf6; }
 
-.invite-feedback {
-  position: absolute;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: 13px;
-  max-width: 300px;
-  text-align: center;
-  animation: slideUp 0.3s ease;
-  z-index: 50;
-  background: rgba(139,92,246,0.95);
-  color: white;
-  box-shadow: var(--shadow-lg);
-}
+/* feedback position handled by .game-feedback */
 
 @keyframes celebrateIn {
   0% { transform: scale(0.8); }

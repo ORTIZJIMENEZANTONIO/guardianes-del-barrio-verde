@@ -13,7 +13,9 @@
     <div class="pollution-game">
       <SceneSky variant="hot" />
       <SceneStreet variant="dirty" />
-
+      <div class="game-hint">
+        👆 Toca las zonas sospechosas · Contaminadas: {{ pollutionFound }}/4
+      </div>
       <div class="street-scene">
         <div
           v-for="spot in spots"
@@ -228,20 +230,7 @@ function resetGame() {
 .gauge-value { font-size: 14px; font-weight: 800; color: #f97316; }
 
 /* Feedback */
-.pollution-feedback {
-  position: absolute;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: 14px;
-  max-width: 280px;
-  text-align: center;
-  animation: slideUp 0.3s ease;
-  z-index: 5;
-}
+/* feedback position handled by .game-feedback */
 
 .feedback--bad { background: rgba(249, 115, 22, 0.9); color: white; }
 .feedback--ok { background: rgba(82, 183, 136, 0.9); color: white; }

@@ -87,8 +87,6 @@ function resetGame() {
   font-size: 14px; z-index: 50; animation: scaleIn 0.3s ease;
   text-align: center; max-width: 280px; box-shadow: var(--shadow-lg);
 }
-.fb--ok { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
-.fb--no { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

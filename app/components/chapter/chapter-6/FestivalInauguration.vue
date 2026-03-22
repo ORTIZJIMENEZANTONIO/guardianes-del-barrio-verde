@@ -433,15 +433,7 @@ function resetGame() {
   box-shadow: var(--shadow-lg);
 }
 
-.fb--ok {
-  background: rgba(139,92,246,0.95);
-  color: white;
-}
 
-.fb--no {
-  background: rgba(249,65,68,0.95);
-  color: white;
-}
 
 /* --- Transitions --- */
 .fade-enter-active,

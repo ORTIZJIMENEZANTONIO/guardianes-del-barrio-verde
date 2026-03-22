@@ -21,7 +21,7 @@ export const chapter6Missions: MissionConfig[] = [
     id: 'mission-2-invite',
     chapterId: 'chapter-6',
     title: 'Invitar al barrio',
-    description: 'Encuentra a los vecinos y vecinas del barrio para invitarlos al festival.',
+    description: 'Toca a cada vecino que encuentres para invitarlo al festival. ¡Son 6 en total!',
     type: 'tap-detect',
     difficulty: 1,
     objectives: [

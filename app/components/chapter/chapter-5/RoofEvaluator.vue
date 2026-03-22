@@ -13,6 +13,9 @@
     <div class="eval-game">
       <SceneSky variant="hot" />
       <SceneStreet variant="normal" />
+      <div class="game-hint">
+        👆 Toca cada punto para inspeccionar · Verificadas: {{ conditionsFound }}/4
+      </div>
       <div class="roof-scene">
         <div
           v-for="spot in spots"
@@ -217,20 +220,7 @@ function resetGame() {
 .progress-dot { font-size: 18px; transition: all 0.3s ease; }
 .progress-dot--filled { animation: scaleIn 0.3s ease; }
 
-.eval-feedback {
-  position: absolute;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: 13px;
-  max-width: 300px;
-  text-align: center;
-  animation: slideUp 0.3s ease;
-  z-index: 5;
-}
+/* feedback position handled by .game-feedback */
 
 .feedback--critical { background: rgba(245,158,11,0.95); color: white; }
 .feedback--ok { background: rgba(82,183,136,0.9); color: white; }

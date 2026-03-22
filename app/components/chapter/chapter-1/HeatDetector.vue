@@ -13,6 +13,10 @@
     <div class="heat-game">
       <SceneSky variant="hot" />
       <SceneStreet variant="dirty" />
+      <!-- Hint banner -->
+      <div class="game-hint">
+        👆 Toca cada zona para medir · Calientes: {{ hotSpotsFound }}/3
+      </div>
       <div class="street-scene">
         <div
           v-for="spot in spots"
@@ -234,20 +238,7 @@ function resetGame() {
 
 .gauge-value { font-size: 14px; font-weight: 800; color: var(--color-text); }
 
-.heat-feedback {
-  position: absolute;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: 14px;
-  max-width: 280px;
-  text-align: center;
-  animation: slideUp 0.3s ease;
-  z-index: 5;
-}
+/* feedback position handled by .game-feedback */
 
 .feedback--hot { background: rgba(249,65,68,0.9); color: white; }
 .feedback--cool { background: rgba(82,183,136,0.9); color: white; }

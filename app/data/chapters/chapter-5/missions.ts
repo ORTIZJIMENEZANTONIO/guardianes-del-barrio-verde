@@ -20,7 +20,7 @@ export const chapter5Missions: MissionConfig[] = [
     id: 'mission-1-evaluate',
     chapterId: 'chapter-5',
     title: 'Evaluar la azotea',
-    description: 'Inspecciona la azotea y detecta las 4 condiciones que necesitas verificar antes de empezar.',
+    description: 'Toca cada punto de la azotea para inspeccionarlo. Encuentra las 4 condiciones que hay que verificar. ¡Algunas ya están bien!',
     type: 'tap-detect',
     difficulty: 1,
     objectives: [

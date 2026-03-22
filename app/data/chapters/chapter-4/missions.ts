@@ -5,7 +5,7 @@ export const chapter4Missions: MissionConfig[] = [
     id: 'mission-1-collect',
     chapterId: 'chapter-4',
     title: 'Recolectar basura',
-    description: 'Toca cada residuo tirado en la calle para recolectarlo',
+    description: 'Toca cada basura que veas en la calle para recogerla. Son 8 residuos escondidos. ¡Búscalos todos!',
     type: 'tap-detect',
     difficulty: 1,
     objectives: [
@@ -36,7 +36,7 @@ export const chapter4Missions: MissionConfig[] = [
     id: 'mission-3-pollution',
     chapterId: 'chapter-4',
     title: 'Detectar contaminación',
-    description: 'Explora la calle y encuentra los 4 puntos de contaminación',
+    description: 'Toca las zonas sospechosas de la calle. Algunas están contaminadas y otras están bien. ¡Encuentra las 4 contaminadas!',
     type: 'tap-detect',
     difficulty: 2,
     objectives: [

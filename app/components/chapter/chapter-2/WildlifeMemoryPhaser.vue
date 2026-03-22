@@ -125,16 +125,6 @@ function resetGame() {
   box-shadow: var(--shadow-lg);
 }
 
-.fb--ok {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: white;
-}
-
-.fb--no {
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  color: white;
-}
-
 /* Progress bar */
 .wildlifememory-progress {
   padding: 8px 16px;

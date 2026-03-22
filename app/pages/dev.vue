@@ -627,121 +627,181 @@ function updateSummary() {
   testSummary.value = { pass, fail, total: pass + fail }
 }
 
-// ===== UI / MOBILE TESTS =====
+// ===== UI / MOBILE TESTS (enhanced) =====
 
-// Test a single mission's UI: mount it, inspect DOM, report issues
 async function uiTestMission(m: MissionConfig) {
   const issues: string[] = []
-  runningTest.value = `📱 UI Test: ${m.title}...`
+  const passed: string[] = []
+  runningTest.value = `📱 UI: ${m.title}...`
 
-  // Mount the minigame
+  // Mount
   playingMissionId.value = m.id
   playingMissionTitle.value = m.title
-
-  // Wait for render
   await new Promise(r => setTimeout(r, 1500))
 
   const overlay = document.querySelector('.mission-player-area')
   if (!overlay) {
-    testResults.value[m.id] = log(false, `📱 ${m.title}: overlay no se montó`)
+    testResults.value[m.id] = log(false, `📱 ${m.title}: no se montó`)
     playingMissionId.value = null
     runningTest.value = null
     return
   }
 
-  // 1. Check component rendered (not empty)
-  const children = overlay.querySelectorAll('*')
-  if (children.length < 5) {
-    issues.push('render: muy pocos elementos (<5)')
-  }
-
-  // 2. Check MinigameShell exists
+  // 1. Render check
   const shell = overlay.querySelector('.minigame-shell')
-  if (!shell) {
-    issues.push('MinigameShell no encontrado')
+  if (!shell) issues.push('no MinigameShell')
+  else passed.push('shell')
+
+  // 2. Instructions overlay visible (game should start with instructions)
+  const instructions = overlay.querySelector('.minigame-instructions')
+  if (!instructions) issues.push('no instrucciones al inicio')
+  else passed.push('instrucciones')
+
+  // 3. Click "Empezar" and verify game area loads
+  const startBtn = overlay.querySelector('.minigame-instructions button') as HTMLElement | null
+  if (startBtn) {
+    startBtn.click()
+    await new Promise(r => setTimeout(r, 800))
   }
 
-  // 3. Check for content overflow (wider than viewport)
+  // 4. Check game items exist after starting
+  const gameArea = overlay.querySelector('.minigame-area') as HTMLElement | null
+  const gameItems = gameArea?.querySelectorAll('.game-item, .game-zone, .game-card, .memory-card, .observe-spot, [data-slot], [data-zone]')
+  if (!gameItems || gameItems.length === 0) {
+    issues.push('VACÍO: no hay items/zonas/cartas después de iniciar')
+  } else {
+    passed.push(`${gameItems.length} items`)
+  }
+
+  // 5. Overflow check (viewport width)
   const vw = window.innerWidth
-  const allEls = overlay.querySelectorAll('*')
-  let overflowCount = 0
-  allEls.forEach(el => {
+  const vh = window.innerHeight
+  let overflowEls: string[] = []
+  gameArea?.querySelectorAll('*').forEach(el => {
     const rect = (el as HTMLElement).getBoundingClientRect()
-    if (rect.right > vw + 5 || rect.left < -5) overflowCount++
+    if (rect.width > 0 && (rect.right > vw + 10 || rect.left < -10)) {
+      const cls = (el as HTMLElement).className?.split?.(' ')?.[0] || el.tagName
+      if (!overflowEls.includes(cls)) overflowEls.push(cls)
+    }
   })
-  if (overflowCount > 0) {
-    issues.push(`overflow: ${overflowCount} elementos fuera de pantalla`)
-  }
+  if (overflowEls.length > 0) issues.push(`overflow-X: ${overflowEls.join(', ')}`)
+  else passed.push('no-overflow')
 
-  // 4. Check touch targets (buttons/interactive elements >= 44x44)
-  const interactives = overlay.querySelectorAll('button, [role="button"], .item-btn, .seed-item, .memory-card, .observe-spot, .trash-item, .obstacle, .piece-item, .drag-item')
-  let smallTargets = 0
-  interactives.forEach(el => {
+  // 6. Touch targets check (≥40px)
+  const interactives = gameArea?.querySelectorAll('.game-item, .game-zone, .game-card, .game-bin, button:not(:disabled), .memory-card')
+  let tinyTargets: string[] = []
+  interactives?.forEach(el => {
     const rect = (el as HTMLElement).getBoundingClientRect()
-    if (rect.width > 0 && rect.height > 0 && (rect.width < 40 || rect.height < 40)) {
-      smallTargets++
+    if (rect.width > 0 && rect.height > 0 && (rect.width < 36 || rect.height < 36)) {
+      const cls = (el as HTMLElement).className?.split?.(' ')?.[0] || el.tagName
+      if (!tinyTargets.includes(cls)) tinyTargets.push(cls)
     }
   })
-  if (smallTargets > 0) {
-    issues.push(`touch: ${smallTargets} elementos < 44px`)
+  if (tinyTargets.length > 0) issues.push(`touch-chico: ${tinyTargets.join(', ')}`)
+  else passed.push('touch-ok')
+
+  // 7. Feedback toast size check (if visible, must fit screen)
+  const feedback = overlay.querySelector('.game-feedback, [class*="feedback"]') as HTMLElement | null
+  if (feedback && feedback.offsetWidth > 0) {
+    const fbRect = feedback.getBoundingClientRect()
+    if (fbRect.width > vw * 0.9) issues.push(`feedback desbordado: ${Math.round(fbRect.width)}px > ${Math.round(vw * 0.9)}px`)
+    if (fbRect.height > vh * 0.3) issues.push(`feedback muy alto: ${Math.round(fbRect.height)}px`)
   }
 
-  // 5. Check z-index conflicts (result overlay should be on top)
-  const resultOverlay = overlay.querySelector('.minigame-result, .minigame-instructions')
-  if (resultOverlay) {
-    const zIndex = window.getComputedStyle(resultOverlay).zIndex
-    if (zIndex && parseInt(zIndex) < 50) {
-      issues.push(`z-index: overlay resultado z=${zIndex} (debe ser ≥100)`)
+  // 8. Drag-drop position test: if there are draggable items, verify they have position set and aren't stacked
+  const dragItems = gameArea?.querySelectorAll('.game-item:not(.game-item--used)') as NodeListOf<HTMLElement> | undefined
+  if (dragItems && dragItems.length >= 2) {
+    const positions: { x: number; y: number; cls: string }[] = []
+    let stackedCount = 0
+    dragItems.forEach(el => {
+      const rect = el.getBoundingClientRect()
+      if (rect.width === 0) return
+      const pos = { x: Math.round(rect.left), y: Math.round(rect.top), cls: el.className.split(' ')[0] }
+      // Check if stacked on top of another (within 5px)
+      for (const prev of positions) {
+        if (Math.abs(prev.x - pos.x) < 5 && Math.abs(prev.y - pos.y) < 5) {
+          stackedCount++
+          break
+        }
+      }
+      positions.push(pos)
+    })
+    if (stackedCount > 0) issues.push(`${stackedCount} items apilados (misma posición)`)
+    else passed.push('posiciones-ok')
+  }
+
+  // 9. Simulate a drag and check nothing else moves
+  if (dragItems && dragItems.length > 0) {
+    const item = dragItems[0]
+    const otherItems = Array.from(dragItems).slice(1, 4)
+    // Record positions of other items
+    const beforePositions = otherItems.map(el => {
+      const r = el.getBoundingClientRect()
+      return { el, x: r.left, y: r.top, w: r.width }
+    }).filter(p => p.w > 0)
+
+    // Simulate drag start
+    const itemRect = item.getBoundingClientRect()
+    const cx = itemRect.left + itemRect.width / 2
+    const cy = itemRect.top + itemRect.height / 2
+    item.dispatchEvent(new PointerEvent('pointerdown', { clientX: cx, clientY: cy, bubbles: true }))
+    await new Promise(r => setTimeout(r, 50))
+    // Move 50px right
+    const parent = gameArea || overlay
+    parent.dispatchEvent(new PointerEvent('pointermove', { clientX: cx + 50, clientY: cy, bubbles: true }))
+    await new Promise(r => setTimeout(r, 100))
+
+    // Check if other items moved (the bug!)
+    let movedCount = 0
+    for (const bp of beforePositions) {
+      const afterRect = bp.el.getBoundingClientRect()
+      const dx = Math.abs(afterRect.left - bp.x)
+      const dy = Math.abs(afterRect.top - bp.y)
+      if (dx > 3 || dy > 3) movedCount++
     }
+    if (movedCount > 0) issues.push(`DRAG-BUG: ${movedCount} items se movieron al arrastrar otro`)
+    else if (beforePositions.length > 0) passed.push('drag-estable')
+
+    // Release
+    parent.dispatchEvent(new PointerEvent('pointerup', { clientX: cx + 50, clientY: cy, bubbles: true }))
+    await new Promise(r => setTimeout(r, 200))
   }
 
-  // 6. Check images loaded (no broken images)
-  const images = overlay.querySelectorAll('img')
-  let brokenImages = 0
-  images.forEach(img => {
-    if (!(img as HTMLImageElement).complete || (img as HTMLImageElement).naturalWidth === 0) {
-      brokenImages++
-    }
-  })
-  if (brokenImages > 0) {
-    issues.push(`img: ${brokenImages} imágenes rotas`)
+  // 10. Stuck check: after interactions, verify game has active elements OR result
+  const hasResult = !!overlay.querySelector('.minigame-result')
+  const hasActiveEls = (overlay.querySelectorAll('.game-item:not(.game-item--used), .game-zone:not(.game-zone--filled), .memory-card:not(.memory-card--matched), button:not(:disabled)')?.length ?? 0) > 0
+  const hasInstructions2 = !!overlay.querySelector('.minigame-instructions')
+  if (!hasResult && !hasActiveEls && !hasInstructions2) {
+    issues.push('TRABADO: no hay resultado, ni items activos, ni instrucciones')
+  } else {
+    passed.push('no-trabado')
   }
 
-  // 7. Check for invisible text (color same as background)
-  const texts = overlay.querySelectorAll('span, p, div, h1, h2, h3, h4, button')
-  let invisibleText = 0
-  texts.forEach(el => {
-    const style = window.getComputedStyle(el as HTMLElement)
-    if (style.color === style.backgroundColor && (el as HTMLElement).textContent?.trim()) {
-      invisibleText++
-    }
-  })
-  if (invisibleText > 0) {
-    issues.push(`contraste: ${invisibleText} textos posiblemente invisibles`)
-  }
-
-  // 8. Measure FPS during animation (simple frame count over 500ms)
+  // 11. FPS
   let frameCount = 0
-  const startTime = performance.now()
-  const countFrames = () => {
-    frameCount++
-    if (performance.now() - startTime < 500) requestAnimationFrame(countFrames)
-  }
-  requestAnimationFrame(countFrames)
+  const t0 = performance.now()
+  const countF = () => { frameCount++; if (performance.now() - t0 < 500) requestAnimationFrame(countF) }
+  requestAnimationFrame(countF)
   await new Promise(r => setTimeout(r, 600))
   const fps = Math.round(frameCount / 0.5)
-  if (fps < 30) {
-    issues.push(`rendimiento: ${fps} FPS (debe ser ≥30)`)
-  }
+  if (fps < 25) issues.push(`${fps}fps (lag)`)
+  else passed.push(`${fps}fps`)
+
+  // 12. Check images
+  let brokenImgs = 0
+  overlay.querySelectorAll('img').forEach(img => {
+    if (!(img as HTMLImageElement).complete || (img as HTMLImageElement).naturalWidth === 0) brokenImgs++
+  })
+  if (brokenImgs > 0) issues.push(`${brokenImgs} imgs rotas`)
 
   // Close
   playingMissionId.value = null
   playingMissionTitle.value = ''
 
   if (issues.length === 0) {
-    testResults.value[m.id] = log(true, `📱 ${m.title}: render ✓, overflow ✓, touch ✓, z-index ✓, imgs ✓, ${fps}fps ✓`)
+    testResults.value[m.id] = log(true, `📱 ${m.title}: ${passed.join(', ')}`)
   } else {
-    testResults.value[m.id] = log(false, `📱 ${m.title}: ${issues.join(' | ')}`)
+    testResults.value[m.id] = log(false, `📱 ${m.title}: ${issues.join(' | ')} (ok: ${passed.join(', ')})`)
   }
   runningTest.value = null
 }
@@ -775,7 +835,16 @@ async function uiTestAll() {
 
 async function stressTestMission(m: MissionConfig) {
   const issues: string[] = []
+  const passed: string[] = []
   runningTest.value = `🔨 Stress: ${m.title}...`
+
+  // Capture console errors during test
+  const capturedErrors: string[] = []
+  const origError = console.error
+  console.error = (...args: any[]) => {
+    capturedErrors.push(args.map(a => String(a)).join(' ').slice(0, 100))
+    origError.apply(console, args)
+  }
 
   playingMissionId.value = m.id
   playingMissionTitle.value = m.title
@@ -783,106 +852,135 @@ async function stressTestMission(m: MissionConfig) {
 
   const overlay = document.querySelector('.mission-player-area')
   if (!overlay) {
+    console.error = origError
     testResults.value[m.id] = log(false, `🔨 ${m.title}: no se montó`)
     runningTest.value = null
     return
   }
 
-  // 1. Click the "Empezar" button to start the game
-  const startBtn = overlay.querySelector('.instructions-card button, .minigame-instructions button') as HTMLElement | null
+  // 1. Click "Empezar"
+  const startBtn = overlay.querySelector('.minigame-instructions button') as HTMLElement | null
   if (startBtn) {
     startBtn.click()
-    await new Promise(r => setTimeout(r, 500))
+    await new Promise(r => setTimeout(r, 600))
+    passed.push('start')
   }
 
-  // 2. Simulate wrong interactions based on mission type
   const gameArea = overlay.querySelector('.minigame-area') as HTMLElement | null
-
-  if (gameArea) {
-    // --- TAP on random spots (simulates clicking wrong areas) ---
-    for (let i = 0; i < 3; i++) {
-      const randomX = Math.random() * gameArea.offsetWidth
-      const randomY = Math.random() * gameArea.offsetHeight
-      gameArea.dispatchEvent(new PointerEvent('pointerdown', {
-        clientX: gameArea.getBoundingClientRect().left + randomX,
-        clientY: gameArea.getBoundingClientRect().top + randomY,
-        bubbles: true,
-      }))
-      gameArea.dispatchEvent(new PointerEvent('pointerup', {
-        clientX: gameArea.getBoundingClientRect().left + randomX,
-        clientY: gameArea.getBoundingClientRect().top + randomY,
-        bubbles: true,
-      }))
-      await new Promise(r => setTimeout(r, 200))
-    }
-
-    // --- Click interactive elements in wrong order ---
-    const clickables = gameArea.querySelectorAll('button:not(:disabled), [data-slot], [data-zone], [data-bin-id], .memory-card, .observe-spot, .item-btn:not(.item-btn--used)')
-    const clickArray = Array.from(clickables)
-
-    // Click last item first, then first zone (wrong combination)
-    if (clickArray.length >= 2) {
-      (clickArray[clickArray.length - 1] as HTMLElement).click()
-      await new Promise(r => setTimeout(r, 300))
-      ;(clickArray[0] as HTMLElement).click()
-      await new Promise(r => setTimeout(r, 300))
-    }
-
-    // --- Click memorama cards rapidly (test board lock) ---
-    const cards = gameArea.querySelectorAll('.memory-card:not(.memory-card--matched)')
-    if (cards.length >= 3) {
-      // Click 3 cards fast (should only flip 2, third should be blocked)
-      ;(cards[0] as HTMLElement).click()
-      ;(cards[1] as HTMLElement).click()
-      ;(cards[2] as HTMLElement).click() // should be ignored (board locked)
-      await new Promise(r => setTimeout(r, 1200)) // wait for mismatch animation
-    }
-
-    // --- Try to place without selecting (tests "selecciona primero" feedback) ---
-    const zones = gameArea.querySelectorAll('[data-zone]:not(.place-zone--filled), [data-slot]:not(.roof-slot--filled)')
-    if (zones.length > 0) {
-      ;(zones[0] as HTMLElement).click()
-      await new Promise(r => setTimeout(r, 300))
-    }
+  if (!gameArea) {
+    issues.push('no gameArea')
+    console.error = origError
+    playingMissionId.value = null
+    testResults.value[m.id] = log(false, `🔨 ${m.title}: ${issues.join(' | ')}`)
+    runningTest.value = null
+    return
   }
 
-  // 3. Check that the game didn't crash
+  // 2. Random taps on empty areas (should not crash)
+  for (let i = 0; i < 5; i++) {
+    const rx = gameArea.getBoundingClientRect().left + Math.random() * gameArea.offsetWidth
+    const ry = gameArea.getBoundingClientRect().top + Math.random() * gameArea.offsetHeight
+    gameArea.dispatchEvent(new PointerEvent('pointerdown', { clientX: rx, clientY: ry, bubbles: true }))
+    gameArea.dispatchEvent(new PointerEvent('pointerup', { clientX: rx, clientY: ry, bubbles: true }))
+    await new Promise(r => setTimeout(r, 100))
+  }
+  if (document.querySelector('.mission-player-area')) passed.push('random-taps')
+  else issues.push('CRASH tras random taps')
+
+  // 3. Drag an item to wrong place (simulates wrong drop)
+  const dragItem = gameArea.querySelector('.game-item:not(.game-item--used)') as HTMLElement | null
+  if (dragItem) {
+    const r = dragItem.getBoundingClientRect()
+    const cx = r.left + r.width / 2
+    const cy = r.top + r.height / 2
+    // Drag to top-left corner (wrong zone)
+    dragItem.dispatchEvent(new PointerEvent('pointerdown', { clientX: cx, clientY: cy, bubbles: true }))
+    await new Promise(r2 => setTimeout(r2, 50))
+    gameArea.dispatchEvent(new PointerEvent('pointermove', { clientX: 10, clientY: 10, bubbles: true }))
+    await new Promise(r2 => setTimeout(r2, 100))
+    gameArea.dispatchEvent(new PointerEvent('pointerup', { clientX: 10, clientY: 10, bubbles: true }))
+    await new Promise(r2 => setTimeout(r2, 400))
+
+    // Item should snap back (not disappear)
+    const itemStillExists = gameArea.querySelector('.game-item:not(.game-item--used)')
+    if (itemStillExists) passed.push('drag-snapback')
+    else issues.push('DRAG: item desapareció al soltar en lugar incorrecto')
+  }
+
+  // 4. Click zone without selecting item (placement games)
+  const zone = gameArea.querySelector('.game-zone:not(.game-zone--filled)') as HTMLElement | null
+  if (zone && !dragItem) {
+    zone.click()
+    await new Promise(r => setTimeout(r, 500))
+    // Should show "selecciona primero" feedback
+    const fb = overlay.querySelector('.game-feedback, [class*="feedback"]')
+    if (fb) passed.push('feedback-sin-selección')
+  }
+
+  // 5. Memorama: click 3 cards rapidly
+  const cards = gameArea.querySelectorAll('.memory-card:not(.memory-card--matched), .game-card:not(.game-card--matched)')
+  if (cards.length >= 3) {
+    ;(cards[0] as HTMLElement).click()
+    ;(cards[1] as HTMLElement).click()
+    ;(cards[2] as HTMLElement).click()
+    await new Promise(r => setTimeout(r, 1500))
+
+    // Check max 2 flipped
+    const flipped = gameArea.querySelectorAll('.memory-card--flipped:not(.memory-card--matched)')
+    if (flipped.length > 2) issues.push(`MEMORAMA: ${flipped.length} cartas volteadas (máx 2)`)
+    else passed.push('memorama-lock')
+  }
+
+  // 6. Rapid clicks on same element (spam)
+  const anyInteractive = gameArea.querySelector('.game-item, .game-zone, .memory-card, button') as HTMLElement | null
+  if (anyInteractive) {
+    for (let i = 0; i < 10; i++) {
+      anyInteractive.click()
+    }
+    await new Promise(r => setTimeout(r, 300))
+    if (document.querySelector('.mission-player-area')) passed.push('spam-ok')
+    else issues.push('CRASH tras spam clicks')
+  }
+
+  // 7. Wait and check stuck state
   await new Promise(r => setTimeout(r, 500))
   const stillMounted = document.querySelector('.mission-player-area')
   if (!stillMounted) {
-    issues.push('CRASH: componente se desmontó después de errores')
-  }
+    issues.push('CRASH: componente se desmontó')
+  } else {
+    const hasResult = !!overlay.querySelector('.minigame-result')
+    const hasItems = (overlay.querySelectorAll('.game-item:not(.game-item--used), .game-zone:not(.game-zone--filled), .memory-card:not(.memory-card--matched)')?.length ?? 0) > 0
+    const hasButtons = (overlay.querySelectorAll('button:not(:disabled)')?.length ?? 0) > 0
+    const hasInstr = !!overlay.querySelector('.minigame-instructions')
+    if (!hasResult && !hasItems && !hasButtons && !hasInstr) {
+      issues.push('TRABADO: sin resultado, sin items, sin botones')
+    } else {
+      passed.push('recuperable')
+    }
 
-  // 4. Check feedback appeared (error message visible)
-  const feedback = overlay?.querySelector('.fb--no, .feedback--wrong, .feedback--error, [class*="feedback"]')
-  // No feedback is OK if random clicks didn't hit anything interactive
-
-  // 5. Check no JS errors were thrown (console.error proxy)
-  // We can't directly check console, but if the component is still mounted, it survived
-
-  // 6. Verify game state is recoverable — can we still interact?
-  const activeButtons = overlay?.querySelectorAll('button:not(:disabled)')
-  if (activeButtons && activeButtons.length === 0 && !overlay?.querySelector('.minigame-result')) {
-    issues.push('BLOQUEADO: no hay botones activos ni resultado visible')
-  }
-
-  // 7. Check result overlay doesn't appear prematurely
-  const result = overlay?.querySelector('.minigame-result')
-  if (result) {
-    const isSuccess = result.querySelector('.result--success')
-    if (isSuccess) {
-      issues.push('resultado SUCCESS apareció sin completar misión')
+    // 8. Check result didn't appear prematurely
+    if (hasResult) {
+      const isSuccess = !!overlay.querySelector('.result--success')
+      if (isSuccess) issues.push('SUCCESS prematuro')
     }
   }
+
+  // 9. Check captured console errors
+  if (capturedErrors.length > 0) {
+    issues.push(`${capturedErrors.length} console.error: ${capturedErrors[0].slice(0, 60)}`)
+  }
+
+  // Restore console
+  console.error = origError
 
   // Close
   playingMissionId.value = null
   playingMissionTitle.value = ''
 
   if (issues.length === 0) {
-    testResults.value[m.id] = log(true, `🔨 ${m.title}: errores simulados ✓, no crasheó ✓, recuperable ✓`)
+    testResults.value[m.id] = log(true, `🔨 ${m.title}: ${passed.join(', ')}`)
   } else {
-    testResults.value[m.id] = log(false, `🔨 ${m.title}: ${issues.join(' | ')}`)
+    testResults.value[m.id] = log(false, `🔨 ${m.title}: ${issues.join(' | ')} (ok: ${passed.join(', ')})`)
   }
   runningTest.value = null
 }

@@ -331,32 +331,7 @@ function resetGame() {
 }
 
 /* Feedback */
-.memory-feedback {
-  position: absolute;
-  bottom: 90px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 20px;
-  border-radius: var(--radius-md, 12px);
-  font-weight: 700;
-  font-size: 14px;
-  z-index: 10;
-  animation: scaleIn 0.3s ease;
-  text-align: center;
-  max-width: 260px;
-  white-space: nowrap;
-}
-
-.fb--ok {
-  background: rgba(82, 183, 136, 0.95);
-  color: white;
-}
-
-.fb--no {
-  background: rgba(249, 65, 68, 0.95);
-  color: white;
-}
-
+/* feedback handled by .game-feedback */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s;
