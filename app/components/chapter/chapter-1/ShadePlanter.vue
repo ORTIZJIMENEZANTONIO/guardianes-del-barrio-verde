@@ -19,12 +19,12 @@
         <div
           v-for="slot in plantSlots"
           :key="slot.id"
-          class="plant-slot"
+          class="plant-slot game-zone"
           :class="{
-            'plant-slot--planted': slot.planted,
-            'plant-slot--wrong': slot.wrongAttempt,
-            'plant-slot--highlight': !!dragging && !slot.planted,
-            'plant-slot--hover': hoveredSlot === slot.id && !slot.planted,
+            'plant-slot--planted game-zone--filled': slot.planted,
+            'plant-slot--wrong game-zone--wrong': slot.wrongAttempt,
+            'plant-slot--highlight game-zone--highlight': !!dragging && !slot.planted,
+            'plant-slot--hover game-zone--hover': hoveredSlot === slot.id && !slot.planted,
           }"
           :style="{ left: slot.x + '%', top: slot.y + '%' }"
           :data-slot="slot.id"
@@ -42,13 +42,13 @@
 
       <!-- Feedback -->
       <Transition name="fade">
-        <div v-if="feedback" class="plant-feedback" :class="feedback.ok ? 'fb--ok' : 'fb--no'">
+        <div v-if="feedback" class="plant-feedback game-feedback" :class="feedback.ok ? 'fb--ok game-feedback--ok' : 'fb--no game-feedback--no'">
           {{ feedback.message }}
         </div>
       </Transition>
 
       <!-- Seed tray at bottom — draggable trees -->
-      <div class="seed-tray">
+      <div class="seed-tray game-tray">
         <div class="seed-tray__info">
           🌱 Semillas: {{ seedsRemaining }}
         </div>
@@ -56,10 +56,10 @@
           <div
             v-for="seed in seeds"
             :key="seed.id"
-            class="seed-item"
+            class="seed-item game-item"
             :class="{
-              'seed-item--used': seed.used,
-              'seed-item--dragging': dragging?.id === seed.id && dragStarted,
+              'seed-item--used game-item--used': seed.used,
+              'seed-item--dragging game-item--dragging': dragging?.id === seed.id && dragStarted,
             }"
             :style="dragging?.id === seed.id && dragStarted ? dragStyle : {}"
             @pointerdown.prevent="onPointerDown(seed, $event)"
@@ -124,8 +124,8 @@ const hoveredSlot = ref<string | null>(null)
 
 const dragStyle = computed(() => ({
   position: 'fixed' as const,
-  left: (dragPos.value.x - 24) + 'px',
-  top: (dragPos.value.y - 24) + 'px',
+  left: (dragPos.value.x - 32) + 'px',
+  top: (dragPos.value.y - 32) + 'px',
   zIndex: 200,
 }))
 
@@ -153,7 +153,7 @@ function onPointerMove(e: PointerEvent) {
     rafPending = false
 
   // Detect hovered slot
-  const els = document.elementsFromPoint(e.clientX, e.clientY)
+  const els = document.elementsFromPoint(dragPos.value.x, dragPos.value.y)
   let foundSlot: string | null = null
   for (const el of els) {
     const slotEl = (el as HTMLElement).closest('[data-slot]') as HTMLElement | null
@@ -224,7 +224,7 @@ function tryPlant(seed: Seed, slotId: string) {
 function showFB(message: string, ok: boolean) {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, ok }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 2000)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function resetGame() {
@@ -270,11 +270,7 @@ function resetGame() {
   transform: translate(-50%, -50%);
 }
 
-.plant-slot--highlight {
-  border-color: var(--color-green-mid);
-  background: rgba(82,183,136,0.15);
-  animation: pulse 1.2s ease-in-out infinite;
-}
+/* highlight handled by .game-zone--highlight */
 
 .plant-slot--hover {
   transform: translate(-50%, -50%) scale(1.12);
@@ -370,33 +366,12 @@ function resetGame() {
   transform: scale(0.8);
 }
 
-.seed-item--dragging {
-  transform: scale(1.2) rotate(-5deg);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-  border-color: #8b5cf6;
-  background: #f5f3ff;
-  pointer-events: none;
-  z-index: 200;
-}
+/* dragging styles handled by .game-item--dragging */
 
 .seed-item__emoji { font-size: 24px; }
 
 /* Feedback */
-.plant-feedback {
-  position: absolute;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  font-size: 13px;
-  max-width: 280px;
-  text-align: center;
-  animation: slideUp 0.3s ease;
-  z-index: 50;
-  box-shadow: var(--shadow-lg);
-}
+/* feedback positioning handled by .game-feedback global class */
 
 .fb--ok { background: rgba(82,183,136,0.95); color: white; }
 .fb--no { background: rgba(249,65,68,0.95); color: white; }

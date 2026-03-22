@@ -64,7 +64,7 @@ let feedbackTimer: ReturnType<typeof setTimeout> | null = null
 function showFB(message: string, ok: boolean) {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, ok }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 1800)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 // Bridge: Phaser → Vue

@@ -69,11 +69,11 @@
         <div
           v-for="slot in slots"
           :key="slot.id"
-          class="pipe-slot"
+          class="pipe-slot game-zone"
           :class="{
             'pipe-slot--empty': !slot.filled,
-            'pipe-slot--filled': slot.filled,
-            'pipe-slot--hover': hoveredSlot === slot.id,
+            'pipe-slot--filled game-zone--filled': slot.filled,
+            'pipe-slot--hover game-zone--hover': hoveredSlot === slot.id,
           }"
           :style="{ left: slot.x + '%', top: slot.y + '%' }"
           :data-slot="slot.id"
@@ -96,28 +96,28 @@
 
       <!-- Feedback -->
       <Transition name="fade">
-        <div v-if="feedback" class="pipe-feedback" :class="feedback.ok ? 'fb--ok' : 'fb--no'">
+        <div v-if="feedback" class="pipe-feedback game-feedback" :class="feedback.ok ? 'fb--ok game-feedback--ok' : 'fb--no game-feedback--no'">
           {{ feedback.message }}
         </div>
       </Transition>
 
       <!-- Draggable pieces tray -->
-      <div class="pieces-tray">
-        <div class="tray-label">Piezas de tubería:</div>
+      <div class="pieces-tray game-tray">
+        <div class="tray-label game-tray__title">Piezas de tubería:</div>
         <div class="pieces-row">
           <div
             v-for="piece in pieces"
             :key="piece.id"
-            class="piece-item"
+            class="piece-item game-item"
             :class="{
-              'piece-item--used': piece.used,
-              'piece-item--dragging': dragging?.id === piece.id,
+              'piece-item--used game-item--used': piece.used,
+              'piece-item--dragging game-item--dragging': dragging?.id === piece.id,
             }"
             :style="pieceStyle(piece)"
             @pointerdown.prevent="onPointerDown(piece, $event)"
           >
-            <span class="piece-emoji">{{ piece.emoji }}</span>
-            <span class="piece-name">{{ piece.name }}</span>
+            <span class="piece-emoji game-item__emoji">{{ piece.emoji }}</span>
+            <span class="piece-name game-item__label">{{ piece.name }}</span>
           </div>
         </div>
       </div>
@@ -229,7 +229,7 @@ function onPointerMove(e: PointerEvent) {
     rafPending = false
 
   // Detect hovered slot
-  const els = document.elementsFromPoint(e.clientX, e.clientY)
+  const els = document.elementsFromPoint(dragPos.value.x, dragPos.value.y)
   let foundSlot: string | null = null
   for (const el of els) {
     const slotEl = (el as HTMLElement).closest('[data-slot]') as HTMLElement | null
@@ -312,8 +312,8 @@ function pieceStyle(piece: PipePiece) {
   if (dragging.value?.id === piece.id && dragStarted.value) {
     return {
       position: 'fixed' as const,
-      left: (dragPos.value.x - 35) + 'px',
-      top: (dragPos.value.y - 35) + 'px',
+      left: (dragPos.value.x - 32) + 'px',
+      top: (dragPos.value.y - 32) + 'px',
       zIndex: 200,
     }
   }
@@ -323,7 +323,7 @@ function pieceStyle(piece: PipePiece) {
 function showFB(message: string, ok: boolean) {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, ok }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 1800)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function onTimeout() {
@@ -612,15 +612,7 @@ function resetGame() {
   filter: grayscale(0.5);
 }
 
-.piece-item--dragging {
-  transform: scale(1.15) rotate(-3deg);
-  box-shadow: var(--shadow-xl);
-  border-color: #8b5cf6;
-  background: #f5f3ff;
-  z-index: 200;
-  pointer-events: none;
-  animation: none;
-}
+/* dragging styles handled by .game-item--dragging */
 
 .piece-emoji {
   font-size: 28px;

@@ -17,15 +17,15 @@
         <div
           v-for="neighbor in neighbors"
           :key="neighbor.id"
-          class="neighbor-spot"
+          class="neighbor-spot game-zone"
           :class="{
-            'neighbor-spot--invited': neighbor.invited,
+            'neighbor-spot--invited game-zone--filled': neighbor.invited,
           }"
           :style="{ left: neighbor.x + '%', top: neighbor.y + '%' }"
           @click="inviteNeighbor(neighbor)"
         >
-          <span class="neighbor-spot__emoji">{{ neighbor.emoji }}</span>
-          <span class="neighbor-spot__label">{{ neighbor.label }}</span>
+          <span class="neighbor-spot__emoji game-zone__icon">{{ neighbor.emoji }}</span>
+          <span class="neighbor-spot__label game-zone__label">{{ neighbor.label }}</span>
           <div v-if="neighbor.invited" class="neighbor-spot__check">✅</div>
         </div>
       </div>
@@ -38,7 +38,7 @@
 
       <!-- Feedback -->
       <Transition name="fade">
-        <div v-if="feedback" class="invite-feedback">
+        <div v-if="feedback" class="invite-feedback game-feedback game-feedback--ok">
           {{ feedback.message }}
         </div>
       </Transition>
@@ -113,7 +113,7 @@ function inviteNeighbor(neighbor: Neighbor) {
 function showFeedback(message: string) {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 2500)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function resetGame() {

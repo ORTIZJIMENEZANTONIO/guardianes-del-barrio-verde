@@ -17,17 +17,17 @@
         <div
           v-for="spot in spots"
           :key="spot.id"
-          class="eval-spot"
+          class="eval-spot game-zone"
           :class="{
             'eval-spot--tapped': spot.tapped,
-            'eval-spot--critical': spot.tapped && spot.isCritical,
-            'eval-spot--ok': spot.tapped && !spot.isCritical,
+            'eval-spot--critical game-zone--filled': spot.tapped && spot.isCritical,
+            'eval-spot--ok game-zone--filled': spot.tapped && !spot.isCritical,
           }"
           :style="{ left: spot.x + '%', top: spot.y + '%', width: spot.w + 'px', height: spot.h + 'px' }"
           @click="tapSpot(spot)"
         >
-          <span class="eval-spot__icon">{{ spot.emoji }}</span>
-          <span class="eval-spot__label">{{ spot.label }}</span>
+          <span class="eval-spot__icon game-zone__icon">{{ spot.emoji }}</span>
+          <span class="eval-spot__label game-zone__label">{{ spot.label }}</span>
           <div v-if="spot.tapped" class="eval-spot__status">
             {{ spot.isCritical ? '⚠️ Revisar' : '✅ OK' }}
           </div>
@@ -46,7 +46,7 @@
 
       <!-- Feedback -->
       <Transition name="fade">
-        <div v-if="feedback" class="eval-feedback" :class="feedback.critical ? 'feedback--critical' : 'feedback--ok'">
+        <div v-if="feedback" class="eval-feedback game-feedback" :class="feedback.critical ? 'feedback--critical game-feedback--ok' : 'feedback--ok game-feedback--ok'">
           {{ feedback.message }}
         </div>
       </Transition>
@@ -122,7 +122,7 @@ function tapSpot(spot: EvalSpot) {
 function showFeedback(message: string, critical: boolean) {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, critical }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 2500)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function resetGame() {

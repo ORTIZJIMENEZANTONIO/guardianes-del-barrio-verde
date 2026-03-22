@@ -135,7 +135,7 @@ function tapSpot(spot: HeatSpot) {
 function showFeedback(message: string, type: 'hot' | 'cool') {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, type }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 2000)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function resetGame() {

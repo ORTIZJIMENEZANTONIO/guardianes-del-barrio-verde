@@ -18,10 +18,10 @@
         <div
           v-for="card in cards"
           :key="card.id"
-          class="memory-card"
+          class="memory-card game-card"
           :class="{
             'memory-card--flipped': card.flipped || card.matched,
-            'memory-card--matched': card.matched,
+            'memory-card--matched game-card--matched': card.matched,
           }"
           :data-card="card.id"
           @click="flipCard(card)"
@@ -40,7 +40,7 @@
 
       <!-- Feedback -->
       <Transition name="fade">
-        <div v-if="feedback" class="memory-feedback" :class="feedback.ok ? 'fb--ok' : 'fb--no'">
+        <div v-if="feedback" class="memory-feedback game-feedback" :class="feedback.ok ? 'fb--ok game-feedback--ok' : 'fb--no game-feedback--no'">
           {{ feedback.message }}
         </div>
       </Transition>
@@ -171,7 +171,7 @@ function checkMatch() {
 function showFB(message: string, ok: boolean) {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, ok }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 2000)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function resetGame() {

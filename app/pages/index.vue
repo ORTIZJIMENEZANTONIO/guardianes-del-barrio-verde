@@ -47,7 +47,7 @@
         <h2>Guardianes del Barrio Verde</h2>
         <p>Un juego educativo sobre cuidado ambiental y comunidad.</p>
         <div class="credits-divider" />
-        <p><strong>Para:</strong> Niños y niñas de 8 a 12 años</p>
+        <p><strong>Para:</strong> Niños y niñas de 6 a 12 años</p>
         <p><strong>Tema:</strong> Medio ambiente urbano en México</p>
         <div class="credits-divider" />
         <p class="credits-msg">"Cada acción suma."</p>
@@ -99,6 +99,7 @@ function startNewGame() {
 }
 
 function continueGame() {
+  playerStore.loadProgress()
   gameStore.continueGame()
   router.push('/capitulos')
 }

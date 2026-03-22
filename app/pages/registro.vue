@@ -49,7 +49,7 @@
             :class="{ 'age-btn--selected': age === 13 }"
             @click="age = 13"
           >
-            12+
+            13+
           </button>
         </div>
         <GameButton
@@ -176,6 +176,11 @@ function startGame() {
 }
 
 onMounted(() => {
+  // If already registered, skip to chapters
+  if (playerStore.isRegistered && step.value === 1) {
+    router.replace('/capitulos')
+    return
+  }
   nextTick(() => nameInputRef.value?.focus())
 })
 </script>

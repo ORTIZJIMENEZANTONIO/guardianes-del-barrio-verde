@@ -82,15 +82,22 @@ const chapters = computed<ChapterEntry[]>(() => {
     { id: 'chapter-6', number: 6, title: 'El Gran Festival Verde', icon: '🎉' },
   ]
 
+  // Cap. 6 locked until chapters 1-5 are complete
+  const first5Complete = ['chapter-1', 'chapter-2', 'chapter-3', 'chapter-4', 'chapter-5']
+    .every(id => playerStore.isChapterComplete(id))
+
   return allChapters.map((ch) => {
     const complete = playerStore.isChapterComplete(ch.id)
-    return { ...ch, complete, locked: false }
+    const locked = ch.id === 'chapter-6' && !first5Complete
+    return { ...ch, complete, locked }
   })
 })
 
 const allComplete = computed(() => chapters.value.every(ch => ch.complete))
 
 function selectChapter(chapterId: string) {
+  const ch = chapters.value.find(c => c.id === chapterId)
+  if (ch?.locked) return
   gameStore.setPhase('playing')
   gameStore.currentChapterId = chapterId
   gameStore.setScene(0)
@@ -102,8 +109,11 @@ function goHome() {
 }
 
 onMounted(() => {
+  // Load saved progress
+  playerStore.loadProgress()
+  // Guard: redirect if not registered
   if (!playerStore.isRegistered) {
-    router.push('/registro')
+    router.replace('/registro')
   }
 })
 </script>
@@ -127,7 +137,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .chapters-header { text-align: center; }
@@ -150,44 +160,44 @@ onMounted(() => {
 /* All complete */
 .all-complete-card {
   background: var(--glass-bg-strong);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255,255,255,0.5);
   border-radius: var(--radius-xl);
-  padding: 20px;
+  padding: 14px 16px;
   text-align: center;
   box-shadow: var(--shadow-xl), var(--glow-green);
   width: 100%;
 }
 
-.all-complete-icon { font-size: 48px; margin-bottom: 8px; }
+.all-complete-icon { font-size: 36px; margin-bottom: 4px; }
 
 .all-complete-title {
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 800;
   color: var(--color-green-dark);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .all-complete-text {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--color-text);
-  line-height: 1.5;
-  margin-bottom: 8px;
+  line-height: 1.4;
+  margin-bottom: 4px;
 }
 
 .all-complete-reflection {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   font-style: italic;
   color: var(--color-green-dark);
-  line-height: 1.4;
-  padding: 10px;
+  line-height: 1.3;
+  padding: 8px;
   background: linear-gradient(135deg, var(--color-green-bg), rgba(168,230,195,0.3));
   border: 1px solid var(--color-green-pale);
   border-radius: var(--radius-md);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .all-complete-stats {
@@ -203,18 +213,18 @@ onMounted(() => {
 .chapters-grid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
 }
 
 .chapter-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 18px;
+  gap: 10px;
+  padding: 12px 14px;
   background: var(--glass-bg-strong);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 2px solid rgba(255,255,255,0.4);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);

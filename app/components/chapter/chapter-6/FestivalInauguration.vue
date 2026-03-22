@@ -20,21 +20,21 @@
         <div
           v-for="zone in zones"
           :key="zone.id"
-          class="drop-zone"
+          class="drop-zone game-zone"
           :class="{
-            'drop-zone--filled': zone.filled,
-            'drop-zone--highlight': !!dragging && !zone.filled,
-            'drop-zone--hover': hoveredZone === zone.id && !zone.filled,
+            'drop-zone--filled game-zone--filled': zone.filled,
+            'drop-zone--highlight game-zone--highlight': !!dragging && !zone.filled,
+            'drop-zone--hover game-zone--hover': hoveredZone === zone.id && !zone.filled,
           }"
           :style="{ left: zone.x, top: zone.y }"
           :data-zone="zone.id"
         >
           <template v-if="zone.filled">
-            <span class="placed-emoji">{{ zone.placedEmoji }}</span>
+            <span class="placed-emoji game-zone__placed">{{ zone.placedEmoji }}</span>
           </template>
           <template v-else>
-            <span class="zone-placeholder">✨</span>
-            <span class="zone-label">{{ zone.label }}</span>
+            <span class="zone-placeholder game-zone__icon">✨</span>
+            <span class="zone-label game-zone__label">{{ zone.label }}</span>
           </template>
         </div>
 
@@ -54,30 +54,30 @@
       <Transition name="fade">
         <div
           v-if="feedback"
-          class="inaug-feedback"
-          :class="feedback.ok ? 'fb--ok' : 'fb--no'"
+          class="inaug-feedback game-feedback"
+          :class="feedback.ok ? 'fb--ok game-feedback--ok' : 'fb--no game-feedback--no'"
         >
           {{ feedback.message }}
         </div>
       </Transition>
 
       <!-- Draggable items tray -->
-      <div class="items-tray">
-        <div class="tray-title">Elementos de inauguracion:</div>
+      <div class="items-tray game-tray">
+        <div class="tray-title game-tray__title">Elementos de inauguracion:</div>
         <div class="items-row">
           <div
             v-for="item in items"
             :key="item.id"
-            class="drag-item"
+            class="drag-item game-item"
             :class="{
-              'drag-item--used': item.used,
-              'drag-item--dragging': dragging?.id === item.id && dragStarted,
+              'drag-item--used game-item--used': item.used,
+              'drag-item--dragging game-item--dragging': dragging?.id === item.id && dragStarted,
             }"
             :style="dragging?.id === item.id && dragStarted ? dragStyle : {}"
             @pointerdown.prevent="onPointerDown(item, $event)"
           >
-            <span class="drag-item__emoji">{{ item.emoji }}</span>
-            <span class="drag-item__name">{{ item.name }}</span>
+            <span class="drag-item__emoji game-item__emoji">{{ item.emoji }}</span>
+            <span class="drag-item__name game-item__label">{{ item.name }}</span>
           </div>
         </div>
       </div>
@@ -150,8 +150,8 @@ const hoveredZone = ref<string | null>(null)
 
 const dragStyle = computed(() => ({
   position: 'fixed' as const,
-  left: (dragPos.value.x - 40) + 'px',
-  top: (dragPos.value.y - 40) + 'px',
+  left: (dragPos.value.x - 32) + 'px',
+  top: (dragPos.value.y - 32) + 'px',
   zIndex: 100,
 }))
 
@@ -162,7 +162,7 @@ let feedbackTimer: ReturnType<typeof setTimeout> | null = null
 function showFB(message: string, ok: boolean) {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, ok }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 1800)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function onStart() {
@@ -189,7 +189,7 @@ function onPointerMove(e: PointerEvent) {
   requestAnimationFrame(() => {
     rafPending = false
 
-  const els = document.elementsFromPoint(e.clientX, e.clientY)
+  const els = document.elementsFromPoint(dragPos.value.x, dragPos.value.y)
   let foundZone: string | null = null
   for (const el of els) {
     const zoneEl = (el as HTMLElement).closest('[data-zone]') as HTMLElement | null
@@ -400,15 +400,7 @@ function resetGame() {
   pointer-events: none;
 }
 
-.drag-item--dragging {
-  transform: scale(1.15) rotate(-3deg);
-  box-shadow: var(--shadow-xl);
-  border-color: #fbbf24;
-  background: #fffbeb;
-  z-index: 100;
-  pointer-events: none;
-  animation: none;
-}
+/* dragging styles handled by .game-item--dragging */
 
 .drag-item__emoji {
   font-size: 24px;

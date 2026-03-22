@@ -28,19 +28,19 @@
         <div
           v-for="item in visibleObstacles"
           :key="item.id"
-          class="obstacle"
+          class="obstacle game-item"
           :class="{
-            'obstacle--dragging': dragging?.id === item.id && dragStarted,
+            'obstacle--dragging game-item--dragging': dragging?.id === item.id && dragStarted,
           }"
           :style="obstacleStyle(item)"
           @pointerdown.prevent="onPointerDown(item, $event)"
         >
-          <span class="obstacle__emoji">{{ item.emoji }}</span>
-          <span class="obstacle__name">{{ item.name }}</span>
+          <span class="obstacle__emoji game-item__emoji">{{ item.emoji }}</span>
+          <span class="obstacle__name game-item__label">{{ item.name }}</span>
         </div>
 
         <!-- Safe zone -->
-        <div class="safe-zone" ref="safeZoneRef">
+        <div class="safe-zone game-zone" ref="safeZoneRef">
           <div class="safe-zone__label">Zona segura &rarr;</div>
 
           <!-- Already-safe items (not draggable) -->
@@ -72,7 +72,7 @@
 
       <!-- Feedback -->
       <Transition name="fade">
-        <div v-if="feedback" class="feedback" :class="feedback.type === 'success' ? 'feedback--success' : 'feedback--error'">
+        <div v-if="feedback" class="feedback game-feedback" :class="feedback.type === 'success' ? 'feedback--success game-feedback--ok' : 'feedback--error game-feedback--no'">
           {{ feedback.message }}
         </div>
       </Transition>
@@ -140,7 +140,7 @@ let feedbackTimer: ReturnType<typeof setTimeout> | null = null
 function showFeedback(message: string, type: 'success' | 'error') {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, type }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 1500)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function onStart() {
@@ -208,8 +208,8 @@ function obstacleStyle(item: Obstacle) {
   if (dragging.value?.id === item.id && dragStarted.value) {
     return {
       position: 'fixed' as const,
-      left: (dragPos.value.x - 35) + 'px',
-      top: (dragPos.value.y - 35) + 'px',
+      left: (dragPos.value.x - 32) + 'px',
+      top: (dragPos.value.y - 32) + 'px',
       zIndex: 200,
     }
   }
@@ -367,15 +367,7 @@ function resetGame() {
   cursor: grabbing;
 }
 
-.obstacle--dragging {
-  transform: scale(1.15) rotate(-3deg);
-  box-shadow: var(--shadow-xl);
-  border-color: #22c55e;
-  background: #f0fdf4;
-  z-index: 200;
-  pointer-events: none;
-  animation: none;
-}
+/* dragging styles handled by .game-item--dragging */
 
 .obstacle__emoji {
   font-size: 28px;

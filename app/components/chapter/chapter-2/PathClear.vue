@@ -38,21 +38,21 @@
         <div
           v-for="obs in visibleObstacles"
           :key="obs.id"
-          class="obstacle"
+          class="obstacle game-item"
           :class="{
-            'obstacle--dragging': dragging?.id === obs.id && dragStarted,
+            'obstacle--dragging game-item--dragging': dragging?.id === obs.id && dragStarted,
           }"
           :style="obstacleStyle(obs)"
           @pointerdown.prevent="onPointerDown(obs, $event)"
         >
-          <span class="obstacle__emoji">{{ obs.emoji }}</span>
-          <span class="obstacle__name">{{ obs.name }}</span>
+          <span class="obstacle__emoji game-item__emoji">{{ obs.emoji }}</span>
+          <span class="obstacle__name game-item__label">{{ obs.name }}</span>
         </div>
 
         <!-- Cleanup zone (right 20%) -->
         <div
-          class="cleanup-zone"
-          :class="{ 'cleanup-zone--active': !!dragging }"
+          class="cleanup-zone game-zone"
+          :class="{ 'cleanup-zone--active game-zone--highlight': !!dragging }"
         >
           <span class="cleanup-zone__label">Zona de limpieza</span>
           <span class="cleanup-zone__arrow">&rarr;</span>
@@ -72,8 +72,8 @@
       <Transition name="fade">
         <div
           v-if="feedback"
-          class="pathclear-feedback"
-          :class="feedback.ok ? 'fb--ok' : 'fb--no'"
+          class="pathclear-feedback game-feedback"
+          :class="feedback.ok ? 'fb--ok game-feedback--ok' : 'fb--no game-feedback--no'"
         >
           {{ feedback.message }}
         </div>
@@ -156,7 +156,7 @@ let feedbackTimer: ReturnType<typeof setTimeout> | null = null
 function showFB(message: string, ok: boolean) {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, ok }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 1800)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function onStart() {
@@ -172,8 +172,8 @@ function obstacleStyle(obs: Obstacle) {
   if (dragging.value?.id === obs.id && dragStarted.value) {
     return {
       position: 'fixed' as const,
-      left: (dragPos.value.x - 35) + 'px',
-      top: (dragPos.value.y - 35) + 'px',
+      left: (dragPos.value.x - 32) + 'px',
+      top: (dragPos.value.y - 32) + 'px',
       zIndex: 100,
     }
   }
@@ -334,15 +334,7 @@ function resetGame() {
   cursor: grabbing;
 }
 
-.obstacle--dragging {
-  transform: scale(1.1) rotate(-3deg);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-  border-color: #8b5cf6;
-  background: #f5f3ff;
-  z-index: 100;
-  pointer-events: none;
-  animation: none;
-}
+/* dragging styles handled by .game-item--dragging */
 
 .obstacle__emoji {
   font-size: 28px;

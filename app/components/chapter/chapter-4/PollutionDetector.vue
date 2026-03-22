@@ -18,17 +18,17 @@
         <div
           v-for="spot in spots"
           :key="spot.id"
-          class="pollution-spot"
+          class="pollution-spot game-zone"
           :class="{
             'pollution-spot--tapped': spot.tapped,
-            'pollution-spot--bad': spot.tapped && spot.isPollution,
-            'pollution-spot--ok': spot.tapped && !spot.isPollution,
+            'pollution-spot--bad game-zone--filled': spot.tapped && spot.isPollution,
+            'pollution-spot--ok game-zone--filled': spot.tapped && !spot.isPollution,
           }"
           :style="{ left: spot.x + '%', top: spot.y + '%', width: spot.w + 'px', height: spot.h + 'px' }"
           @click="tapSpot(spot)"
         >
-          <span class="pollution-spot__icon">{{ spot.emoji }}</span>
-          <span class="pollution-spot__label">{{ spot.label }}</span>
+          <span class="pollution-spot__icon game-zone__icon">{{ spot.emoji }}</span>
+          <span class="pollution-spot__label game-zone__label">{{ spot.label }}</span>
           <div v-if="spot.tapped" class="pollution-spot__badge">
             {{ spot.isPollution ? '⚠️' : '✅' }}
           </div>
@@ -46,7 +46,7 @@
 
       <!-- Feedback -->
       <Transition name="fade">
-        <div v-if="feedback" class="pollution-feedback" :class="feedback.type === 'bad' ? 'feedback--bad' : 'feedback--ok'">
+        <div v-if="feedback" class="pollution-feedback game-feedback" :class="feedback.type === 'bad' ? 'feedback--bad game-feedback--no' : 'feedback--ok game-feedback--ok'">
           {{ feedback.message }}
         </div>
       </Transition>
@@ -132,7 +132,7 @@ function tapSpot(spot: PollutionSpot) {
 function showFeedback(message: string, type: 'bad' | 'ok') {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, type }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 2000)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function resetGame() {

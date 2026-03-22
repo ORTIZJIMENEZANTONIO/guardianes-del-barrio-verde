@@ -133,8 +133,8 @@ button {
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.06); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 @keyframes shake {
@@ -214,6 +214,302 @@ button {
   flex: 1;
   position: relative;
   overflow: hidden;
+}
+
+/* ===== GAME ITEM DESIGN SYSTEM ===== */
+
+/* Draggable item card — used in drag-drop, tap games */
+.game-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: linear-gradient(145deg, #ffffff, #f1f5f9);
+  border: 2.5px solid #d1d5db;
+  border-radius: 14px;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.08),
+    0 4px 8px rgba(0,0,0,0.04),
+    inset 0 1px 0 rgba(255,255,255,0.8);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: box-shadow 150ms ease, border-color 150ms ease;
+  min-width: 64px;
+  min-height: 64px;
+  padding: 8px 6px;
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.game-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.4), transparent);
+  border-radius: 12px 12px 0 0;
+  pointer-events: none;
+}
+
+.game-item:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+.game-item--selected {
+  border-color: var(--color-yellow);
+  background: linear-gradient(145deg, #fffbeb, #fef3c7);
+  box-shadow:
+    0 0 0 3px rgba(251,191,36,0.3),
+    0 4px 12px rgba(251,191,36,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.8);
+  transform: scale(1.05);
+}
+
+.game-item--dragging {
+  transform: scale(1.1) rotate(-2deg);
+  box-shadow:
+    0 12px 28px rgba(0,0,0,0.2),
+    0 4px 8px rgba(0,0,0,0.1);
+  border-color: #8b5cf6;
+  background: linear-gradient(145deg, #f5f3ff, #ede9fe);
+  z-index: 200;
+  pointer-events: none;
+  transition: none; /* disable transition during drag — prevents jumpy animation */
+}
+
+.game-item--used {
+  opacity: 0.25;
+  pointer-events: none;
+  transform: scale(0.85);
+  filter: grayscale(0.4);
+}
+
+.game-item--rejected {
+  opacity: 0.15;
+  pointer-events: none;
+  border-color: var(--color-coral);
+  text-decoration: line-through;
+}
+
+.game-item__emoji {
+  font-size: 28px;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.12));
+  line-height: 1;
+}
+
+.game-item__label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #374151;
+  line-height: 1.2;
+  text-align: center;
+  max-width: 60px;
+}
+
+/* Drop zone — target areas for placement/drag */
+.game-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 2.5px dashed rgba(0,0,0,0.2);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: all 200ms var(--ease-spring);
+  min-width: 70px;
+  min-height: 65px;
+  padding: 8px 6px;
+  position: relative;
+}
+
+.game-zone--highlight {
+  border-color: var(--color-green-mid);
+  background: rgba(69,201,122,0.12);
+  animation: zoneGlow 1.2s ease-in-out infinite;
+}
+
+@keyframes zoneGlow {
+  0%, 100% { border-color: var(--color-green-mid); background: rgba(69,201,122,0.08); }
+  50% { border-color: var(--color-green-light); background: rgba(69,201,122,0.2); }
+}
+
+.game-zone--hover {
+  transform: scale(1.08);
+  border-color: var(--color-yellow);
+  background: rgba(251,191,36,0.15);
+  box-shadow: 0 0 16px rgba(251,191,36,0.3);
+  animation: none;
+}
+
+.game-zone--filled {
+  border: 2.5px solid var(--color-green-mid);
+  background: rgba(69,201,122,0.12);
+  cursor: default;
+  animation: none;
+}
+
+.game-zone--wrong {
+  border-color: var(--color-coral);
+  background: rgba(249,65,68,0.1);
+}
+
+.game-zone__icon {
+  font-size: 22px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+}
+
+.game-zone__label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #374151;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.game-zone__placed {
+  font-size: 32px;
+  animation: scaleIn 0.4s var(--ease-spring);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+/* Bin / container — for sorting games */
+.game-bin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 6px;
+  border-radius: 12px;
+  min-width: 64px;
+  transition: all 250ms var(--ease-spring);
+  background: var(--bin-color-light, #f1f5f9);
+  border: 2.5px solid var(--bin-color, #d1d5db);
+  position: relative;
+  overflow: hidden;
+}
+
+.game-bin::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--bin-color, #d1d5db);
+  border-radius: 10px 10px 0 0;
+}
+
+.game-bin--highlight {
+  animation: pulse 1.2s ease-in-out infinite;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--bin-color, #d1d5db) 30%, transparent);
+}
+
+.game-bin--hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--bin-color, #d1d5db) 50%, transparent);
+  animation: none;
+}
+
+.game-bin__icon {
+  font-size: 20px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+}
+
+.game-bin__label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #374151;
+}
+
+.game-bin__count {
+  font-size: 9px;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+/* Tray — bottom bar holding items */
+.game-tray {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(241,245,249,0.98));
+  border-top: 2px solid rgba(0,0,0,0.06);
+  position: relative;
+  z-index: 10;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.game-tray__title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #475569;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+/* Memorama card improvements */
+.game-card {
+  border-radius: 14px;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.08),
+    0 4px 8px rgba(0,0,0,0.04);
+  transition: transform 0.4s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-card:active {
+  transform: scale(0.95);
+}
+
+.game-card--matched {
+  box-shadow:
+    0 0 8px rgba(69,201,122,0.4),
+    0 0 16px rgba(69,201,122,0.15);
+}
+
+/* Feedback toast — unified */
+.game-feedback {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 13px;
+  z-index: 50;
+  animation: scaleIn 0.3s var(--ease-spring);
+  text-align: center;
+  max-width: 290px;
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.15),
+    0 8px 24px rgba(0,0,0,0.05);
+  line-height: 1.4;
+}
+
+.game-feedback--ok {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+}
+
+.game-feedback--no {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: white;
 }
 
 /* Scrollbar hide for game views */

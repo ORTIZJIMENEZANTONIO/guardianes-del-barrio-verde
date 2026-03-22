@@ -22,10 +22,10 @@
             <div
               v-for="(slot, i) in slots"
               :key="slot.id"
-              class="roof-slot"
+              class="roof-slot game-zone"
               :class="{
-                'roof-slot--filled': slot.filled,
-                'roof-slot--highlight': selectedItem && !slot.filled,
+                'roof-slot--filled game-zone--filled': slot.filled,
+                'roof-slot--highlight game-zone--highlight': selectedItem && !slot.filled,
                 'roof-slot--next': !slot.filled && i === nextSlotIndex,
               }"
               :data-slot="slot.id"
@@ -51,29 +51,29 @@
 
       <!-- Feedback -->
       <Transition name="fade">
-        <div v-if="feedback" class="greenroof-feedback" :class="feedback.ok ? 'fb--ok' : 'fb--no'">
+        <div v-if="feedback" class="greenroof-feedback game-feedback" :class="feedback.ok ? 'fb--ok game-feedback--ok' : 'fb--no game-feedback--no'">
           {{ feedback.message }}
         </div>
       </Transition>
 
       <!-- Items tray -->
-      <div class="items-tray">
-        <div class="tray-title">Capas disponibles:</div>
+      <div class="items-tray game-tray">
+        <div class="tray-title game-tray__title">Capas disponibles:</div>
         <div class="items-row">
           <button
             v-for="item in items"
             :key="item.id"
-            class="item-btn"
+            class="item-btn game-item"
             :class="{
-              'item-btn--selected': selectedItem?.id === item.id,
-              'item-btn--used': item.used,
-              'item-btn--rejected': item.rejected,
+              'item-btn--selected game-item--selected': selectedItem?.id === item.id,
+              'item-btn--used game-item--used': item.used,
+              'item-btn--rejected game-item--rejected': item.rejected,
             }"
             :disabled="item.used || item.rejected"
             @click="selectItem(item)"
           >
-            <span class="item-emoji">{{ item.emoji }}</span>
-            <span class="item-name">{{ item.name }}</span>
+            <span class="item-emoji game-item__emoji">{{ item.emoji }}</span>
+            <span class="item-name game-item__label">{{ item.name }}</span>
           </button>
         </div>
       </div>
@@ -212,7 +212,7 @@ function placeInSlot(slot: RoofSlot) {
 function showFB(message: string, ok: boolean) {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, ok }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 2200)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function resetGame() {

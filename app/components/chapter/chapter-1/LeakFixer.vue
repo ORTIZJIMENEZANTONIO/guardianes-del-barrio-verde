@@ -138,11 +138,11 @@
         <button
           v-for="(gap, i) in gaps"
           :key="gap.id"
-          class="gap-zone"
+          class="gap-zone game-zone"
           :class="{
             'gap-zone--empty': !gap.filled,
-            'gap-zone--filled': gap.filled,
-            'gap-zone--highlight': selectedPiece && !gap.filled,
+            'gap-zone--filled game-zone--filled': gap.filled,
+            'gap-zone--highlight game-zone--highlight': selectedPiece && !gap.filled,
           }"
           :style="gapPositions[i]"
           :data-gap="gap.id"
@@ -164,22 +164,22 @@
 
       <!-- Feedback -->
       <Transition name="fade">
-        <div v-if="feedback" class="leak-feedback" :class="feedback.ok ? 'fb--ok' : 'fb--no'">
+        <div v-if="feedback" class="leak-feedback game-feedback" :class="feedback.ok ? 'fb--ok game-feedback--ok' : 'fb--no game-feedback--no'">
           {{ feedback.message }}
         </div>
       </Transition>
 
       <!-- Pieces tray -->
-      <div class="pieces-tray">
+      <div class="pieces-tray game-tray">
         <div class="tray-label">Piezas disponibles:</div>
         <div class="pieces-row">
           <button
             v-for="piece in availablePieces"
             :key="piece.id"
-            class="piece-btn"
+            class="piece-btn game-item"
             :class="{
-              'piece-btn--selected': selectedPiece?.id === piece.id,
-              'piece-btn--used': piece.used,
+              'piece-btn--selected game-item--selected': selectedPiece?.id === piece.id,
+              'piece-btn--used game-item--used': piece.used,
             }"
             :disabled="piece.used"
             @click="selectPiece(piece)"
@@ -309,7 +309,7 @@ function placeInGap(gap: PipeGap) {
 function showFB(message: string, ok: boolean) {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, ok }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 2000)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function resetGame() {

@@ -14,7 +14,7 @@
       <!-- CINEMATIC SCENE -->
       <div v-if="currentSceneType === 'cinematic'" class="scene cinematic-scene">
         <SceneSky variant="hot" />
-        <SceneStreet variant="dirty" />
+        <SceneStreet :landmarks="chapterLandmarks"variant="dirty" />
         <!-- Floating problems -->
         <div
           v-for="(item, i) in cinematicFloats"
@@ -35,7 +35,7 @@
       <!-- DIALOGUE SCENE -->
       <div v-else-if="currentSceneType === 'dialogue'" class="scene dialogue-full-scene">
         <SceneSky variant="nice" />
-        <SceneStreet variant="normal" />
+        <SceneStreet :landmarks="chapterLandmarks"variant="normal" />
         <DialogueScene />
         <ActionButton :visible="!dialogueStore.isDialogueActive && sceneReady">
           <GameButton variant="primary" size="lg" @click="advanceScene">
@@ -50,7 +50,7 @@
         <!-- Scrollable street area -->
         <div class="exploration-scroll" ref="explorationScrollRef">
           <div class="exploration-street">
-            <SceneStreet variant="dirty" />
+            <SceneStreet :landmarks="chapterLandmarks"variant="dirty" />
             <!-- Spots distributed across wider area -->
             <div
               v-for="spot in observationSpots"
@@ -98,7 +98,7 @@
       <div v-else-if="currentSceneType === 'mission'" class="scene mission-scene">
         <div v-if="missionPhase === 'intro'" class="mission-intro">
           <SceneSky variant="nice" />
-          <SceneStreet variant="normal" />
+          <SceneStreet :landmarks="chapterLandmarks"variant="normal" />
           <!-- Mission title card with reward preview -->
           <div class="mission-title-card animate-pop-in">
             <div class="mission-title-card__icon">{{ missionIcon }}</div>
@@ -122,7 +122,7 @@
 
         <div v-else-if="missionPhase === 'success'" class="mission-success">
           <SceneSky variant="nice" />
-          <SceneStreet :variant="chapterCompletedMissions >= 4 ? 'clean' : 'normal'" />
+          <SceneStreet :landmarks="chapterLandmarks":variant="chapterCompletedMissions >= 4 ? 'clean' : 'normal'" />
           <!-- Progressive improvements — appear as missions complete -->
           <div class="progressive-improvements">
             <Transition name="fade"><span v-if="chapterCompletedMissions >= 1" class="prog-emoji" style="left:15%;top:20%">🌱</span></Transition>
@@ -402,6 +402,19 @@ const currentSceneType = computed(() => currentScene.value?.type ?? 'dialogue')
 
 const showHud = computed(() => {
   return true
+})
+
+// Landmarks by chapter — different Mexican monuments per region
+const chapterLandmarks = computed(() => {
+  const map: Record<string, string> = {
+    'chapter-1': 'centro',     // CDMX
+    'chapter-2': 'sur',        // Oaxaca, Chiapas, Yucatán
+    'chapter-3': 'occidente',  // Jalisco, Michoacán
+    'chapter-4': 'norte',      // Monterrey, Chihuahua
+    'chapter-5': 'oriente',    // Querétaro, Puebla, Veracruz
+    'chapter-6': 'centro',     // Festival en CDMX
+  }
+  return map[route.params.chapterId as string] ?? 'default'
 })
 
 const chapterCompletedMissions = computed(() => {
@@ -1015,8 +1028,50 @@ watch(transformStep, (step) => {
 })
 
 onMounted(() => {
+  // Guard: redirect if no player profile
+  if (!playerStore.isRegistered) {
+    router.replace('/registro')
+    return
+  }
+
+  // Guard: redirect if invalid chapter
+  if (!chapter.value) {
+    router.replace('/capitulos')
+    return
+  }
+
+  // Guard: chapter 6 locked until chapters 1-5 complete
+  if (route.params.chapterId === 'chapter-6') {
+    const first5 = ['chapter-1', 'chapter-2', 'chapter-3', 'chapter-4', 'chapter-5']
+    if (!first5.every(id => playerStore.isChapterComplete(id))) {
+      router.replace('/capitulos')
+      return
+    }
+  }
+
+  // Set game state
+  gameStore.setPhase('playing')
+  gameStore.currentChapterId = route.params.chapterId as string
   gameStore.setScene(0)
   startSceneDialogue()
+})
+
+// Handle browser back button — save progress and clean up
+onUnmounted(() => {
+  playerStore.saveProgress()
+  dialogueStore.endDialogue()
+})
+
+// Prevent accidental back during gameplay
+onBeforeRouteLeave((_to, _from, next) => {
+  // If in the middle of a mission, confirm
+  if (missionPhase.value === 'playing') {
+    showPauseModal.value = true
+    next(false) // block navigation, let user use pause menu
+  } else {
+    playerStore.saveProgress()
+    next()
+  }
 })
 </script>
 

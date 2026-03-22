@@ -19,21 +19,21 @@
         <div
           v-for="zone in zones"
           :key="zone.id"
-          class="place-zone"
+          class="place-zone game-zone"
           :class="{
-            'place-zone--filled': zone.filled,
-            'place-zone--highlight': selectedItem && !zone.filled,
+            'place-zone--filled game-zone--filled': zone.filled,
+            'place-zone--highlight game-zone--highlight': selectedItem && !zone.filled,
           }"
           :style="{ left: zone.x + '%', top: zone.y + '%' }"
           :data-zone="zone.id"
           @click="placeInZone(zone)"
         >
           <template v-if="zone.filled">
-            <span class="placed-emoji">{{ zone.placedEmoji }}</span>
+            <span class="placed-emoji game-zone__placed">{{ zone.placedEmoji }}</span>
           </template>
           <template v-else>
-            <span class="zone-need-icon">{{ zone.needEmoji }}</span>
-            <span class="zone-need">{{ zone.need }}</span>
+            <span class="zone-need-icon game-zone__icon">{{ zone.needEmoji }}</span>
+            <span class="zone-need game-zone__label">{{ zone.need }}</span>
           </template>
         </div>
 
@@ -51,29 +51,29 @@
 
       <!-- Feedback -->
       <Transition name="fade">
-        <div v-if="feedback" class="design-feedback" :class="feedback.ok ? 'fb--ok' : 'fb--no'">
+        <div v-if="feedback" class="design-feedback game-feedback" :class="feedback.ok ? 'fb--ok game-feedback--ok' : 'fb--no game-feedback--no'">
           {{ feedback.message }}
         </div>
       </Transition>
 
       <!-- Items tray -->
-      <div class="items-tray">
-        <div class="tray-title">Elementos disponibles:</div>
+      <div class="items-tray game-tray">
+        <div class="tray-title game-tray__title">Elementos disponibles:</div>
         <div class="items-row">
           <button
             v-for="item in items"
             :key="item.id"
-            class="item-btn"
+            class="item-btn game-item"
             :class="{
-              'item-btn--selected': selectedItem?.id === item.id,
-              'item-btn--used': item.used,
-              'item-btn--rejected': item.rejected,
+              'item-btn--selected game-item--selected': selectedItem?.id === item.id,
+              'item-btn--used game-item--used': item.used,
+              'item-btn--rejected game-item--rejected': item.rejected,
             }"
             :disabled="item.used || item.rejected"
             @click="selectItem(item)"
           >
-            <span class="item-emoji">{{ item.emoji }}</span>
-            <span class="item-name">{{ item.name }}</span>
+            <span class="item-emoji game-item__emoji">{{ item.emoji }}</span>
+            <span class="item-name game-item__label">{{ item.name }}</span>
           </button>
         </div>
       </div>
@@ -220,7 +220,7 @@ function placeInZone(zone: PlaceZone) {
 function showFB(message: string, ok: boolean) {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, ok }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 2500)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function resetGame() {

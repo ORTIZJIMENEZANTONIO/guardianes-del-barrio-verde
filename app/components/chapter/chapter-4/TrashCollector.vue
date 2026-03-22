@@ -24,12 +24,12 @@
         <div
           v-for="item in visibleItems"
           :key="item.id"
-          class="trash-item"
+          class="trash-item game-item"
           :style="{ left: item.x + '%', top: item.y + '%' }"
           @click="collectItem(item)"
         >
-          <span class="trash-item__emoji">{{ item.emoji }}</span>
-          <span class="trash-item__name">{{ item.name }}</span>
+          <span class="trash-item__emoji game-item__emoji">{{ item.emoji }}</span>
+          <span class="trash-item__name game-item__label">{{ item.name }}</span>
         </div>
       </div>
 
@@ -50,7 +50,7 @@
 
       <!-- Feedback -->
       <Transition name="fade">
-        <div v-if="feedback" class="collector-feedback">
+        <div v-if="feedback" class="collector-feedback game-feedback game-feedback--ok">
           {{ feedback }}
         </div>
       </Transition>
@@ -124,7 +124,7 @@ function collectItem(item: TrashItem) {
 function showFeedback(message: string) {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = message
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 1200)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function resetGame() {

@@ -39,10 +39,10 @@
         <div
           v-for="(stop, i) in stops"
           :key="stop.id"
-          class="route-stop"
+          class="route-stop game-zone"
           :class="{
             'route-stop--active': i === currentStop && !stop.fulfilled,
-            'route-stop--fulfilled': stop.fulfilled,
+            'route-stop--fulfilled game-zone--filled': stop.fulfilled,
             'route-stop--future': i > currentStop,
           }"
           :style="{ left: stop.x + '%', top: stop.y + '%' }"
@@ -56,29 +56,29 @@
 
       <!-- Feedback -->
       <Transition name="fade">
-        <div v-if="feedback" class="bolillo-feedback" :class="feedback.ok ? 'fb--ok' : 'fb--no'">
+        <div v-if="feedback" class="bolillo-feedback game-feedback" :class="feedback.ok ? 'fb--ok game-feedback--ok' : 'fb--no game-feedback--no'">
           {{ feedback.message }}
         </div>
       </Transition>
 
       <!-- Items tray -->
-      <div class="items-tray">
-        <div class="tray-title">¿Qué necesita Bolillo aquí?</div>
+      <div class="items-tray game-tray">
+        <div class="tray-title game-tray__title">¿Qué necesita Bolillo aquí?</div>
         <div class="items-row">
           <button
             v-for="item in items"
             :key="item.id"
-            class="item-btn"
+            class="item-btn game-item"
             :class="{
-              'item-btn--selected': selectedItem?.id === item.id,
-              'item-btn--used': item.used,
-              'item-btn--wrong': item.wrong,
+              'item-btn--selected game-item--selected': selectedItem?.id === item.id,
+              'item-btn--used game-item--used': item.used,
+              'item-btn--wrong game-item--rejected': item.wrong,
             }"
             :disabled="item.used || item.wrong"
             @click="selectItem(item)"
           >
-            <span class="item-emoji">{{ item.emoji }}</span>
-            <span class="item-name">{{ item.name }}</span>
+            <span class="item-emoji game-item__emoji">{{ item.emoji }}</span>
+            <span class="item-name game-item__label">{{ item.name }}</span>
           </button>
         </div>
       </div>
@@ -212,7 +212,7 @@ function tryFulfill(stop: RouteStop, index: number) {
 function showFB(message: string, ok: boolean) {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, ok }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 2500)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function resetGame() {

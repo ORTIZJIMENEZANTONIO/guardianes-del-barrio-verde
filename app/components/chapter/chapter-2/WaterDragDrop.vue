@@ -34,10 +34,10 @@
                 <div
                   v-for="drop in drops"
                   :key="drop.id"
-                  class="water-drop"
+                  class="water-drop game-item"
                   :class="{
-                    'water-drop--used': drop.used,
-                    'water-drop--dragging': dragging?.id === drop.id,
+                    'water-drop--used game-item--used': drop.used,
+                    'water-drop--dragging game-item--dragging': dragging?.id === drop.id,
                   }"
                   :style="dropStyle(drop)"
                   @pointerdown.prevent="onPointerDown(drop, $event)"
@@ -57,11 +57,11 @@
           <div
             v-for="plant in plants"
             :key="plant.id"
-            class="plant-zone"
+            class="plant-zone game-zone"
             :class="{
-              'plant-zone--watered': plant.watered,
-              'plant-zone--wasted': plant.wasted,
-              'plant-zone--hover': hoveredPlant === plant.id,
+              'plant-zone--watered game-zone--filled': plant.watered,
+              'plant-zone--wasted game-zone--wrong': plant.wasted,
+              'plant-zone--hover game-zone--hover': hoveredPlant === plant.id,
             }"
             :data-plant-id="plant.id"
           >
@@ -75,8 +75,8 @@
       <Transition name="fade">
         <div
           v-if="feedback"
-          class="feedback"
-          :class="feedback.type === 'correct' ? 'feedback--correct' : 'feedback--wrong'"
+          class="feedback game-feedback"
+          :class="feedback.type === 'correct' ? 'feedback--correct game-feedback--ok' : 'feedback--wrong game-feedback--no'"
         >
           {{ feedback.message }}
         </div>
@@ -171,7 +171,7 @@ function onPointerMove(e: PointerEvent) {
     rafPending = false
 
   // Check if hovering over a plant zone
-  const el = document.elementFromPoint(e.clientX, e.clientY)
+  const el = document.elementFromPoint(dragPos.value.x, dragPos.value.y)
   const plantEl = el?.closest('[data-plant-id]') as HTMLElement | null
   hoveredPlant.value = plantEl?.dataset.plantId ?? null
   })
@@ -245,8 +245,8 @@ function dropStyle(drop: WaterDrop) {
   if (dragging.value?.id === drop.id && dragStarted.value) {
     return {
       position: 'fixed' as const,
-      left: (dragPos.value.x - 22) + 'px',
-      top: (dragPos.value.y - 22) + 'px',
+      left: (dragPos.value.x - 32) + 'px',
+      top: (dragPos.value.y - 32) + 'px',
       zIndex: 200,
     }
   }
@@ -256,7 +256,7 @@ function dropStyle(drop: WaterDrop) {
 function showFeedback(message: string, type: 'correct' | 'wrong') {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, type }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 2000)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function onTimeout() {
@@ -385,14 +385,7 @@ function resetGame() {
   transform: scale(0);
 }
 
-.water-drop--dragging {
-  transform: scale(1.3);
-  box-shadow: 0 0 16px rgba(59, 130, 246, 0.5);
-  border-color: white;
-  background: rgba(255, 255, 255, 0.5);
-  z-index: 200;
-  pointer-events: none;
-}
+/* dragging styles handled by .game-item--dragging */
 
 .water-drop__emoji {
   font-size: 20px;

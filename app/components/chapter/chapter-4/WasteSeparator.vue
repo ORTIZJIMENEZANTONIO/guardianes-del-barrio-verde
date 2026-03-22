@@ -27,17 +27,17 @@
         <div
           v-for="item in visibleItems"
           :key="item.id"
-          class="waste-item"
+          class="waste-item game-item"
           :class="{
-            'waste-item--selected': selectedItem?.id === item.id,
-            'waste-item--dragging': dragging?.id === item.id,
+            'waste-item--selected game-item--selected': selectedItem?.id === item.id,
+            'waste-item--dragging game-item--dragging': dragging?.id === item.id,
           }"
           :style="itemStyle(item)"
           @pointerdown.prevent="onPointerDown(item, $event)"
           @click="onItemClick(item)"
         >
-          <span class="waste-item__emoji">{{ item.emoji }}</span>
-          <span class="waste-item__name">{{ item.name }}</span>
+          <span class="waste-item__emoji game-item__emoji">{{ item.emoji }}</span>
+          <span class="waste-item__name game-item__label">{{ item.name }}</span>
         </div>
       </div>
 
@@ -46,7 +46,7 @@
         <div
           v-for="bin in bins"
           :key="bin.id"
-          class="bin"
+          class="bin game-bin"
           :class="{
             'bin--highlight': !!selectedItem || !!dragging,
             'bin--hover': hoveredBin === bin.id,
@@ -67,7 +67,7 @@
 
       <!-- Feedback -->
       <Transition name="fade">
-        <div v-if="feedback" class="feedback" :class="feedback.type === 'correct' ? 'feedback--correct' : 'feedback--wrong'">
+        <div v-if="feedback" class="feedback game-feedback" :class="feedback.type === 'correct' ? 'feedback--correct game-feedback--ok' : 'feedback--wrong game-feedback--no'">
           {{ feedback.message }}
         </div>
       </Transition>
@@ -165,7 +165,7 @@ function onPointerMove(e: PointerEvent) {
   requestAnimationFrame(() => {
     rafPending = false
 
-  const el = document.elementFromPoint(e.clientX, e.clientY)
+  const el = document.elementFromPoint(dragPos.value.x, dragPos.value.y)
   const binEl = el?.closest('[data-bin-id]') as HTMLElement | null
   hoveredBin.value = binEl?.dataset.binId ?? null
   })
@@ -205,8 +205,8 @@ function itemStyle(item: WasteItem) {
   if (dragging.value?.id === item.id && dragStarted.value) {
     return {
       position: 'fixed' as const,
-      left: (dragPos.value.x - 35) + 'px',
-      top: (dragPos.value.y - 35) + 'px',
+      left: (dragPos.value.x - 32) + 'px',
+      top: (dragPos.value.y - 32) + 'px',
       zIndex: 200,
     }
   }
@@ -241,7 +241,7 @@ function checkSort(item: WasteItem, binId: string) {
 function showFeedback(message: string, type: 'correct' | 'wrong') {
   if (feedbackTimer) clearTimeout(feedbackTimer)
   feedback.value = { message, type }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 1500)
+  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
 }
 
 function onTimeout() { showResult.value = true }
@@ -325,15 +325,7 @@ function resetGame() {
   animation: pulse 1s ease-in-out infinite;
 }
 
-.waste-item--dragging {
-  transform: scale(1.15) rotate(-3deg);
-  box-shadow: var(--shadow-xl);
-  border-color: #8b5cf6;
-  background: #f5f3ff;
-  z-index: 200;
-  pointer-events: none;
-  animation: none;
-}
+/* dragging styles handled by .game-item--dragging */
 
 .waste-item__emoji { font-size: 28px; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15)); }
 .waste-item__name { font-size: 10px; font-weight: 800; color: var(--color-text); line-height: 1.2; text-align: center; max-width: 70px; }
