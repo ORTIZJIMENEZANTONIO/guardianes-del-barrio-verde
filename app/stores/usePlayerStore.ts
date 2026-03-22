@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useAnalytics } from '~/composables/useAnalytics'
 
 const SAVE_KEY = 'guardianes-save-v1'
 
@@ -44,6 +45,8 @@ export const usePlayerStore = defineStore('player', {
     setProfile(name: string, age: number) {
       this.playerName = name
       this.playerAge = age
+      const { trackEvent } = useAnalytics()
+      trackEvent('registration', name, age, { avatarCharacterId: this.avatarCharacterId })
     },
 
     addScore(points: number) {
@@ -82,12 +85,16 @@ export const usePlayerStore = defineStore('player', {
     completeMission(missionId: string) {
       if (!this.completedMissions.includes(missionId)) {
         this.completedMissions.push(missionId)
+        const { trackEvent } = useAnalytics()
+        trackEvent('mission_complete', this.playerName, this.playerAge, { missionId })
       }
     },
 
     completeChapter(chapterId: string) {
       if (!this.completedChapters.includes(chapterId)) {
         this.completedChapters.push(chapterId)
+        const { trackEvent } = useAnalytics()
+        trackEvent('chapter_complete', this.playerName, this.playerAge, { chapterId })
       }
     },
 
@@ -130,6 +137,12 @@ export const usePlayerStore = defineStore('player', {
         this.avatarHair = data.avatarHair ?? 0
         this.avatarAccessory = data.avatarAccessory ?? -1
         this.avatarCharacterId = data.avatarCharacterId ?? 'lila'
+        const { trackEvent } = useAnalytics()
+        trackEvent('session_start', this.playerName, this.playerAge, {
+          score: this.score,
+          completedMissions: this.completedMissions.length,
+          completedChapters: this.completedChapters.length,
+        })
         return true
       }
       return false

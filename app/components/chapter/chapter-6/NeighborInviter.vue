@@ -133,6 +133,7 @@ function resetGame() {
   display: flex;
   background: transparent;
   position: relative;
+  overflow: hidden;
 }
 
 .street-scene {
@@ -181,6 +182,7 @@ function resetGame() {
 
 .invite-counter {
   width: 60px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;

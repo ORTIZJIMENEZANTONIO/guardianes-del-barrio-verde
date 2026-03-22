@@ -54,6 +54,8 @@ app/
     chapter/chapter-1/ a 6/     # 28 minijuegos Vue + Phaser wrappers (caps 1-3)
   composables/
     useGameAnimations.ts        # GSAP helpers
+    useSecretAccess.ts          # Gesto secreto para admin (3 taps x 4 esquinas en 6s)
+    useAnalytics.ts             # Tracking de eventos (localStorage + backend)
     usePhaserGame.ts            # Monta/destruye Phaser (lazy import)
   phaser/                       # Scenes, mechanics, effects (USE_PHASER = false)
   pages/
@@ -61,7 +63,8 @@ app/
     registro.vue                # Registro: nombre + edad + avatar personaje (4 pasos)
     capitulos.vue               # Selector de 6 capítulos
     chapter/[chapterId].vue     # Motor del juego (dificultad adaptativa por edad)
-    dev.vue                     # Catálogo dev + Testing Autobots
+    admin.vue                   # Dashboard de estadísticas (gesto secreto + login)
+    dev.vue                     # Catálogo dev + Testing Autobots (solo localhost)
   stores/
     useGameStore.ts             # Estado maestro
     usePlayerStore.ts           # Perfil + progreso + avatarCharacterId
@@ -113,7 +116,7 @@ Cada capítulo dura máximo ~15 minutos. El `shouldSkipMission()` en `[chapterId
 
 - **Inicio acortado**: cinemática 2 líneas + bienvenida con choices (antes 4 escenas)
 - **Opciones negativas**: "¿Te unes?" → "¡Sí!" / "Mmm, no sé..." / "¿Y si mejor no?" + convencimiento
-- **Exploración scroll horizontal**: calle 2x, spots sin label, spots falsos, hint "→ Desliza"
+- **Exploración scroll infinito**: calle 2x duplicada, scroll bidireccional con loop, spots sin label, spots falsos, hint "→ Desliza"
 - **Preview de recompensa**: "🌿 20pts 🏅 Badge" antes de cada misión
 - **Misión fuga sorpresa**: Cap.1 misión 4 como evento inesperado
 - **Barra de progreso en HUD**: dots 🟢⚪ (solo misiones activas por edad)
@@ -121,6 +124,8 @@ Cada capítulo dura máximo ~15 minutos. El `shouldSkipMission()` en `[chapterId
 - **ShadePlanter drag & drop**: arrastrar árboles en vez de tap
 - **LeakFixer rediseñado**: ruta SVG visual con huecos y gotas
 - **Mensajes de error educativos**: "Por qué estuvo mal. 💡 Consejo suave." Sin dar respuesta, sin "Piensa:"
+- **Bolillo expresivo en BolilloRoute**: PNG layers con emociones progresivas (asustado→neutral→feliz) según avanza la ruta
+- **Mobile-first flex fix**: paneles laterales (termómetro, gauge, contador) con `flex-shrink: 0` + `overflow: hidden` en contenedores
 
 ## Capítulo 1 — La Calle Caliente
 
@@ -147,9 +152,9 @@ Recompensa: 50 pts, "Guardián de la Calle Caliente".
 | 3 | Regar con estrategia | `WaterDragDrop` | drag (6 gotas→plantas, 90s) | 2 |
 | 4 | Vida en el parque | `WildlifeMemory` | memorama (4 parejas) | 1 |
 | 5 | Reactivar parque | `ParkDragRestore` | drag (5→zonas) | 2 |
-| 6 | **Ruta de Bolillo** | `BolilloRoute` | placement (5+2 distractores) | 2 |
+| 6 | **Ruta de Bolillo** | `BolilloRoute` | placement (5+2 distractores, Bolillo PNG expresivo) | 2 |
 
-Recompensa: 60 pts. Bolillo: agua → sombra → comida → cama → compañía. No chocolate (tóxico), no perseguir.
+Recompensa: 60 pts. Bolillo: agua → sombra → comida → cama → compañía. No chocolate (tóxico), no perseguir. Bolillo usa capas PNG con emociones progresivas: asustado (stops 0-1) → neutral (2-3) → feliz (4-5), cola mueve desde stop 3, parpadeo natural.
 
 ## Capítulo 3 — La Fuga Infinita
 
@@ -245,6 +250,7 @@ Imágenes en `app/assets/images/bolillo/` (14 PNGs):
 
 - **Easter egg**: 5 taps rápidos → sonríe, cola super-wag, corazones ❤️💛 (3s)
 - **foreignObject** `x=10 y=8 width=80 height=162`, base `width:100%; height:auto`
+- **BolilloRoute**: usa capas PNG directamente (no CharacterBody), emoción mapeada a `needsMet` (0-1: sad/worried, 2-3: neutral, 4-5: happy/wide), blink cada 3-5s, tail wag desde `needsMet >= 3`
 
 ### Mensajes de error educativos
 
@@ -252,6 +258,42 @@ Patrón: **"Por qué estuvo mal. 💡 Consejo suave."**
 - No dar respuesta directa
 - No usar "Piensa:" (agresivo)
 - Usar: "Fíjate en...", "Cada... tiene...", "Intenta con..."
+
+## Acceso secreto a Admin/Dev
+
+**Gesto secreto**: tocar **3 veces cada una de las 4 esquinas** de la pantalla (zonas de 80x80px) **en 6 segundos** desde cualquier página → navega a `/admin`. El orden de las esquinas no importa, solo que las 4 acumulen 3 taps dentro de la ventana de tiempo.
+
+- `/admin` — Login con contraseña → Dashboard de estadísticas. Password hasheada con SHA-256 en `admin.vue` (`ADMIN_HASH`). Para cambiar: `echo -n "nueva-password" | shasum -a 256` y pegar el hash. Default: `barrio-verde-admin`. Sesión en `sessionStorage` (se resetea al cerrar pestaña).
+- `/dev` — Catálogo de desarrollo, **solo accesible en localhost/127.0.0.1/192.168.x.x**
+- No hay botón visible ni URL pública para acceder a ninguno
+
+## Panel de administración (`/admin`)
+
+Dashboard oscuro con estadísticas:
+- **Resumen**: total jugadores, eventos, misiones completadas, capítulos completados
+- **Distribución por edad**: barras horizontales (6-12, 12+)
+- **Embudo de capítulos**: jugadores que iniciaron vs completaron cada capítulo
+- **Misiones**: intentos, completadas, reintentos por misión
+- **Puntos de abandono**: último capítulo jugado antes de dejar de avanzar
+- **Avatares elegidos**: distribución de personajes
+- **Sesiones por día**: timeline de los últimos 30 días
+- **Estado backend**: indicador de conexión a `/cercu-backend`
+- **Eventos crudos**: tabla expandible con todos los eventos
+
+### Analytics (`useAnalytics.ts`)
+
+Eventos rastreados:
+- `registration` — al registrar perfil (nombre, edad, avatar)
+- `session_start` — al cargar progreso guardado
+- `chapter_start` — al entrar a un capítulo
+- `chapter_complete` — al completar un capítulo
+- `mission_start` — al iniciar una misión
+- `mission_complete` — al completar una misión
+- `mission_retry` — al reintentar una misión
+
+Almacenamiento dual:
+- **Local**: `guardianes-analytics-v1` en localStorage (máx 5000 eventos)
+- **Backend**: POST a `/cercu-backend/api/guardianes/events` (silently fails si no hay backend)
 
 ## Catálogo dev (`/dev`)
 
@@ -278,8 +320,14 @@ Log en terminal oscuro. Banner amarillo cuando corre. Resumen PASS/FAIL.
 - **Edades 6-12 + modo 12+** (solo misiones difíciles, timer ×0.6)
 - **Dificultad adaptativa**: `difficulty: 1|2|3` por misión, `shouldSkipMission()` por edad
 - **Registro**: nombre + edad (6-12, 12+) + avatar = personaje existente
-- **Bolillo** con capas PNG expresivas + easter egg
+- **Bolillo** con capas PNG expresivas + easter egg + emociones progresivas en BolilloRoute
 - **Mensajes de error** educativos y amigables
+- **Admin dashboard** con estadísticas de usuarios (local + backend)
+- **Acceso secreto** a admin via gesto (3 taps x 4 esquinas en 6s) + login con password
+- **Analytics** rastrean: registro, sesiones, capítulos, misiones (localStorage + /cercu-backend)
 - **Dev tools** con autobots (verificar, correr, completar)
+- **Mobile-first**: paneles laterales con `flex-shrink: 0`, `overflow: hidden` en contenedores de juego
+- **Exploración infinita**: scroll bidireccional con loop (2 paneles duplicados)
+- **Siluetas de monumentos mexicanos**: 20 landmarks regionales por capítulo (opacity 0.35)
 - Integración Phaser.js preparada (`USE_PHASER = false`)
 - Deploy en guardianes.cercu.com.mx

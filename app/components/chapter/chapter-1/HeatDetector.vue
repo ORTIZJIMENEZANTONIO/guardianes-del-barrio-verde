@@ -157,6 +157,7 @@ function resetGame() {
   display: flex;
   background: transparent;
   position: relative;
+  overflow: hidden;
 }
 
 .street-scene {
@@ -176,7 +177,8 @@ function resetGame() {
   border: 2px dashed rgba(0,0,0,0.25);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  will-change: transform;
 }
 
 .heat-spot:active { transform: scale(0.95); }
@@ -208,6 +210,7 @@ function resetGame() {
 
 .temp-gauge {
   width: 60px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;

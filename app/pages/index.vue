@@ -30,9 +30,7 @@
           Acerca de
         </GameButton>
 
-        <GameButton v-if="isLocal" variant="ghost" size="md" @click="router.push('/dev')">
-          🛠 Catálogo dev
-        </GameButton>
+        <!-- Dev/Admin access via secret gesture (tap bottom-right corner 5x) -->
       </div>
 
       <div class="home-footer animate-fade-in" style="animation-delay: 0.4s">
@@ -73,7 +71,6 @@ const showCreditsModal = ref(false)
 
 const hasSave = ref(false)
 const showEasterEgg = ref(false)
-const isLocal = ref(false)
 let tapCount = 0
 let tapTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -90,8 +87,6 @@ function onLogoTap() {
 
 onMounted(() => {
   hasSave.value = playerStore.loadProgress()
-  const host = window.location.hostname
-  isLocal.value = host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168')
 })
 
 function startNewGame() {

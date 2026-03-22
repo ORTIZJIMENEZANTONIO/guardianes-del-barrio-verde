@@ -47,24 +47,38 @@
       <!-- EXPLORATION SCENE (Observation with horizontal scroll) -->
       <div v-else-if="currentSceneType === 'exploration'" class="scene exploration-scene">
         <SceneSky variant="hot" />
-        <!-- Scrollable street area -->
-        <div class="exploration-scroll" ref="explorationScrollRef">
+        <!-- Scrollable street area (infinite loop) -->
+        <div class="exploration-scroll" ref="explorationScrollRef" @scroll="onExplorationScroll">
           <div class="exploration-street">
-            <SceneStreet :landmarks="chapterLandmarks"variant="dirty" />
-            <!-- Spots distributed across wider area -->
-            <div
-              v-for="spot in observationSpots"
-              :key="spot.id"
-              class="observe-spot"
-              :class="{
-                'observe-spot--found': spot.found,
-                'observe-spot--ok': spot.found && spot.id.startsWith('obs-ok'),
-              }"
-              :style="{ left: spot.x + '%', top: spot.y + '%' }"
-              @click="tapObservation(spot)"
-            >
-              <span class="observe-emoji">{{ spot.emoji }}</span>
-              <span v-if="!spot.found" class="observe-ping" />
+            <!-- Panel A -->
+            <div class="exploration-panel">
+              <SceneStreet :landmarks="chapterLandmarks" variant="dirty" />
+              <div
+                v-for="spot in observationSpots"
+                :key="'a-'+spot.id"
+                class="observe-spot"
+                :class="{ 'observe-spot--found': spot.found, 'observe-spot--ok': spot.found && spot.id.startsWith('obs-ok') }"
+                :style="{ left: spot.x + '%', top: spot.y + '%' }"
+                @click="tapObservation(spot)"
+              >
+                <span class="observe-emoji">{{ spot.emoji }}</span>
+                <span v-if="!spot.found" class="observe-ping" />
+              </div>
+            </div>
+            <!-- Panel B (duplicate for infinite loop) -->
+            <div class="exploration-panel">
+              <SceneStreet :landmarks="chapterLandmarks" variant="dirty" />
+              <div
+                v-for="spot in observationSpots"
+                :key="'b-'+spot.id"
+                class="observe-spot"
+                :class="{ 'observe-spot--found': spot.found, 'observe-spot--ok': spot.found && spot.id.startsWith('obs-ok') }"
+                :style="{ left: spot.x + '%', top: spot.y + '%' }"
+                @click="tapObservation(spot)"
+              >
+                <span class="observe-emoji">{{ spot.emoji }}</span>
+                <span v-if="!spot.found" class="observe-ping" />
+              </div>
             </div>
           </div>
         </div>
@@ -72,7 +86,7 @@
         <div class="exploration-ui">
           <div class="explore-title">
             <span class="explore-title__icon">🔍</span>
-            {{ route.params.chapterId === 'chapter-2' ? 'Explora el parque. ¡Toca lo que notes!' : 'Desliza y toca lo que notes →' }}
+            {{ route.params.chapterId === 'chapter-2' ? 'Explora el parque. ¡Toca lo que notes!' : '← Desliza y toca lo que notes →' }}
           </div>
           <div class="observe-progress">
             <span class="observe-progress__bar">
@@ -273,6 +287,7 @@
 import { useGameStore } from '~/stores/useGameStore'
 import { usePlayerStore } from '~/stores/usePlayerStore'
 import { useDialogueStore } from '~/stores/useDialogueStore'
+import { useAnalytics } from '~/composables/useAnalytics'
 import { chapter1 } from '~/data/chapters/chapter-1'
 import { chapter1Dialogues } from '~/data/chapters/chapter-1/dialogues'
 import { chapter1Missions } from '~/data/chapters/chapter-1/missions'
@@ -356,6 +371,21 @@ const playerStore = usePlayerStore()
 const dialogueStore = useDialogueStore()
 
 const showPauseModal = ref(false)
+
+// Infinite scroll loop for exploration
+function onExplorationScroll() {
+  const el = explorationScrollRef.value
+  if (!el) return
+  const panelWidth = el.scrollWidth / 2
+  // If scrolled past panel B start → jump back to same position in panel A
+  if (el.scrollLeft >= panelWidth) {
+    el.scrollLeft -= panelWidth
+  }
+  // If scrolled before panel A start → jump forward to same position in panel B
+  if (el.scrollLeft <= 0) {
+    el.scrollLeft += panelWidth
+  }
+}
 const showScrollHint = ref(true)
 const explorationScrollRef = ref<HTMLElement | null>(null)
 const showReward = ref(false)
@@ -640,10 +670,13 @@ function startSceneDialogue() {
   if (scene.type === 'exploration') {
     observationSpots.value = defaultSpots.value.map(s => ({ ...s }))
     showScrollHint.value = true
-    // Hide scroll hint after first scroll
+    // Hide scroll hint after first scroll + start at middle for bidirectional scroll
     nextTick(() => {
       const scrollEl = explorationScrollRef.value
       if (scrollEl) {
+        // Start at panel A (middle of the 2-panel strip)
+        const panelWidth = scrollEl.scrollWidth / 2
+        scrollEl.scrollLeft = panelWidth * 0.25 // start 25% into panel A
         const hideHint = () => { showScrollHint.value = false; scrollEl.removeEventListener('scroll', hideHint) }
         scrollEl.addEventListener('scroll', hideHint)
       }
@@ -689,6 +722,11 @@ function advanceScene() {
 
 function startCurrentMission() {
   missionPhase.value = 'playing'
+  const { trackEvent } = useAnalytics()
+  trackEvent('mission_start', playerStore.playerName, playerStore.playerAge, {
+    missionId: currentMission.value?.id,
+    chapterId: route.params.chapterId,
+  })
 }
 
 function onMissionComplete() {
@@ -1049,6 +1087,12 @@ onMounted(() => {
     }
   }
 
+  // Track chapter start
+  const { trackEvent } = useAnalytics()
+  trackEvent('chapter_start', playerStore.playerName, playerStore.playerAge, {
+    chapterId: route.params.chapterId,
+  })
+
   // Set game state
   gameStore.setPhase('playing')
   gameStore.currentChapterId = route.params.chapterId as string
@@ -1101,13 +1145,16 @@ onBeforeRouteLeave((_to, _from, next) => {
 }
 
 .exploration-street {
-  width: 200%;
+  display: flex;
   height: 100%;
-  position: relative;
 }
 
-.exploration-street :deep(.scene-street) {
-  width: 100%; min-width: 100%;
+.exploration-panel {
+  width: 100vw;
+  min-width: 100vw;
+  height: 100%;
+  position: relative;
+  flex-shrink: 0;
 }
 
 .exploration-ui {

@@ -142,6 +142,7 @@ function resetGame() {
   display: flex;
   background: transparent;
   position: relative;
+  overflow: hidden;
 }
 
 .roof-scene {
@@ -198,6 +199,7 @@ function resetGame() {
 
 .eval-progress {
   width: 70px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;

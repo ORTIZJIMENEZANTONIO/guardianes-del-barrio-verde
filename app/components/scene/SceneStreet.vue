@@ -1,7 +1,7 @@
 <template>
   <div class="street" :class="`street--${variant}`">
     <!-- Buildings SVG -->
-    <svg class="buildings-svg" viewBox="0 0 400 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <svg class="buildings-svg" viewBox="0 0 400 200" :preserveAspectRatio="isMobile ? 'xMidYMax slice' : 'none'" xmlns="http://www.w3.org/2000/svg">
       <!-- Texture patterns -->
       <defs>
         <!-- Brick pattern (for walls) -->
@@ -229,8 +229,8 @@
       </g>
 
       <!-- Near buildings with detail -->
-      <!-- Building 1: Casa rosa con techo -->
-      <g>
+      <!-- Building 1: Casa rosa con techo (hidden on mobile to reduce clutter) -->
+      <g v-if="!isMobile">
         <rect x="5" y="100" width="65" height="100" :fill="variant === 'clean' ? '#fda4af' : '#e8a0a0'" />
         <rect x="5" y="100" width="65" height="100" fill="url(#brick)" />
         <polygon x="5" points="5,100 37,75 70,100" :fill="variant === 'clean' ? '#fb7185' : '#d07070'" />
@@ -317,8 +317,8 @@
         <rect x="272" y="172" width="26" height="14" rx="1" :fill="variant === 'clean' ? '#fed7aa' : '#c0a878'" />
       </g>
 
-      <!-- Building 6: Casa pequeña morada -->
-      <g>
+      <!-- Building 6: Casa pequeña morada (hidden on mobile) -->
+      <g v-if="!isMobile">
         <rect x="315" y="115" width="45" height="85" :fill="variant === 'clean' ? '#d8b4fe' : '#b8a0c8'" />
         <rect x="315" y="115" width="45" height="85" fill="url(#stucco)" />
         <polygon points="315,115 337,90 360,115" :fill="variant === 'clean' ? '#a855f7' : '#8868a8'" />
@@ -390,6 +390,13 @@ const props = withDefaults(defineProps<{
 }>(), {
   variant: 'normal',
   landmarks: 'default',
+})
+
+// Mobile: slice (fills width, crops top) vs Desktop: none (stretches)
+const isMobile = ref(false)
+onMounted(() => {
+  isMobile.value = window.innerWidth < 768
+  window.addEventListener('resize', () => { isMobile.value = window.innerWidth < 768 })
 })
 
 const windowStroke = 'rgba(0,0,0,0.12)'
