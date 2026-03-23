@@ -344,6 +344,7 @@ import FloodDragClear from '~/components/chapter/chapter-3/FloodDragClear.vue'
 import WaterWasteDetector from '~/components/chapter/chapter-3/WaterWasteDetector.vue'
 import WetlandMemory from '~/components/chapter/chapter-3/WetlandMemory.vue'
 import PipeDragFit from '~/components/chapter/chapter-3/PipeDragFit.vue'
+import WaterQuiz from '~/components/chapter/chapter-3/WaterQuiz.vue'
 
 // Chapter 4
 import TrashCollector from '~/components/chapter/chapter-4/TrashCollector.vue'
@@ -358,6 +359,7 @@ import RoofEvaluator from '~/components/chapter/chapter-5/RoofEvaluator.vue'
 import RoofDesigner from '~/components/chapter/chapter-5/RoofDesigner.vue'
 import PlantMatcher from '~/components/chapter/chapter-5/PlantMatcher.vue'
 import IrrigationBuilder from '~/components/chapter/chapter-5/IrrigationBuilder.vue'
+import RoofDifference from '~/components/chapter/chapter-5/RoofDifference.vue'
 
 // Chapter 6
 import FestivalSetup from '~/components/chapter/chapter-6/FestivalSetup.vue'
@@ -512,6 +514,7 @@ const missionComponentMap: Record<string, any> = {
   'mission-2-detect': WaterWasteDetector,
   'mission-3-wetland': USE_PHASER ? WetlandMemoryPhaser : WetlandMemory,
   'mission-4-repair': USE_PHASER ? PipeDragFitPhaser : PipeDragFit,
+  'mission-5-quiz': WaterQuiz,
   // Chapter 4
   'mission-1-collect': TrashCollector,
   'mission-2-separate': WasteSeparator,
@@ -524,6 +527,7 @@ const missionComponentMap: Record<string, any> = {
   'mission-2-design': RoofDesigner,
   'mission-3-plants': PlantMatcher,
   'mission-4-irrigation': IrrigationBuilder,
+  'mission-5-difference': RoofDifference,
   // Chapter 6
   'mission-1-prepare': FestivalSetup,
   'mission-2-invite': NeighborInviter,
@@ -818,6 +822,7 @@ const missionIconMap: Record<string, string> = {
   'mission-2-detect': '🔍',
   'mission-3-wetland': '🌿',
   'mission-4-repair': '🔧',
+  'mission-5-quiz': '❓',
   // Chapter 4
   'mission-1-collect': '🧹',
   'mission-2-separate': '♻️',
@@ -830,6 +835,7 @@ const missionIconMap: Record<string, string> = {
   'mission-2-design': '🏗️',
   'mission-3-plants': '🌱',
   'mission-4-irrigation': '💧',
+  'mission-5-difference': '🔍',
   // Chapter 6
   'mission-1-prepare': '🎪',
   'mission-2-invite': '📣',

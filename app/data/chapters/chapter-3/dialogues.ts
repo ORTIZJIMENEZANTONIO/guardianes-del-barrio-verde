@@ -135,6 +135,30 @@ export const chapter3Dialogues: Record<string, DialoguePool> = {
     ],
   },
 
+  // ===== MISIÓN 5 — Quiz de decisiones sobre el agua =====
+  'mission-5-intro': {
+    id: 'mission-5-intro',
+    context: 'Intro misión 5 — quiz rápido sobre agua',
+    lines: [
+      { id: 'm5i-1', speaker: 'lila', emotion: 'excited', text: '{nombre}, ahora veamos qué tanto aprendiste. ¡Decisiones rápidas!' },
+      { id: 'm5i-2', speaker: 'timo', emotion: 'thinking', text: 'Piensa rápido: en cada situación, ¿qué es lo mejor para el agua?' },
+    ],
+  },
+  'mission-5-success': {
+    id: 'mission-5-success',
+    context: 'Éxito misión 5',
+    lines: [
+      { id: 'm5s-1', speaker: 'lila', emotion: 'proud', text: '¡Excelente, {nombre}! Sabes tomar buenas decisiones sobre el agua.' },
+    ],
+  },
+  'mission-5-failure': {
+    id: 'mission-5-failure',
+    context: 'Fallo misión 5',
+    lines: [
+      { id: 'm5f-1', speaker: 'lila', emotion: 'neutral', text: 'No te preocupes, {nombre}. Cada error es una oportunidad de aprender.' },
+    ],
+  },
+
   // ===== ESCENA FINAL — El agua vuelve a su equilibrio =====
   'chapter-3-ending': {
     id: 'chapter-3-ending',

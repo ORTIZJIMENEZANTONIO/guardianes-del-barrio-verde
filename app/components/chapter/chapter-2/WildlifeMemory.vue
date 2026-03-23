@@ -1,7 +1,7 @@
 <template>
   <MinigameShell
     title="Vida en el parque"
-    description="Encuentra las parejas: cada animal necesita algo para vivir en el parque."
+    description="Conecta cada animal con lo que necesita para vivir en el parque. Toca un animal a la izquierda y arrastra hasta su necesidad a la derecha."
     :completed="matched"
     :total="4"
     :is-success="gameRef?.isComplete ?? false"
@@ -10,14 +10,13 @@
     @complete="$emit('complete')"
     @retry="onStart"
   >
-    <MemoryGame
+    <LineMatchGame
       ref="gameRef"
       :pairs="pairs"
-      back-emoji="🌿"
-      back-gradient="linear-gradient(135deg, #2d9d5e, #52b788, #40c977)"
-      accent-color="#52b788"
-      error-message="Esas cartas no hacen pareja. 💡 Cada animal necesita algo especial para vivir en el parque."
-      success-message="¡Pareja encontrada!"
+      hint="👆 Conecta cada animal con lo que necesita"
+      error-message="Esos no son pareja. 💡 Cada animal necesita algo especial para vivir en el parque."
+      success-message="¡Conexión correcta!"
+      accent-color="#2d9d5e"
       @complete="onComplete"
       @update="onUpdate"
     />
@@ -25,22 +24,18 @@
 </template>
 
 <script setup lang="ts">
-import type { MemoryPair } from '~/components/minigame/MemoryGame.vue'
+import type { LineMatchPair } from '~/components/minigame/LineMatchGame.vue'
 
 defineEmits<{ complete: [] }>()
 
-const pairs: MemoryPair[] = [
-  { pairId: 1, emoji: '🦋', label: 'Mariposa' },
-  { pairId: 1, emoji: '🌸', label: 'Flores con néctar' },
-  { pairId: 2, emoji: '🐦', label: 'Pájaro' },
-  { pairId: 2, emoji: '🌳', label: 'Árbol con sombra' },
-  { pairId: 3, emoji: '🐝', label: 'Abeja' },
-  { pairId: 3, emoji: '🌻', label: 'Plantas aromáticas' },
-  { pairId: 4, emoji: '🐕', label: 'Bolillo (perro)' },
-  { pairId: 4, emoji: '💧', label: 'Agua y sombra' },
+const pairs: LineMatchPair[] = [
+  { pairId: 1, left: { id: 'l1', emoji: '🦋', label: 'Mariposa' }, right: { id: 'r1', emoji: '🌸', label: 'Flores con néctar' } },
+  { pairId: 2, left: { id: 'l2', emoji: '🐦', label: 'Pájaro' }, right: { id: 'r2', emoji: '🌳', label: 'Árbol con sombra' } },
+  { pairId: 3, left: { id: 'l3', emoji: '🐝', label: 'Abeja' }, right: { id: 'r3', emoji: '🌻', label: 'Plantas aromáticas' } },
+  { pairId: 4, left: { id: 'l4', emoji: '🐕', label: 'Bolillo' }, right: { id: 'r4', emoji: '💧', label: 'Agua y sombra' } },
 ]
 
-const gameRef = ref<InstanceType<typeof import('~/components/minigame/MemoryGame.vue').default> | null>(null)
+const gameRef = ref<InstanceType<typeof import('~/components/minigame/LineMatchGame.vue').default> | null>(null)
 const matched = ref(0)
 const showResult = ref(false)
 

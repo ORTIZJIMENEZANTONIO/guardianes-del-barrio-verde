@@ -229,6 +229,30 @@ export const chapter5Dialogues: Record<string, DialoguePool> = {
     ],
   },
 
+  // ===== MISIÓN 5 — Antes y después =====
+  'mission-5-intro': {
+    id: 'mission-5-intro',
+    context: 'Intro misión 5 — comparar antes/después',
+    lines: [
+      { id: 'm5i-1', speaker: 'xani', emotion: 'excited', text: '{nombre}, mira cómo cambió todo. ¿Puedes ver las diferencias?' },
+      { id: 'm5i-2', speaker: 'timo', emotion: 'happy', text: 'Cada mejora tiene un impacto real en el barrio.' },
+    ],
+  },
+  'mission-5-success': {
+    id: 'mission-5-success',
+    context: 'Éxito misión 5',
+    lines: [
+      { id: 'm5s-1', speaker: 'xani', emotion: 'proud', text: '¡Encontraste todas las mejoras, {nombre}! Un techo verde cambia todo.' },
+    ],
+  },
+  'mission-5-failure': {
+    id: 'mission-5-failure',
+    context: 'Fallo misión 5',
+    lines: [
+      { id: 'm5f-1', speaker: 'xani', emotion: 'neutral', text: 'Fíjate bien en las dos escenas, {nombre}. Las diferencias son las mejoras ambientales.' },
+    ],
+  },
+
   // ===== ESCENA FINAL — Azotea transformada =====
   'chapter-5-ending': {
     id: 'chapter-5-ending',

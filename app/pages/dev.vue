@@ -305,6 +305,7 @@ import RoofEvaluator from '~/components/chapter/chapter-5/RoofEvaluator.vue'
 import RoofDesigner from '~/components/chapter/chapter-5/RoofDesigner.vue'
 import PlantMatcher from '~/components/chapter/chapter-5/PlantMatcher.vue'
 import IrrigationBuilder from '~/components/chapter/chapter-5/IrrigationBuilder.vue'
+import RoofDifference from '~/components/chapter/chapter-5/RoofDifference.vue'
 import FestivalSetup from '~/components/chapter/chapter-6/FestivalSetup.vue'
 import NeighborInviter from '~/components/chapter/chapter-6/NeighborInviter.vue'
 import FestivalProblems from '~/components/chapter/chapter-6/FestivalProblems.vue'
@@ -313,6 +314,7 @@ import FloodDragClear from '~/components/chapter/chapter-3/FloodDragClear.vue'
 import WaterWasteDetector from '~/components/chapter/chapter-3/WaterWasteDetector.vue'
 import WetlandMemory from '~/components/chapter/chapter-3/WetlandMemory.vue'
 import PipeDragFit from '~/components/chapter/chapter-3/PipeDragFit.vue'
+import WaterQuiz from '~/components/chapter/chapter-3/WaterQuiz.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -379,6 +381,7 @@ const missionComponentMap: Record<string, any> = {
   'mission-2-detect': WaterWasteDetector,
   'mission-3-wetland': WetlandMemory,
   'mission-4-repair': PipeDragFit,
+  'mission-5-quiz': WaterQuiz,
   // Chapter 4
   'mission-1-collect': TrashCollector,
   'mission-2-separate': WasteSeparator,
@@ -391,6 +394,7 @@ const missionComponentMap: Record<string, any> = {
   'mission-2-design': RoofDesigner,
   'mission-3-plants': PlantMatcher,
   'mission-4-irrigation': IrrigationBuilder,
+  'mission-5-difference': RoofDifference,
   // Chapter 6
   'mission-1-prepare': FestivalSetup,
   'mission-2-invite': NeighborInviter,
@@ -1044,11 +1048,11 @@ const missionIconMapRef: Record<string, string> = {
   'mission-4-leak': '🔧', 'mission-5-restore': '🎨',
   'mission-1-paths': '🧹', 'mission-2-soil': '🌱', 'mission-3-water': '💧',
   'mission-4-life': '🦋', 'mission-5-reactivate': '🎨', 'mission-6-bolillo-route': '🐕',
-  'mission-1-waste': '🚧', 'mission-2-detect': '🔍', 'mission-3-wetland': '🌿', 'mission-4-repair': '🔧',
+  'mission-1-waste': '🚧', 'mission-2-detect': '🔍', 'mission-3-wetland': '🌿', 'mission-4-repair': '🔧', 'mission-5-quiz': '❓',
   'mission-1-collect': '🧹', 'mission-2-separate': '♻️', 'mission-3-pollution': '🔍',
   'mission-4-compost': '🌱', 'mission-5-recycle': '🔄',
   'mission-0-greenroof': '🌿', 'mission-1-evaluate': '📋', 'mission-2-design': '🏗️',
-  'mission-3-plants': '🌱', 'mission-4-irrigation': '💧',
+  'mission-3-plants': '🌱', 'mission-4-irrigation': '💧', 'mission-5-difference': '🔍',
   'mission-1-prepare': '🎪', 'mission-2-invite': '📣', 'mission-3-solve': '🧩', 'mission-4-inaugurate': '🎉',
 }
 

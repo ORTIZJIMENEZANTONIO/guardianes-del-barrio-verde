@@ -14,11 +14,12 @@ export const chapter3: ChapterConfig = {
     { id: 'mission-2', type: 'mission', missionId: 'mission-2-detect' },
     { id: 'mission-3', type: 'mission', missionId: 'mission-3-wetland' },
     { id: 'mission-4', type: 'mission', missionId: 'mission-4-repair' },
+    { id: 'mission-5', type: 'mission', missionId: 'mission-5-quiz' },
     { id: 'transformation', type: 'transformation', dialoguePoolId: 'chapter-3-ending' },
     { id: 'summary', type: 'summary' },
     { id: 'hook', type: 'hook', dialoguePoolId: 'chapter-4-hook' },
   ],
-  missionIds: ['mission-1-waste', 'mission-2-detect', 'mission-3-wetland', 'mission-4-repair'],
+  missionIds: ['mission-1-waste', 'mission-2-detect', 'mission-3-wetland', 'mission-4-repair', 'mission-5-quiz'],
   completionReward: {
     points: 50,
     badge: 'infinite-leak-guardian',

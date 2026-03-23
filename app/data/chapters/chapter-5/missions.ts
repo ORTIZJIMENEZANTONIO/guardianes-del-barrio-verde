@@ -77,4 +77,19 @@ export const chapter5Missions: MissionConfig[] = [
     successDialogueId: 'mission-4-success',
     failureDialogueId: 'mission-4-failure',
   },
+  {
+    id: 'mission-5-difference',
+    chapterId: 'chapter-5',
+    title: 'Antes y después',
+    description: 'Compara la azotea antes y después del techo verde. Encuentra las mejoras.',
+    type: 'spot-difference',
+    difficulty: 1,
+    objectives: [
+      { id: 'spot-diffs', description: 'Encontrar 5 diferencias', target: 5, current: 0 },
+    ],
+    reward: { points: 20, seeds: 1, badge: 'keen-eye', badgeTitle: 'Ojo de Águila' },
+    introDialogueId: 'mission-5-intro',
+    successDialogueId: 'mission-5-success',
+    failureDialogueId: 'mission-5-failure',
+  },
 ]

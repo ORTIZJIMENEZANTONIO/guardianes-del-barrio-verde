@@ -16,11 +16,12 @@ export const chapter5: ChapterConfig = {
     { id: 'mission-2', type: 'mission', missionId: 'mission-2-design' },
     { id: 'mission-3', type: 'mission', missionId: 'mission-3-plants' },
     { id: 'mission-4', type: 'mission', missionId: 'mission-4-irrigation' },
+    { id: 'mission-5', type: 'mission', missionId: 'mission-5-difference' },
     { id: 'transformation', type: 'transformation', dialoguePoolId: 'chapter-5-ending' },
     { id: 'summary', type: 'summary' },
     { id: 'hook', type: 'hook', dialoguePoolId: 'chapter-6-hook' },
   ],
-  missionIds: ['mission-0-greenroof', 'mission-1-evaluate', 'mission-2-design', 'mission-3-plants', 'mission-4-irrigation'],
+  missionIds: ['mission-0-greenroof', 'mission-1-evaluate', 'mission-2-design', 'mission-3-plants', 'mission-4-irrigation', 'mission-5-difference'],
   completionReward: {
     points: 60,
     badge: 'rooftop-guardian',

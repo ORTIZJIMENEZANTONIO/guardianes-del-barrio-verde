@@ -63,4 +63,19 @@ export const chapter3Missions: MissionConfig[] = [
     successDialogueId: 'mission-4-success',
     failureDialogueId: 'mission-4-failure',
   },
+  {
+    id: 'mission-5-quiz',
+    chapterId: 'chapter-3',
+    title: 'Decisiones sobre el agua',
+    description: 'Responde rápido: ¿qué harías en cada situación sobre el agua?',
+    type: 'scenario-choice',
+    difficulty: 2,
+    objectives: [
+      { id: 'water-quiz', description: 'Responder 5 preguntas', target: 5, current: 0 },
+    ],
+    reward: { points: 25, seeds: 1, badge: 'water-wise', badgeTitle: 'Sabio del Agua' },
+    introDialogueId: 'mission-5-intro',
+    successDialogueId: 'mission-5-success',
+    failureDialogueId: 'mission-5-failure',
+  },
 ]
