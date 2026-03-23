@@ -406,22 +406,7 @@ function resetGame() {
   filter: grayscale(0.3) opacity(0.7);
 }
 
-/* --- Feedback --- */
-.pathclear-feedback {
-  position: absolute;
-  top: 45%;
-  left: 40%;
-  transform: translate(-50%, -50%);
-  padding: 12px 24px;
-  border-radius: var(--radius-md);
-  font-weight: 800;
-  font-size: 14px;
-  z-index: 50;
-  animation: scaleIn 0.3s ease;
-  text-align: center;
-  max-width: 280px;
-  box-shadow: var(--shadow-lg);
-}
+/* feedback handled by global .game-feedback */
 
 
 

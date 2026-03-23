@@ -527,22 +527,7 @@ function resetGame() {
   border-radius: 4px;
 }
 
-/* ── Feedback ── */
-.leak-feedback {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 12px 20px;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  font-size: 13px;
-  z-index: 50;
-  animation: scaleIn 0.3s ease;
-  text-align: center;
-  max-width: 280px;
-  box-shadow: var(--shadow-lg);
-}
+/* feedback handled by global .game-feedback */
 
 
 /* ── Pieces tray ── */

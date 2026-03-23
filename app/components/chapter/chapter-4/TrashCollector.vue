@@ -240,23 +240,7 @@ function resetGame() {
   white-space: nowrap;
 }
 
-/* Feedback */
-.collector-feedback {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 12px 24px;
-  border-radius: var(--radius-lg);
-  font-weight: 800;
-  font-size: 16px;
-  z-index: 50;
-  animation: popIn 400ms var(--ease-spring);
-  box-shadow: var(--shadow-lg);
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: white;
-  text-align: center;
-}
+/* feedback handled by global .game-feedback */
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }

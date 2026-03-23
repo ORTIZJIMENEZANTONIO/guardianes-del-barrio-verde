@@ -33,13 +33,11 @@
           :class="{ 'bolillo-marker--complete': isComplete }"
           :style="{ left: stops[currentStop]?.x + '%', top: stops[currentStop]?.y + '%' }"
         >
-          <div class="bolillo-layers">
-            <img :src="bolilloTailSrc" class="bolillo-part bolillo-tail" :class="{ 'bolillo-tail--wag': isComplete || needsMet >= 3 }" />
-            <img src="~/assets/images/bolillo/bolillo-base.png" class="bolillo-base-img" />
-            <img :src="bolilloEyesSrc" class="bolillo-part bolillo-eyes" />
-            <img :src="bolilloBrowsSrc" class="bolillo-part bolillo-brows" />
-            <img :src="bolilloMouthSrc" class="bolillo-part bolillo-mouth" />
-          </div>
+          <CharacterFace
+            character-id="bolillo"
+            :emotion="bolilloEmotion"
+            :is-speaking="false"
+          />
         </div>
 
         <!-- Stops -->
@@ -96,18 +94,7 @@
 <script setup lang="ts">
 import { useGameAnimations } from '~/composables/useGameAnimations'
 
-// Bolillo PNG layer imports
-import bolilloEyesSad from '~/assets/images/bolillo/bolillo-eyes-sad.png'
-import bolilloEyesNeutral from '~/assets/images/bolillo/bolillo-eyes-neutral.png'
-import bolilloEyesHappy from '~/assets/images/bolillo/bolillo-eyes-happy.png'
-import bolilloEyesClosed from '~/assets/images/bolillo/bolillo-eyes-closed.png'
-import bolilloBrowsWorried from '~/assets/images/bolillo/bolillo-brows-worried.png'
-import bolilloBrowsNeutral from '~/assets/images/bolillo/bolillo-brows-neutral.png'
-import bolilloMouthClosed from '~/assets/images/bolillo/bolillo-mouth-2-closed.png'
-import bolilloMouthOpen from '~/assets/images/bolillo/bolillo-mouth-2-open.png'
-import bolilloMouthWide from '~/assets/images/bolillo/bolillo-mouth-2-wide.png'
-import bolilloTailDown from '~/assets/images/bolillo/bolillo-tail-down.png'
-import bolilloTailUp from '~/assets/images/bolillo/bolillo-tail-up.png'
+import type { Emotion } from '~/shared/types/character'
 
 const emit = defineEmits<{ complete: [] }>()
 const { shakeWrong, celebrateSuccess, confettiBurst } = useGameAnimations()
@@ -162,49 +149,15 @@ const showResult = ref(false)
 const feedback = ref<{ message: string; ok: boolean } | null>(null)
 let feedbackTimer: ReturnType<typeof setTimeout> | null = null
 
-// Bolillo emotion based on progress
-const bolilloEyesSrc = computed(() => {
-  if (isBlinking.value) return bolilloEyesClosed
-  if (needsMet.value >= 4) return bolilloEyesHappy
-  if (needsMet.value >= 2) return bolilloEyesNeutral
-  return bolilloEyesSad
+// Bolillo emotion mapped to progress — CharacterFace handles the PNG layers
+const bolilloEmotion = computed<Emotion>(() => {
+  const n = needsMet.value
+  if (n >= 5) return 'excited'   // complete: super emocionado
+  if (n >= 3) return 'happy'     // pasó la mitad: feliz
+  if (n >= 2) return 'neutral'   // empezando a sentirse mejor
+  if (n >= 1) return 'worried'   // todavía preocupado
+  return 'sad'                    // triste al inicio
 })
-
-const bolilloBrowsSrc = computed(() => {
-  if (needsMet.value >= 2) return bolilloBrowsNeutral
-  return bolilloBrowsWorried
-})
-
-const bolilloMouthSrc = computed(() => {
-  if (needsMet.value >= 4) return bolilloMouthWide
-  if (needsMet.value >= 2) return bolilloMouthOpen
-  return bolilloMouthClosed
-})
-
-const bolilloTailSrc = computed(() => {
-  if (needsMet.value >= 3) return bolilloTailUp
-  return bolilloTailDown
-})
-
-// Blink animation
-const isBlinking = ref(false)
-let blinkInterval: ReturnType<typeof setInterval> | null = null
-
-function startBlink() {
-  stopBlink()
-  blinkInterval = setInterval(() => {
-    isBlinking.value = true
-    setTimeout(() => { isBlinking.value = false }, 150)
-  }, 3000 + Math.random() * 2000)
-}
-
-function stopBlink() {
-  if (blinkInterval) { clearInterval(blinkInterval); blinkInterval = null }
-  isBlinking.value = false
-}
-
-onMounted(startBlink)
-onUnmounted(stopBlink)
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr]
@@ -306,61 +259,26 @@ function resetGame() {
 
 .bolillo-marker {
   position: absolute; z-index: 4;
-  transform: translate(-50%, -80%);
+  transform: translate(-50%, -110%);
   transition: left 600ms var(--ease-spring), top 600ms var(--ease-spring);
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
-  animation: float 2s ease-in-out infinite;
-  width: 64px;
-  height: 80px;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.35));
+  animation: float 2.5s ease-in-out infinite;
+  width: 56px;
+  height: 56px;
 }
 
 .bolillo-marker--complete {
-  animation: float 1.2s ease-in-out infinite;
-}
-
-.bolillo-layers {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.bolillo-base-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-.bolillo-part {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  pointer-events: none;
-}
-
-.bolillo-tail {
-  z-index: -1;
-}
-
-.bolillo-tail--wag {
-  animation: wagTail 0.4s ease-in-out infinite alternate;
-  transform-origin: 60% 80%;
-}
-
-.bolillo-eyes { z-index: 1; }
-.bolillo-brows { z-index: 2; }
-.bolillo-mouth { z-index: 1; }
-
-@keyframes wagTail {
-  0% { transform: rotate(-12deg); }
-  100% { transform: rotate(12deg); }
+  animation: floatExcited 0.8s ease-in-out infinite;
 }
 
 @keyframes float {
-  0%, 100% { transform: translate(-50%, -80%); }
-  50% { transform: translate(-50%, -85%); }
+  0%, 100% { transform: translate(-50%, -110%); }
+  50% { transform: translate(-50%, -118%); }
+}
+
+@keyframes floatExcited {
+  0%, 100% { transform: translate(-50%, -110%) scale(1); }
+  50% { transform: translate(-50%, -122%) scale(1.12); }
 }
 
 .route-stop {
@@ -413,13 +331,7 @@ function resetGame() {
 .item-emoji { font-size: 20px; }
 .item-name { font-size: 8px; font-weight: 700; color: var(--color-text); text-align: center; }
 
-/* Feedback */
-.bolillo-feedback {
-  position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
-  padding: 12px 20px; border-radius: var(--radius-md); font-weight: 700;
-  font-size: 13px; z-index: 50; animation: scaleIn 0.3s ease;
-  text-align: center; max-width: 300px; box-shadow: var(--shadow-lg);
-}
+/* feedback handled by global .game-feedback */
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

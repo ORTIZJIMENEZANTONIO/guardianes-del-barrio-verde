@@ -400,22 +400,7 @@ function resetGame() {
 .item-emoji { font-size: 22px; }
 .item-name { font-size: 9px; font-weight: 700; color: var(--color-text); text-align: center; }
 
-/* Feedback */
-.compost-feedback {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 12px 24px;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  font-size: 14px;
-  z-index: 50;
-  animation: scaleIn 0.3s ease;
-  text-align: center;
-  max-width: 300px;
-  box-shadow: var(--shadow-lg);
-}
+/* feedback handled by global .game-feedback */
 
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }

@@ -552,22 +552,7 @@ function resetGame() {
   50% { opacity: 0.7; }
 }
 
-/* --- Feedback --- */
-.pipe-feedback {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 14px 28px;
-  border-radius: var(--radius-lg);
-  font-weight: 800;
-  font-size: 16px;
-  z-index: 50;
-  animation: popIn 400ms var(--ease-spring);
-  box-shadow: var(--shadow-lg);
-  text-align: center;
-  max-width: 300px;
-}
+/* feedback handled by global .game-feedback */
 
 
 

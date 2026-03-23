@@ -206,10 +206,9 @@ function resetGame() {
 .card-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, 1fr);
   gap: 8px;
-  padding: 16px;
-  max-width: 380px;
+  padding: 8px 12px;
+  max-width: 500px;
   width: 100%;
   position: relative;
   z-index: 5;
@@ -218,8 +217,6 @@ function resetGame() {
 
 .memory-card {
   width: 100%;
-  min-width: 70px;
-  min-height: 70px;
   aspect-ratio: 1;
   cursor: pointer;
   perspective: 600px;

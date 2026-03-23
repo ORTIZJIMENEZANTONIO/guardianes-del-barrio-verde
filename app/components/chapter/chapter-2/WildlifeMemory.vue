@@ -230,26 +230,22 @@ function resetGame() {
 .card-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, 1fr);
   gap: 8px;
-  padding: 16px;
-  max-width: 380px;
+  padding: 8px 12px;
+  max-width: 500px;
   width: 100%;
   position: relative;
   z-index: 5;
 }
 
 .memory-card {
-  width: 80px;
-  height: 80px;
-  min-width: 70px;
-  min-height: 70px;
+  width: 100%;
+  aspect-ratio: 1;
   perspective: 600px;
   cursor: pointer;
   background: none;
   border: none;
   padding: 0;
-  justify-self: center;
 }
 
 .memory-card:active .card-inner {
@@ -342,17 +338,8 @@ function resetGame() {
   opacity: 0;
 }
 
-/* Responsive: smaller screens */
 @media (max-width: 380px) {
-  .card-grid {
-    gap: 6px;
-    padding: 10px;
-  }
-
-  .memory-card {
-    width: 70px;
-    height: 70px;
-  }
+  .card-grid { gap: 6px; padding: 6px 8px; }
 
   .card-front-emoji {
     font-size: 24px;

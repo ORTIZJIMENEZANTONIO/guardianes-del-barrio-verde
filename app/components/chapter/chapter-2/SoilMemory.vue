@@ -192,17 +192,19 @@ function resetGame() {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(4, 80px);
-  grid-template-rows: repeat(2, 80px);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   z-index: 5;
   position: relative;
   perspective: 800px;
+  width: 100%;
+  max-width: 500px;
+  padding: 8px 12px;
 }
 
 .memory-card {
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  aspect-ratio: 1;
   cursor: pointer;
   perspective: 600px;
   -webkit-tap-highlight-color: transparent;
@@ -285,19 +287,8 @@ function resetGame() {
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* Responsive: smaller screens get smaller cards */
 @media (max-width: 380px) {
-  .card-grid {
-    grid-template-columns: repeat(4, 70px);
-    grid-template-rows: repeat(2, 70px);
-    gap: 6px;
-  }
-
-  .memory-card {
-    width: 70px;
-    height: 70px;
-  }
-
+  .card-grid { gap: 6px; padding: 6px 8px; }
   .card-front__emoji { font-size: 22px; }
   .card-front__label { font-size: 8px; }
   .card-back__emoji { font-size: 24px; }

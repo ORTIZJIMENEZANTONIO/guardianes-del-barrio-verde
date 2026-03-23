@@ -193,17 +193,19 @@ function resetGame() {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(5, 72px);
-  grid-template-rows: repeat(2, 80px);
+  grid-template-columns: repeat(5, 1fr);
   gap: 8px;
   z-index: 5;
   position: relative;
   perspective: 800px;
+  width: 100%;
+  max-width: 520px;
+  padding: 8px 12px;
 }
 
 .memory-card {
-  width: 72px;
-  height: 80px;
+  width: 100%;
+  aspect-ratio: 0.85;
   cursor: pointer;
   perspective: 600px;
   -webkit-tap-highlight-color: transparent;
@@ -288,27 +290,13 @@ function resetGame() {
 
 /* Responsive: smaller screens */
 @media (max-width: 420px) {
-  .card-grid {
-    grid-template-columns: repeat(5, 62px);
-    grid-template-rows: repeat(2, 72px);
-    gap: 5px;
-  }
-
-  .memory-card {
-    width: 62px;
-    height: 72px;
-  }
-
+  .card-grid { gap: 5px; padding: 6px 8px; }
   .card-front__emoji { font-size: 20px; }
   .card-front__label { font-size: 7px; }
   .card-back__emoji { font-size: 22px; }
 }
 
 @media (max-width: 360px) {
-  .card-grid {
-    grid-template-columns: repeat(4, 62px);
-    grid-template-rows: auto;
-    gap: 5px;
-  }
+  .card-grid { grid-template-columns: repeat(4, 1fr); }
 }
 </style>
