@@ -1,314 +1,56 @@
 <template>
   <MinigameShell
     title="Resolver imprevistos"
-    description="Encuentra las parejas: cada problema del festival tiene una solucion sustentable."
-    :completed="matchedCount"
+    description="Encuentra las parejas: cada problema del festival tiene una solución sustentable."
+    :completed="matched"
     :total="4"
-    :is-success="isComplete"
+    :is-success="gameRef?.isComplete ?? false"
     :show-result="showResult"
     @start="onStart"
     @complete="$emit('complete')"
-    @retry="resetGame"
+    @retry="onStart"
   >
-    <div class="memory-game">
-      <SceneSky variant="nice" />
-      <SceneStreet variant="clean" />
-
-      <div class="card-grid">
-        <div
-          v-for="card in cards"
-          :key="card.id"
-          class="memory-card game-card"
-          :class="{
-            'memory-card--flipped': card.flipped || card.matched,
-            'memory-card--matched game-card--matched': card.matched,
-          }"
-          :data-card="card.id"
-          @click="flipCard(card)"
-        >
-          <div class="card-inner">
-            <div class="card-back">
-              <span class="card-back-emoji">🎉</span>
-            </div>
-            <div class="card-front">
-              <span class="card-front-emoji">{{ card.emoji }}</span>
-              <span class="card-front-label">{{ card.label }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Feedback -->
-      <Transition name="fade">
-        <div v-if="feedback" class="memory-feedback game-feedback" :class="feedback.ok ? 'fb--ok game-feedback--ok' : 'fb--no game-feedback--no'">
-          {{ feedback.message }}
-        </div>
-      </Transition>
-    </div>
+    <MemoryGame
+      ref="gameRef"
+      :pairs="pairs"
+      back-emoji="🎉"
+      back-gradient="linear-gradient(135deg, #8b5cf6, #6d28d9)"
+      accent-color="#8b5cf6"
+      error-message="Esas cartas no son pareja. 💡 Cada problema del festival tiene una solución sustentable."
+      success-message="¡Problema resuelto!"
+      street-variant="clean"
+      @complete="onComplete"
+      @update="onUpdate"
+    />
   </MinigameShell>
 </template>
 
 <script setup lang="ts">
-import { useGameAnimations } from '~/composables/useGameAnimations'
+import type { MemoryPair } from '~/components/minigame/MemoryGame.vue'
 
-const emit = defineEmits<{
-  complete: []
-}>()
+defineEmits<{ complete: [] }>()
 
-const { shakeWrong, celebrateSuccess, confettiBurst } = useGameAnimations()
-
-interface MemoryCard {
-  id: string
-  pairId: number
-  emoji: string
-  label: string
-  flipped: boolean
-  matched: boolean
-}
-
-const pairData: { pairId: number; emoji: string; label: string }[] = [
-  { pairId: 1, emoji: '💧', label: 'Se acabo el agua' },
+const pairs: MemoryPair[] = [
+  { pairId: 1, emoji: '💧', label: 'Se acabó el agua' },
   { pairId: 1, emoji: '🌧️', label: 'Captador de lluvia' },
   { pairId: 2, emoji: '🗑️', label: 'Mucha basura' },
-  { pairId: 2, emoji: '♻️', label: 'Estaciones de separacion' },
+  { pairId: 2, emoji: '♻️', label: 'Estaciones de separación' },
   { pairId: 3, emoji: '☀️', label: 'No hay sombra' },
   { pairId: 3, emoji: '🏕️', label: 'Toldos reciclados' },
   { pairId: 4, emoji: '❓', label: 'Vecinos perdidos' },
-  { pairId: 4, emoji: '🙋', label: 'Voluntarios y senales' },
+  { pairId: 4, emoji: '🙋', label: 'Voluntarios y señales' },
 ]
 
-const cards = ref<MemoryCard[]>([])
-const matchedCount = ref(0)
-const isComplete = computed(() => matchedCount.value >= 4)
+const gameRef = ref<InstanceType<typeof import('~/components/minigame/MemoryGame.vue').default> | null>(null)
+const matched = ref(0)
 const showResult = ref(false)
-const feedback = ref<{ message: string; ok: boolean } | null>(null)
-let feedbackTimer: ReturnType<typeof setTimeout> | null = null
-
-const flippedCards = ref<MemoryCard[]>([])
-let lockBoard = false
-
-function shuffle<T>(array: T[]): T[] {
-  const arr = [...array]
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[arr[i], arr[j]] = [arr[j], arr[i]]
-  }
-  return arr
-}
 
 function onStart() {
-  const shuffled = shuffle(pairData)
-  cards.value = shuffled.map((item, index) => ({
-    id: `card-${index}`,
-    pairId: item.pairId,
-    emoji: item.emoji,
-    label: item.label,
-    flipped: false,
-    matched: false,
-  }))
-  matchedCount.value = 0
-  flippedCards.value = []
-  lockBoard = false
-}
-
-function flipCard(card: MemoryCard) {
-  if (lockBoard) return
-  if (card.flipped || card.matched) return
-  if (flippedCards.value.length >= 2) return
-
-  card.flipped = true
-  flippedCards.value.push(card)
-
-  if (flippedCards.value.length === 2) {
-    checkMatch()
-  }
-}
-
-function checkMatch() {
-  lockBoard = true
-  const [first, second] = flippedCards.value
-
-  if (first.pairId === second.pairId) {
-    first.matched = true
-    second.matched = true
-    matchedCount.value++
-    showFB('Problema resuelto!', true)
-
-    nextTick(() => {
-      const firstEl = document.querySelector(`[data-card="${first.id}"]`)
-      const secondEl = document.querySelector(`[data-card="${second.id}"]`)
-      if (firstEl) celebrateSuccess(firstEl)
-      if (secondEl) celebrateSuccess(secondEl)
-    })
-
-    flippedCards.value = []
-    lockBoard = false
-
-    if (isComplete.value) {
-      const gameEl = document.querySelector('.memory-game')
-      if (gameEl) confettiBurst(gameEl, 24)
-      setTimeout(() => { showResult.value = true }, 1000)
-    }
-  } else {
-    showFB('Esas cartas no son pareja. 💡 💡 Cada problema del festival tiene una solución sustentable.', false)
-
-    nextTick(() => {
-      const firstEl = document.querySelector(`[data-card="${first.id}"]`)
-      const secondEl = document.querySelector(`[data-card="${second.id}"]`)
-      if (firstEl) shakeWrong(firstEl)
-      if (secondEl) shakeWrong(secondEl)
-    })
-
-    setTimeout(() => {
-      first.flipped = false
-      second.flipped = false
-      flippedCards.value = []
-      lockBoard = false
-    }, 1000)
-  }
-}
-
-function showFB(message: string, ok: boolean) {
-  if (feedbackTimer) clearTimeout(feedbackTimer)
-  feedback.value = { message, ok }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
-}
-
-function resetGame() {
-  const shuffled = shuffle(pairData)
-  cards.value = shuffled.map((item, index) => ({
-    id: `card-${index}`,
-    pairId: item.pairId,
-    emoji: item.emoji,
-    label: item.label,
-    flipped: false,
-    matched: false,
-  }))
-  matchedCount.value = 0
-  flippedCards.value = []
-  lockBoard = false
+  matched.value = 0
   showResult.value = false
+  nextTick(() => gameRef.value?.start())
 }
+
+function onUpdate(m: number) { matched.value = m }
+function onComplete() { setTimeout(() => { showResult.value = true }, 1000) }
 </script>
-
-<style scoped>
-.memory-game {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  position: relative;
-}
-
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  padding: 8px 12px;
-  max-width: 500px;
-  width: 100%;
-  position: relative;
-  z-index: 5;
-  perspective: 800px;
-}
-
-.memory-card {
-  width: 100%;
-  aspect-ratio: 1;
-  cursor: pointer;
-  perspective: 600px;
-}
-
-.memory-card:active {
-  transform: scale(0.95);
-}
-
-.card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.4s ease;
-  transform-style: preserve-3d;
-}
-
-.memory-card--flipped .card-inner {
-  transform: rotateY(180deg);
-}
-
-.card-back,
-.card-front {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  border-radius: var(--radius-md);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.card-back {
-  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
-}
-
-.card-back-emoji {
-  font-size: 28px;
-  filter: brightness(1.2);
-}
-
-.card-front {
-  background: rgba(255, 255, 255, 0.95);
-  border: 2px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transform: rotateY(180deg);
-  padding: 4px;
-}
-
-.card-front-emoji {
-  font-size: 26px;
-}
-
-.card-front-label {
-  font-size: 9px;
-  font-weight: 800;
-  color: var(--color-text);
-  text-align: center;
-  line-height: 1.2;
-}
-
-.memory-card--matched .card-front {
-  border-color: #8b5cf6;
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.4), 0 0 24px rgba(139, 92, 246, 0.15);
-  background: rgba(245, 243, 255, 0.95);
-}
-
-.memory-card--matched {
-  cursor: default;
-}
-
-.memory-card--matched:active {
-  transform: none;
-}
-
-/* feedback handled by .game-feedback */
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-.fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
-</style>
