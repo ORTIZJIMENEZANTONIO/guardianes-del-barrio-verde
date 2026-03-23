@@ -51,10 +51,10 @@
 
     <!-- Swipe buttons (fallback for no-swipe) -->
     <div class="swipe-buttons">
-      <button class="swipe-btn swipe-btn--left" :disabled="!currentItem" @click="classify('left')">
+      <button class="swipe-btn swipe-btn--left" :disabled="!currentItem || locked" @click="classify('left')">
         ← {{ leftLabel }}
       </button>
-      <button class="swipe-btn swipe-btn--right" :disabled="!currentItem" @click="classify('right')">
+      <button class="swipe-btn swipe-btn--right" :disabled="!currentItem || locked" @click="classify('right')">
         {{ rightLabel }} →
       </button>
     </div>
@@ -112,6 +112,7 @@ const currentItem = computed(() => queue.value[0] ?? null)
 
 // Swipe state
 const dragging = ref(false)
+const locked = ref(false)
 const startX = ref(0)
 const offsetX = ref(0)
 const swipeDir = computed<'left' | 'right' | null>(() => {
@@ -124,11 +125,9 @@ const stackRef = ref<HTMLElement | null>(null)
 
 const cardStyle = computed(() => {
   if (flyDir.value) return {}
-  if (!dragging.value) return {}
-  const rotation = offsetX.value * 0.1
   return {
-    transform: `translateX(${offsetX.value}px) rotate(${rotation}deg)`,
-    transition: 'none',
+    transform: `translateX(${offsetX.value}px) rotate(${offsetX.value * 0.08}deg)`,
+    transition: dragging.value ? 'none' : 'transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
   }
 })
 
@@ -147,23 +146,27 @@ function start() {
   streak.value = 0
   flyDir.value = null
   flyResult.value = null
+  locked.value = false
+  dragging.value = false
+  offsetX.value = 0
   clearFeedback()
   emit('update', 0, props.items.length)
 }
 
 function onPointerDown(e: PointerEvent) {
+  if (locked.value) return
   dragging.value = true
   startX.value = e.clientX
   offsetX.value = 0
 }
 
 function onPointerMove(e: PointerEvent) {
-  if (!dragging.value) return
+  if (!dragging.value || locked.value) return
   offsetX.value = e.clientX - startX.value
 }
 
 function onPointerUp() {
-  if (!dragging.value) return
+  if (!dragging.value || locked.value) return
   dragging.value = false
 
   const threshold = 60
@@ -172,49 +175,52 @@ function onPointerUp() {
   } else if (offsetX.value > threshold) {
     classify('right')
   } else {
+    // Snap back smoothly (cardStyle transition handles the animation)
     offsetX.value = 0
   }
 }
 
 function classify(dir: 'left' | 'right') {
-  if (!currentItem.value) return
+  if (!currentItem.value || locked.value) return
+  locked.value = true
+  dragging.value = false
+
   const item = currentItem.value
   const correct = item.category === dir
 
-  flyDir.value = dir
-  flyResult.value = correct ? 'correct' : 'wrong'
+  // Reset offset before fly so inline style doesn't interfere
+  offsetX.value = 0
+
+  // Apply fly animation via CSS class
+  nextTick(() => {
+    flyDir.value = dir
+    flyResult.value = correct ? 'correct' : 'wrong'
+  })
 
   if (correct) {
     streak.value++
     showOk(item.message || '¡Correcto!')
-    nextTick(() => {
-      const el = document.querySelector('.swipe-card')
-      if (el) celebrateSuccess(el)
-    })
   } else {
     streak.value = 0
     const correctLabel = item.category === 'left' ? props.leftLabel : props.rightLabel
     showNo(`Ese va en "${correctLabel}". ${item.message || ''}`)
-    nextTick(() => {
-      const el = document.querySelector('.swipe-card')
-      if (el) shakeWrong(el)
-    })
   }
 
-  // Advance to next after animation
+  // Advance to next after fly animation completes
   setTimeout(() => {
     queue.value.shift()
     classified.value++
     flyDir.value = null
     flyResult.value = null
     offsetX.value = 0
+    locked.value = false
 
     emit('update', classified.value, props.items.length)
 
     if (allDone.value) {
       setTimeout(() => emit('complete'), 500)
     }
-  }, 400)
+  }, 450)
 }
 
 function reset() { start() }
@@ -284,23 +290,23 @@ defineExpose({ start, reset, classified, allDone })
   align-items: center;
   gap: 8px;
   cursor: grab;
-  transition: transform 300ms var(--ease-spring), opacity 300ms ease;
-  touch-action: pan-y;
+  touch-action: none;
   user-select: none;
+  will-change: transform;
 }
 
 .swipe-card:active { cursor: grabbing; }
 
 .swipe-card--left {
-  transform: translateX(-120vw) rotate(-20deg) !important;
-  opacity: 0;
-  transition: transform 400ms ease, opacity 400ms ease;
+  transform: translateX(-110vw) rotate(-15deg) !important;
+  opacity: 0 !important;
+  transition: transform 400ms ease-in, opacity 350ms ease !important;
 }
 
 .swipe-card--right {
-  transform: translateX(120vw) rotate(20deg) !important;
-  opacity: 0;
-  transition: transform 400ms ease, opacity 400ms ease;
+  transform: translateX(110vw) rotate(15deg) !important;
+  opacity: 0 !important;
+  transition: transform 400ms ease-in, opacity 350ms ease !important;
 }
 
 .swipe-card--correct {

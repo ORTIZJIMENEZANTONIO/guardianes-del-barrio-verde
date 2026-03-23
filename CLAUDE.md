@@ -40,7 +40,7 @@ ssh root@72.62.200.124 "cd /var/www/cercu-frontend/guardianes && tar -xzf guardi
 ```
 app/
   assets/
-    css/main.css                # Design tokens, animaciones, glassmorphism
+    css/main.css                # Design tokens, animaciones, glassmorphism, game-* classes
     images/bolillo/             # 14 PNGs de capas para Bolillo (base, ojos, boca, cejas, cola)
   components/
     ui/                         # GameButton, ProgressBar, Modal, ActionButton, PlayerAvatar
@@ -48,12 +48,14 @@ app/
     dialogue/                   # DialogueBox, CharacterPortrait, CharacterFace, CharacterBody,
                                 #   ChoicePanel, DialogueScene
     scene/                      # SceneSky (cielos SVG), SceneStreet (barrio SVG)
-    minigame/                   # MinigameShell (timer adaptativo, z-index 100 overlays)
+    minigame/                   # MinigameShell + 8 componentes reutilizables (ver abajo)
     reward/                     # RewardPopup
     phaser/                     # PhaserCanvas (wrapper Phaser)
-    chapter/chapter-1/ a 6/     # 28 minijuegos Vue + Phaser wrappers (caps 1-3)
+    chapter/chapter-1/ a 6/     # 32 minijuegos (wrappers delgados que usan componentes reutilizables)
   composables/
-    useGameAnimations.ts        # GSAP helpers
+    useGameAnimations.ts        # GSAP helpers (celebrateSuccess, confettiBurst, shakeWrong)
+    useGameFeedback.ts          # Feedback toast reutilizable (show/showOk/showNo/clear)
+    useDragDrop.ts              # Pointer handling reutilizable (drag, RAF, hover detection)
     useSecretAccess.ts          # Gesto secreto para admin (3 taps x 4 esquinas en 6s)
     useAnalytics.ts             # Tracking de eventos (localStorage + backend)
     usePhaserGame.ts            # Monta/destruye Phaser (lazy import)
@@ -74,6 +76,29 @@ app/
     chapters/chapter-1/ a 6/    # 6 capítulos (index, dialogues, missions con difficulty)
   shared/types/                 # TypeScript (MissionConfig con difficulty: 1|2|3)
 ```
+
+## Componentes reutilizables de minijuegos
+
+8 componentes base en `app/components/minigame/`. Cada minijuego del capítulo es un wrapper delgado (~50 líneas) que pasa datos al componente base.
+
+| Componente | Mecánica | Props clave | Usado en |
+|-----------|----------|-------------|----------|
+| `MemoryGame.vue` | Memorama (voltear cartas, encontrar parejas) | `pairs`, `backEmoji`, `backGradient`, `accentColor` | SoilMemory, WetlandMemory, RecycleMemory, PlantMatcher, FestivalProblems |
+| `TapDetectGame.vue` | Tocar zonas para detectar/clasificar | `spotData`, `total`, `targetBadge`, `foundEmoji` | HeatDetector, PollutionDetector, RoofEvaluator, WaterWasteDetector |
+| `SequenceGame.vue` | Ordenar pasos en secuencia correcta | `steps` (con `correctPosition`), `slotLabels` | CompostBuilder |
+| `SwipeClassifier.vue` | Swipe izq/der para clasificar + botones | `items` (con `category`), `leftLabel`, `rightLabel` | WasteSeparator |
+| `LineMatchGame.vue` | Dibujar líneas conectando parejas | `pairs` (left/right), `accentColor` | WildlifeMemory |
+| `QuickQuiz.vue` | Quiz con timer por pregunta | `questions` (con opciones), `timePerQuestion` | WaterQuiz |
+| `SpotDifference.vue` | Encontrar diferencias entre escenas | `differences`, `maxHints`, before/after variants | RoofDifference |
+| `RouteTracer.vue` | Trazar ruta tocando nodos en orden | `nodeData` (con `correctOrder`), `segments` | IrrigationBuilder |
+
+### Composables de juego
+
+| Composable | Función | Usado por |
+|-----------|---------|-----------|
+| `useGameFeedback.ts` | Toast de feedback con timer (`showOk`/`showNo`/`clear`) | Todos los componentes base |
+| `useDragDrop.ts` | Pointer handling con RAF, hover detection, dragStyle | Juegos drag-drop |
+| `useGameAnimations.ts` | GSAP: celebrateSuccess, confettiBurst, shakeWrong | Todos |
 
 ## Flujo del usuario
 
@@ -112,20 +137,21 @@ Cada misión tiene `difficulty: 1 | 2 | 3` (fácil, medio, difícil).
 
 Cada capítulo dura máximo ~15 minutos. El `shouldSkipMission()` en `[chapterId].vue` auto-avanza las misiones que no corresponden a la edad. El HUD muestra solo las misiones activas (`activeMissionCount`).
 
-## Mejoras de UX
+## Mecánicas de juego (10 tipos)
 
-- **Inicio acortado**: cinemática 2 líneas + bienvenida con choices (antes 4 escenas)
-- **Opciones negativas**: "¿Te unes?" → "¡Sí!" / "Mmm, no sé..." / "¿Y si mejor no?" + convencimiento
-- **Exploración scroll infinito**: calle 2x duplicada, scroll bidireccional con loop, spots sin label, spots falsos, hint "→ Desliza"
-- **Preview de recompensa**: "🌿 20pts 🏅 Badge" antes de cada misión
-- **Misión fuga sorpresa**: Cap.1 misión 4 como evento inesperado
-- **Barra de progreso en HUD**: dots 🟢⚪ (solo misiones activas por edad)
-- **Celebración visual progresiva**: emojis aparecen entre misiones
-- **ShadePlanter drag & drop**: arrastrar árboles en vez de tap
-- **LeakFixer rediseñado**: ruta SVG visual con huecos y gotas
-- **Mensajes de error educativos**: "Por qué estuvo mal. 💡 Consejo suave." Sin dar respuesta, sin "Piensa:"
-- **Bolillo expresivo en BolilloRoute**: PNG layers con emociones progresivas (asustado→neutral→feliz) según avanza la ruta
-- **Mobile-first flex fix**: paneles laterales (termómetro, gauge, contador) con `flex-shrink: 0` + `overflow: hidden` en contenedores
+| Mecánica | Tipo | Componente base | Descripción |
+|----------|------|----------------|-------------|
+| drag-drop | Arrastrar items a zonas | `useDragDrop.ts` | Pointer handling + RAF + hover |
+| memorama | Voltear cartas | `MemoryGame.vue` | 2 cols mobile, 4 cols tablet |
+| tap-detect | Tocar spots | `TapDetectGame.vue` | Spots con isTarget boolean |
+| placement | Seleccionar + colocar | — (manual) | selectedItem + zones |
+| pipe-fit | Colocar piezas en huecos SVG | — (manual) | SVG pipe con slots |
+| **sequence** | Ordenar pasos | `SequenceGame.vue` | Slots numerados + tray |
+| **swipe** | Clasificar izq/der | `SwipeClassifier.vue` | Card + botones + rachas |
+| **line-match** | Conectar con líneas | `LineMatchGame.vue` | SVG live drawing |
+| **quiz** | Decisiones rápidas | `QuickQuiz.vue` | Timer por pregunta |
+| **spot-difference** | Encontrar diferencias | `SpotDifference.vue` | Antes/después + pistas |
+| **route-trace** | Trazar ruta en orden | `RouteTracer.vue` | Nodos + SVG path |
 
 ## Capítulo 1 — La Calle Caliente
 
@@ -150,21 +176,23 @@ Recompensa: 50 pts, "Guardián de la Calle Caliente".
 | 1 | Despejar senderos | `PathClear` | drag (6→zona, 90s) | 1 |
 | 2 | Cuidar el suelo | `SoilMemory` | memorama (4 parejas) | 1 |
 | 3 | Regar con estrategia | `WaterDragDrop` | drag (6 gotas→plantas, 90s) | 2 |
-| 4 | Vida en el parque | `WildlifeMemory` | memorama (4 parejas) | 1 |
+| 4 | Vida en el parque | `WildlifeMemory` | **line-match** (4 parejas: animal→necesidad) | 1 |
 | 5 | Reactivar parque | `ParkDragRestore` | drag (5→zonas) | 2 |
-| 6 | **Ruta de Bolillo** | `BolilloRoute` | placement (5+2 distractores, Bolillo PNG expresivo) | 2 |
+| 6 | **Ruta de Bolillo** | `BolilloRoute` | placement (5+2 distractores) | 2 |
 
-Recompensa: 60 pts. Bolillo: agua → sombra → comida → cama → compañía. No chocolate (tóxico), no perseguir. Bolillo usa capas PNG con emociones progresivas: asustado (stops 0-1) → neutral (2-3) → feliz (4-5), cola mueve desde stop 3, parpadeo natural.
+Recompensa: 60 pts. Bolillo usa `CharacterFace` con emoción progresiva: sad→worried→neutral→happy→excited.
 
 ## Capítulo 3 — La Fuga Infinita
 
-8 escenas, 3 misiones. Tema: agua, humedales.
+10 escenas, 5 misiones. Tema: agua, humedales, desperdicio.
 
 | # | Misión | Componente | Mecánica | Diff |
 |---|--------|------------|----------|:----:|
 | 1 | Controlar desperdicio | `FloodDragClear` | drag (5→zona, 90s) | 1 |
-| 2 | Proteger humedal | `WetlandMemory` | memorama (4 parejas) | 2 |
-| 3 | Reparar tubería | `PipeDragFit` | drag (4+2 trampa, 90s) | 3 |
+| 2 | Detectar desperdicios | `WaterWasteDetector` | tap-detect (4 de 7) | 2 |
+| 3 | Proteger humedal | `WetlandMemory` | memorama (4 parejas) | 2 |
+| 4 | Reparar tubería | `PipeDragFit` | drag (4+2 trampa, 90s) | 3 |
+| 5 | **Decisiones sobre agua** | `WaterQuiz` | **quiz** (5 preguntas, 12s c/u) | 2 |
 
 Recompensa: 50 pts.
 
@@ -175,16 +203,16 @@ Recompensa: 50 pts.
 | # | Misión | Componente | Mecánica | Diff |
 |---|--------|------------|----------|:----:|
 | 1 | Recolectar basura | `TrashCollector` | tap (8 items) | 1 |
-| 2 | Separar residuos | `WasteSeparator` | drag (8→4 bins, 90s, datos degradación) | 2 |
+| 2 | Separar residuos | `WasteSeparator` | **swipe** (8 items, orgánico↔reciclable, rachas) | 2 |
 | 3 | Detectar contaminación | `PollutionDetector` | tap-detect (4 de 7) | 2 |
-| 4 | **Hacer composta** | `CompostBuilder` | placement (5 capas + 3 distractores) | 3 |
+| 4 | **Hacer composta** | `CompostBuilder` | **sequence** (5 capas en orden) | 3 |
 | 5 | Centro de reciclaje | `RecycleMemory` | memorama (5 parejas: material→producto) | 2 |
 
 Recompensa: 60 pts.
 
 ## Capítulo 5 — Azoteas con Vida
 
-11 escenas, 5 misiones. Tema: techos verdes, ref. CIIEMAD/IPN. Protagonistas: Xani + Timo.
+12 escenas, 6 misiones. Tema: techos verdes, ref. CIIEMAD/IPN. Protagonistas: Xani + Timo.
 
 | # | Misión | Componente | Mecánica | Diff |
 |---|--------|------------|----------|:----:|
@@ -192,7 +220,8 @@ Recompensa: 60 pts.
 | 1 | Evaluar azotea | `RoofEvaluator` | tap-detect (4 de 6) | 1 |
 | 2 | Diseñar espacio | `RoofDesigner` | placement (6+2 distractores) | 3 |
 | 3 | Elegir plantas | `PlantMatcher` | memorama (4 parejas) | 2 |
-| 4 | Instalar riego | `IrrigationBuilder` | drag (5+2 trampa, 90s) | 3 |
+| 4 | Instalar riego | `IrrigationBuilder` | **route-trace** (5 nodos en orden) | 3 |
+| 5 | **Antes y después** | `RoofDifference` | **spot-difference** (5 mejoras, 2 pistas) | 1 |
 
 Recompensa: 60 pts.
 
@@ -217,10 +246,10 @@ Recompensa: 80 pts.
 | Calor urbano / isla de calor | Cap. 1 | Completo |
 | Espacio público / urbanismo | Cap. 1 | Misión dedicada (SpaceRestorer) |
 | Biodiversidad / animales callejeros | Cap. 2 | Completo (Bolillo + BolilloRoute) |
-| Agua / humedales | Cap. 3 | Capítulo completo |
-| Separación de residuos | Cap. 1 (general) + Cap. 4 (datos) | Diferenciados |
-| **Composta** | Cap. 4 | Misión dedicada (CompostBuilder) |
-| **Techos verdes** | Cap. 5 | Capítulo completo (CIIEMAD/IPN) |
+| Agua / humedales / desperdicio | Cap. 3 | Capítulo completo (5 misiones) |
+| Separación de residuos | Cap. 1 (general) + Cap. 4 (swipe con datos) | Diferenciados |
+| **Composta** | Cap. 4 | Misión dedicada (CompostBuilder, secuencia) |
+| **Techos verdes** | Cap. 5 | Capítulo completo (CIIEMAD/IPN, 6 misiones) |
 | Comunidad / activación | Cap. 6 | Capítulo completo (festival) |
 
 ## Personajes
@@ -250,7 +279,7 @@ Imágenes en `app/assets/images/bolillo/` (14 PNGs):
 
 - **Easter egg**: 5 taps rápidos → sonríe, cola super-wag, corazones ❤️💛 (3s)
 - **foreignObject** `x=10 y=8 width=80 height=162`, base `width:100%; height:auto`
-- **BolilloRoute**: usa capas PNG directamente (no CharacterBody), emoción mapeada a `needsMet` (0-1: sad/worried, 2-3: neutral, 4-5: happy/wide), blink cada 3-5s, tail wag desde `needsMet >= 3`
+- **BolilloRoute**: usa `CharacterFace` con prop `emotion` mapeada a progreso (sad→worried→neutral→happy→excited)
 
 ### Mensajes de error educativos
 
@@ -269,22 +298,28 @@ Patrón: **"Por qué estuvo mal. 💡 Consejo suave."**
 
 ## Panel de administración (`/admin`)
 
-Dashboard oscuro con estadísticas:
-- **Resumen**: total jugadores, eventos, misiones completadas, capítulos completados
+Dashboard oscuro con 15 secciones de estadísticas (todas con notas explicativas):
+- **Resumen**: jugadores únicos, retención %, progreso promedio %, completaron juego
+- **Embudo de conversión**: registro → 1a misión → 1er capítulo → juego completo
+- **Sesiones**: promedio por sesión, total horas, sesiones registradas
+- **Horarios de conexión**: hora pico/baja, gráfica 24h
+- **Dispositivos**: mobile vs desktop, resoluciones más comunes
+- **Ranking de avatares**: más/menos elegidos con barras
 - **Distribución por edad**: barras horizontales (6-12, 12+)
-- **Embudo de capítulos**: jugadores que iniciaron vs completaron cada capítulo
-- **Misiones**: intentos, completadas, reintentos por misión
-- **Puntos de abandono**: último capítulo jugado antes de dejar de avanzar
-- **Avatares elegidos**: distribución de personajes
-- **Sesiones por día**: timeline de los últimos 30 días
-- **Estado backend**: indicador de conexión a `/cercu-backend`
-- **Eventos crudos**: tabla expandible con todos los eventos
+- **Tasa de error por edad**: reintentos/intentos (>40% = rojo)
+- **Embudo de capítulos**: iniciados vs completados + tiempo promedio
+- **Misiones detalle**: intentos, OK, retries, abandonos, tiempo promedio
+- **Misiones más rejugadas**: las favoritas
+- **Puntos de abandono**: último capítulo jugado
+- **Timeline 30 días**: sesiones por día
+- **Sistema**: estado backend + acciones
+- **Eventos crudos**: tabla expandible
 
 ### Analytics (`useAnalytics.ts`)
 
 Eventos rastreados:
 - `registration` — al registrar perfil (nombre, edad, avatar)
-- `session_start` — al cargar progreso guardado
+- `session_start` — al cargar progreso (incluye device info: screenWidth/Height, isMobile, userAgent)
 - `chapter_start` — al entrar a un capítulo
 - `chapter_complete` — al completar un capítulo
 - `mission_start` — al iniciar una misión
@@ -300,15 +335,15 @@ Almacenamiento dual:
 Solo localhost. Secciones:
 - **Personajes**: emociones + hablar
 - **Capítulos**: "▶ Jugar este capítulo"
-- **Misiones**: 28 minijuegos con "▶ Jugar" (overlay Teleport)
-- **🤖 Testing / Autobots**:
+- **Misiones**: 32 minijuegos con "▶ Jugar" (overlay Teleport)
+- **🤖 Testing / Autobots** (captura console.error + console.warn):
 
 | Botón | Función |
 |-------|---------|
 | 🤖 Verificar TODOS | Checa componente + diálogos + icon + objectives + reward |
+| 📱 UI/Mobile | Render, overflow, touch targets, drag stability, FPS, console |
+| 🔨 Stress | Random taps, wrong drags, spam clicks, console errors |
 | ▶ Correr TODOS | Abre cada misión secuencialmente (1.5s), completa, cierra |
-| ▶ Correr capítulo | Igual pero solo un capítulo |
-| ▶ Correr misión | Abre 1 misión (2s), completa, cierra |
 | ⚡ Completar | Marca done instantáneamente |
 | 🔄 Reset | Limpia progreso |
 
@@ -316,18 +351,20 @@ Log en terminal oscuro. Banner amarillo cuando corre. Resumen PASS/FAIL.
 
 ## Estado actual
 
-- **6 capítulos, 28 minijuegos** jugables
+- **6 capítulos, 32 minijuegos** jugables (10 mecánicas diferentes)
+- **8 componentes reutilizables** (MemoryGame, TapDetectGame, SequenceGame, SwipeClassifier, LineMatchGame, QuickQuiz, SpotDifference, RouteTracer)
+- **3 composables de juego** (useGameFeedback, useDragDrop, useGameAnimations)
 - **Edades 6-12 + modo 12+** (solo misiones difíciles, timer ×0.6)
 - **Dificultad adaptativa**: `difficulty: 1|2|3` por misión, `shouldSkipMission()` por edad
 - **Registro**: nombre + edad (6-12, 12+) + avatar = personaje existente
-- **Bolillo** con capas PNG expresivas + easter egg + emociones progresivas en BolilloRoute
+- **Bolillo** con capas PNG expresivas + easter egg + CharacterFace en BolilloRoute
 - **Mensajes de error** educativos y amigables
-- **Admin dashboard** con estadísticas de usuarios (local + backend)
+- **Admin dashboard** con 15 secciones de estadísticas (local + backend)
 - **Acceso secreto** a admin via gesto (3 taps x 4 esquinas en 6s) + login con password
 - **Analytics** rastrean: registro, sesiones, capítulos, misiones (localStorage + /cercu-backend)
-- **Dev tools** con autobots (verificar, correr, completar)
-- **Mobile-first**: paneles laterales con `flex-shrink: 0`, `overflow: hidden` en contenedores de juego
-- **Exploración infinita**: scroll bidireccional con loop (2 paneles duplicados)
+- **Dev tools** con autobots (verificar, UI/mobile, stress, correr, completar) + captura console
+- **Mobile-first**: 2 cols memorama, flex-shrink paneles, overflow hidden, touch-action
+- **Exploración**: scroll horizontal con loop (2 paneles duplicados)
 - **Siluetas de monumentos mexicanos**: 20 landmarks regionales por capítulo (opacity 0.35)
 - Integración Phaser.js preparada (`USE_PHASER = false`)
 - Deploy en guardianes.cercu.com.mx

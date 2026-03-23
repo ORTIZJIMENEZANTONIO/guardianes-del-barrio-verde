@@ -1306,6 +1306,12 @@ function goToChapter(chapterId: string) {
 .tag--placement { background: #10b981; }
 .tag--pipe-fit { background: #6366f1; }
 .tag--scenario-choice { background: #ec4899; }
+.tag--sequence { background: #14b8a6; }
+.tag--swipe { background: #f43f5e; }
+.tag--line-match { background: #a855f7; }
+.tag--spot-difference { background: #0ea5e9; }
+.tag--route-trace { background: #84cc16; }
+.tag--quiz { background: #f59e0b; }
 
 .mission-title { font-size: 13px; font-weight: 700; color: #1e293b; flex: 1; }
 .mission-pts { font-size: 12px; font-weight: 800; color: var(--color-green-dark); }

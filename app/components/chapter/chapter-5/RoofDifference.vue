@@ -1,7 +1,7 @@
 <template>
   <MinigameShell
     title="Antes y después"
-    description="Compara las dos escenas de la azotea: antes era gris y caliente, después tiene un techo verde. Encuentra las 5 diferencias que representan mejoras ambientales."
+    description="Compara las dos escenas: la azotea antes era gris y caliente. Después se transformó. Toca en la escena de 'Después' donde veas algo nuevo. Tienes 2 pistas."
     :completed="found"
     :total="5"
     :is-success="gameRef?.isComplete ?? false"
@@ -14,7 +14,8 @@
       ref="gameRef"
       :differences="diffs"
       :total="5"
-      hint="👆 Encuentra las 5 mejoras entre antes y después"
+      hint="👆 Toca en 'Después' donde veas algo que no estaba antes"
+      :max-hints="2"
       before-sky="hot"
       before-street="dirty"
       after-sky="nice"
