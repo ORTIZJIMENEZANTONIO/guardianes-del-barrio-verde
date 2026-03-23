@@ -1,247 +1,59 @@
 <template>
   <MinigameShell
     title="Detectar contaminación"
-    description="Explora la calle y encuentra los 4 focos de contaminación."
-    :completed="pollutionFound"
+    description="Toca cada zona del barrio para revisar. Encuentra los 4 puntos de contaminación."
+    :completed="found"
     :total="4"
-    :is-success="isComplete"
+    :is-success="gameRef?.isComplete ?? false"
     :show-result="showResult"
     @start="onStart"
     @complete="$emit('complete')"
-    @retry="resetGame"
+    @retry="onStart"
   >
-    <div class="pollution-game">
-      <SceneSky variant="hot" />
-      <SceneStreet variant="dirty" />
-      <div class="game-hint">
-        👆 Toca las zonas sospechosas · Contaminadas: {{ pollutionFound }}/4
-      </div>
-      <div class="street-scene">
-        <div
-          v-for="spot in spots"
-          :key="spot.id"
-          class="pollution-spot game-zone"
-          :class="{
-            'pollution-spot--tapped': spot.tapped,
-            'pollution-spot--bad game-zone--filled': spot.tapped && spot.isPollution,
-            'pollution-spot--ok game-zone--filled': spot.tapped && !spot.isPollution,
-          }"
-          :style="{ left: spot.x + '%', top: spot.y + '%', width: spot.w + 'px', height: spot.h + 'px' }"
-          @click="tapSpot(spot)"
-        >
-          <span class="pollution-spot__icon game-zone__icon">{{ spot.emoji }}</span>
-          <span class="pollution-spot__label game-zone__label">{{ spot.label }}</span>
-          <div v-if="spot.tapped" class="pollution-spot__badge">
-            {{ spot.isPollution ? '⚠️' : '✅' }}
-          </div>
-        </div>
-      </div>
-
-      <!-- Danger gauge -->
-      <div class="danger-gauge">
-        <div class="gauge-label">Contaminación</div>
-        <div class="gauge-bar">
-          <div class="gauge-fill" :style="{ height: gaugePercent + '%' }" />
-        </div>
-        <div class="gauge-value">{{ pollutionFound }}/4</div>
-      </div>
-
-      <!-- Feedback -->
-      <Transition name="fade">
-        <div v-if="feedback" class="pollution-feedback game-feedback" :class="feedback.type === 'bad' ? 'feedback--bad game-feedback--no' : 'feedback--ok game-feedback--ok'">
-          {{ feedback.message }}
-        </div>
-      </Transition>
-    </div>
+    <TapDetectGame
+      ref="gameRef"
+      :spot-data="spots"
+      :total="4"
+      hint="👆 Toca cada zona para investigar"
+      success-label="Contaminantes"
+      meter-label="Peligro"
+      target-badge="⚠️ Contaminado"
+      ok-badge="✅ Limpio"
+      found-emoji="⚠️"
+      sky-variant="hot"
+      street-variant="dirty"
+      success-color="#f97316"
+      @complete="onComplete"
+      @update="onUpdate"
+    />
   </MinigameShell>
 </template>
 
 <script setup lang="ts">
-import { useGameAnimations } from '~/composables/useGameAnimations'
+import type { TapSpot } from '~/components/minigame/TapDetectGame.vue'
 
-const emit = defineEmits<{
-  complete: []
-}>()
+defineEmits<{ complete: [] }>()
 
-const { shakeWrong, celebrateSuccess, confettiBurst } = useGameAnimations()
-
-interface PollutionSpot {
-  id: string
-  label: string
-  emoji: string
-  isPollution: boolean
-  x: number
-  y: number
-  w: number
-  h: number
-  tapped: boolean
-  message: string
-}
-
-const allSpots: PollutionSpot[] = [
-  { id: 's1', label: 'Suelo manchado', emoji: '🟤', isPollution: true, x: 10, y: 60, w: 80, h: 60, tapped: false,
-    message: 'Lixiviado: el suelo absorbe los tóxicos de la basura podrida.' },
-  { id: 's2', label: 'Coladera tapada', emoji: '🕳️', isPollution: true, x: 55, y: 55, w: 70, h: 55, tapped: false,
-    message: 'La basura tapa las coladeras y provoca inundaciones.' },
-  { id: 's3', label: 'Quema de basura', emoji: '🔥', isPollution: true, x: 35, y: 18, w: 65, h: 55, tapped: false,
-    message: 'Quemar basura libera gases tóxicos que dañan los pulmones.' },
-  { id: 's4', label: 'Tiradero ilegal', emoji: '🗑️', isPollution: true, x: 75, y: 30, w: 70, h: 55, tapped: false,
-    message: 'Un tiradero clandestino contamina suelo, agua y aire.' },
-  { id: 's5', label: 'Jardín limpio', emoji: '🌺', isPollution: false, x: 5, y: 25, w: 60, h: 50, tapped: false,
-    message: 'Este lugar se ve bien, no hay contaminación aquí. 💡 Busca zonas con basura acumulada, agua sucia o tierra dañada.' },
-  { id: 's6', label: 'Fuente activa', emoji: '⛲', isPollution: false, x: 45, y: 70, w: 60, h: 50, tapped: false,
-    message: 'Este lugar se ve bien, no hay contaminación aquí. 💡 Busca zonas con basura acumulada, agua sucia o tierra dañada.' },
-  { id: 's7', label: 'Pared pintada', emoji: '🎨', isPollution: false, x: 60, y: 10, w: 55, h: 50, tapped: false,
-    message: 'Este lugar se ve bien, no hay contaminación aquí. 💡 Busca zonas con basura acumulada, agua sucia o tierra dañada.' },
+const spots: TapSpot[] = [
+  { id: 'p1', label: 'Drenaje abierto', emoji: '🕳️', isTarget: true, x: 15, y: 55, w: 75, h: 55, message: 'Un drenaje sin tapa contamina el suelo y es peligroso para los peatones.' },
+  { id: 'p2', label: 'Aceite en piso', emoji: '🛢️', isTarget: true, x: 50, y: 65, w: 70, h: 50, message: 'El aceite de motor contamina el agua y el suelo. Un litro puede contaminar mil litros de agua.' },
+  { id: 'p3', label: 'Humo de taller', emoji: '💨', isTarget: true, x: 60, y: 15, w: 70, h: 55, message: 'El humo de talleres mecánicos contamina el aire del barrio.' },
+  { id: 'p4', label: 'Basura quemada', emoji: '🔥', isTarget: true, x: 10, y: 25, w: 65, h: 50, message: 'Quemar basura libera gases tóxicos que dañan la salud de todos.' },
+  { id: 'ok1', label: 'Jardinera', emoji: '🌿', isTarget: false, x: 40, y: 40, w: 60, h: 50, message: 'Las jardineras ayudan a filtrar el aire y retener agua.' },
+  { id: 'ok2', label: 'Bici estacionada', emoji: '🚲', isTarget: false, x: 75, y: 45, w: 55, h: 45, message: 'El transporte en bicicleta no contamina. ¡Bien por el ciclista!' },
+  { id: 'ok3', label: 'Tienda local', emoji: '🏪', isTarget: false, x: 30, y: 10, w: 60, h: 50, message: 'Comprar en tiendas locales reduce el transporte y la contaminación.' },
 ]
 
-const spots = ref<PollutionSpot[]>([])
-const pollutionFound = ref(0)
-const isComplete = computed(() => pollutionFound.value >= 4)
+const gameRef = ref<InstanceType<typeof import('~/components/minigame/TapDetectGame.vue').default> | null>(null)
+const found = ref(0)
 const showResult = ref(false)
-const feedback = ref<{ message: string; type: 'bad' | 'ok' } | null>(null)
-let feedbackTimer: ReturnType<typeof setTimeout> | null = null
-
-const gaugePercent = computed(() => {
-  return (pollutionFound.value / 4) * 100
-})
 
 function onStart() {
-  spots.value = allSpots.map(s => ({ ...s }))
-}
-
-function tapSpot(spot: PollutionSpot) {
-  if (spot.tapped) return
-  spot.tapped = true
-
-  if (spot.isPollution) {
-    pollutionFound.value++
-    showFeedback(spot.message, 'bad')
-    // Shake screen for pollution effect
-    const gameEl = document.querySelector('.pollution-game')
-    if (gameEl) shakeWrong(gameEl)
-  } else {
-    showFeedback(spot.message, 'ok')
-  }
-
-  if (isComplete.value) {
-    const gameEl = document.querySelector('.pollution-game')
-    if (gameEl) confettiBurst(gameEl, 16)
-    setTimeout(() => { showResult.value = true }, 1000)
-  }
-}
-
-function showFeedback(message: string, type: 'bad' | 'ok') {
-  if (feedbackTimer) clearTimeout(feedbackTimer)
-  feedback.value = { message, type }
-  feedbackTimer = setTimeout(() => { feedback.value = null }, 3500)
-}
-
-function resetGame() {
-  spots.value = allSpots.map(s => ({ ...s }))
-  pollutionFound.value = 0
+  found.value = 0
   showResult.value = false
+  nextTick(() => gameRef.value?.start())
 }
+
+function onUpdate(f: number) { found.value = f }
+function onComplete() { setTimeout(() => { showResult.value = true }, 1000) }
 </script>
-
-<style scoped>
-.pollution-game {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  background: transparent;
-  position: relative;
-  overflow: hidden;
-}
-
-.street-scene {
-  flex: 1;
-  position: relative;
-  z-index: 5;
-}
-
-.pollution-spot {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 2px dashed rgba(0, 0, 0, 0.25);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.pollution-spot:active { transform: scale(0.95); }
-
-.pollution-spot--tapped { cursor: default; }
-
-.pollution-spot--bad {
-  background: rgba(249, 115, 22, 0.3);
-  border-color: #f97316;
-  animation: heatWave 2s infinite;
-}
-
-.pollution-spot--ok {
-  background: rgba(82, 183, 136, 0.3);
-  border-color: var(--color-green-light);
-}
-
-.pollution-spot__icon { font-size: 24px; }
-.pollution-spot__label { font-size: 10px; font-weight: 800; color: var(--color-text); }
-.pollution-spot__badge {
-  font-size: 18px;
-  animation: scaleIn 0.3s ease;
-}
-
-/* Danger gauge */
-.danger-gauge {
-  width: 60px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 12px 8px;
-  background: rgba(255, 255, 255, 0.9);
-  gap: 6px;
-  z-index: 5;
-  position: relative;
-}
-
-.gauge-label { font-size: 10px; font-weight: 800; color: var(--color-text); text-align: center; }
-
-.gauge-bar {
-  flex: 1;
-  width: 20px;
-  background: #eee;
-  border-radius: 10px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column-reverse;
-}
-
-.gauge-fill {
-  width: 100%;
-  border-radius: 10px;
-  transition: all 0.5s ease;
-  background: linear-gradient(to top, #f97316, #ef4444);
-}
-
-.gauge-value { font-size: 14px; font-weight: 800; color: #f97316; }
-
-/* Feedback */
-/* feedback position handled by .game-feedback */
-
-.feedback--bad { background: rgba(249, 115, 22, 0.9); color: white; }
-.feedback--ok { background: rgba(82, 183, 136, 0.9); color: white; }
-
-.fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-  to { opacity: 1; transform: translateX(-50%) translateY(0); }
-}
-</style>
