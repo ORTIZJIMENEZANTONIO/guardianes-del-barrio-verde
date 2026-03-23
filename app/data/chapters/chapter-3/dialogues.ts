@@ -58,55 +58,80 @@ export const chapter3Dialogues: Record<string, DialoguePool> = {
     ],
   },
 
-  // ===== MISIÓN 2 — Proteger el humedal del barrio =====
+  // ===== MISIÓN 2 — Detectar desperdicios de agua =====
   'mission-2-intro': {
     id: 'mission-2-intro',
-    context: 'Intro misión 2 — cuidar el humedal',
+    context: 'Intro misión 2 — encontrar donde se desperdicia agua en el barrio',
     lines: [
-      { id: 'm2i-1', speaker: 'xani', emotion: 'excited', text: '{nombre}, ahora vamos a cuidar el humedal.' },
-      { id: 'm2i-2', speaker: 'xani', emotion: 'neutral', text: 'Aunque sea pequeño, puede guardar humedad, limpiar el agua y dar vida al barrio.' },
-      { id: 'm2i-3', speaker: 'timo', emotion: 'happy', text: 'En resumen: no es un lodito inútil.', optional: true },
+      { id: 'm2i-1', speaker: 'xani', emotion: 'thinking', text: '{nombre}, el agua no solo se pierde por fugas grandes. A veces son pequeños desperdicios que nadie nota.' },
+      { id: 'm2i-2', speaker: 'timo', emotion: 'neutral', text: 'Revisa cada rincón del barrio. Toca las zonas sospechosas para investigar.' },
     ],
   },
   'mission-2-success': {
     id: 'mission-2-success',
-    context: 'Éxito misión 2 — humedal sano, aves e insectos aparecen',
+    context: 'Éxito misión 2 — desperdicios detectados',
     lines: [
-      { id: 'm2s-1', speaker: 'xani', emotion: 'proud', text: 'Mucho mejor, {nombre}. Un humedal sano ayuda al agua y a la vida.' },
-      { id: 'm2s-2', speaker: 'lila', emotion: 'happy', text: 'No solo cuidamos una fuga. También protegimos un espacio importante.', optional: true },
+      { id: 'm2s-1', speaker: 'xani', emotion: 'happy', text: '¡Buen ojo, {nombre}! Ahora sabemos dónde se pierde el agua.' },
+      { id: 'm2s-2', speaker: 'timo', emotion: 'proud', text: 'Una llave goteando parece poca cosa, pero al año son miles de litros.', optional: true },
     ],
   },
   'mission-2-failure': {
     id: 'mission-2-failure',
     context: 'Fallo misión 2',
     lines: [
-      { id: 'm2f-1', speaker: 'xani', emotion: 'neutral', text: 'Esa planta no va ahí, {nombre}. Piensa en qué necesita el humedal.' },
+      { id: 'm2f-1', speaker: 'xani', emotion: 'neutral', text: 'Fíjate bien, {nombre}. Busca llaves abiertas, fugas o charcos que no deberían estar ahí.' },
     ],
   },
 
-  // ===== MISIÓN 3 — Reparar y redirigir el agua =====
+  // ===== MISIÓN 3 — Proteger el humedal del barrio =====
   'mission-3-intro': {
     id: 'mission-3-intro',
-    context: 'Intro misión 3 — reparación final de la tubería',
+    context: 'Intro misión 3 — cuidar el humedal',
     lines: [
-      { id: 'm3i-1', speaker: 'timo', emotion: 'excited', text: '{nombre}, ahora sí: la reparación final.' },
-      { id: 'm3i-2', speaker: 'lila', emotion: 'neutral', text: 'Si lo hacemos bien, dejamos de desperdiciar agua.' },
-      { id: 'm3i-3', speaker: 'xani', emotion: 'thinking', text: 'Y también evitamos que llegue con demasiada fuerza a la zona húmeda.', optional: true },
+      { id: 'm3i-1', speaker: 'xani', emotion: 'excited', text: '{nombre}, ahora vamos a cuidar el humedal.' },
+      { id: 'm3i-2', speaker: 'xani', emotion: 'neutral', text: 'Aunque sea pequeño, puede guardar humedad, limpiar el agua y dar vida al barrio.' },
+      { id: 'm3i-3', speaker: 'timo', emotion: 'happy', text: 'En resumen: no es un lodito inútil.', optional: true },
     ],
   },
   'mission-3-success': {
     id: 'mission-3-success',
-    context: 'Éxito misión 3 — fuga reparada, agua controlada',
+    context: 'Éxito misión 3 — humedal sano, aves e insectos aparecen',
     lines: [
-      { id: 'm3s-1', speaker: 'timo', emotion: 'proud', text: '¡Listo, {nombre}! Agua bajo control. 💧' },
-      { id: 'm3s-2', speaker: 'xani', emotion: 'happy', text: 'Ahora el agua está donde debe estar.', optional: true },
+      { id: 'm3s-1', speaker: 'xani', emotion: 'proud', text: 'Mucho mejor, {nombre}. Un humedal sano ayuda al agua y a la vida.' },
+      { id: 'm3s-2', speaker: 'lila', emotion: 'happy', text: 'No solo cuidamos una fuga. También protegimos un espacio importante.', optional: true },
     ],
   },
   'mission-3-failure': {
     id: 'mission-3-failure',
     context: 'Fallo misión 3',
     lines: [
-      { id: 'm3f-1', speaker: 'timo', emotion: 'thinking', text: 'Esa pieza no va ahí, {nombre}. Piensa en el camino del agua.' },
+      { id: 'm3f-1', speaker: 'xani', emotion: 'neutral', text: 'Fíjate en las cartas: cada ser vivo tiene una función. ¿Cuál va con cuál?' },
+    ],
+  },
+
+  // ===== MISIÓN 4 — Reparar y redirigir el agua =====
+  'mission-4-intro': {
+    id: 'mission-4-intro',
+    context: 'Intro misión 4 — reparación final de la tubería',
+    lines: [
+      { id: 'm4i-1', speaker: 'timo', emotion: 'excited', text: '{nombre}, ahora sí: la reparación final.' },
+      { id: 'm4i-2', speaker: 'lila', emotion: 'neutral', text: 'Si lo hacemos bien, dejamos de desperdiciar agua.' },
+      { id: 'm4i-3', speaker: 'xani', emotion: 'thinking', text: 'Y también evitamos que llegue con demasiada fuerza a la zona húmeda.', optional: true },
+    ],
+  },
+  'mission-4-success': {
+    id: 'mission-4-success',
+    context: 'Éxito misión 4 — fuga reparada, agua controlada',
+    lines: [
+      { id: 'm4s-1', speaker: 'timo', emotion: 'proud', text: '¡Listo, {nombre}! Agua bajo control. 💧' },
+      { id: 'm4s-2', speaker: 'xani', emotion: 'happy', text: 'Ahora el agua está donde debe estar.', optional: true },
+    ],
+  },
+  'mission-4-failure': {
+    id: 'mission-4-failure',
+    context: 'Fallo misión 4',
+    lines: [
+      { id: 'm4f-1', speaker: 'timo', emotion: 'thinking', text: 'Esa pieza no va ahí, {nombre}. Fíjate en la forma del hueco y el tipo de pieza.' },
     ],
   },
 

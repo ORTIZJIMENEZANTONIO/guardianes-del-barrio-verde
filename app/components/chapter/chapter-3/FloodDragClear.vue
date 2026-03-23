@@ -1,7 +1,7 @@
 <template>
   <MinigameShell
     title="Controlar el desperdicio"
-    description="Arrastra los obstáculos fuera del agua para despejar el paso."
+    description="Hay basura tapando el paso del agua. Arrastra cada obstáculo hacia la zona segura (a la derecha) para liberar el flujo."
     :completed="cleared"
     :total="5"
     :is-success="isComplete"
@@ -40,8 +40,8 @@
         </div>
 
         <!-- Safe zone -->
-        <div class="safe-zone game-zone" ref="safeZoneRef">
-          <div class="safe-zone__label">Zona segura &rarr;</div>
+        <div class="safe-zone game-zone" ref="safeZoneRef" :class="{ 'safe-zone--highlight': !!dragging }">
+          <div class="safe-zone__label">{{ dragging ? '¡Suelta aqui!' : 'Zona segura' }}</div>
 
           <!-- Already-safe items (not draggable) -->
           <div
@@ -66,8 +66,9 @@
       </div>
 
       <!-- Hint -->
-      <div class="flood-hint">
-        {{ dragging ? '⬅️ Lleva el obstáculo a la zona segura' : '👆 Arrastra los obstáculos fuera del agua' }}
+      <div class="game-hint">
+        {{ dragging ? '➡️ Suelta el obstáculo sobre la zona segura (derecha)' : '👆 Toca y arrastra cada basura hacia la zona segura →' }}
+        · Despejados: {{ cleared }}/5
       </div>
 
       <!-- Feedback -->
@@ -297,6 +298,13 @@ function resetGame() {
   z-index: 4;
 }
 
+.safe-zone--highlight {
+  border-color: #22c55e;
+  border-style: solid;
+  background: rgba(34, 197, 94, 0.15);
+  animation: pulse 1s ease-in-out infinite;
+}
+
 .safe-zone__label {
   font-size: 11px;
   font-weight: 800;
@@ -307,6 +315,12 @@ function resetGame() {
   border-radius: var(--radius-full);
   white-space: nowrap;
   box-shadow: var(--shadow-sm);
+}
+
+.safe-zone--highlight .safe-zone__label {
+  background: #22c55e;
+  color: white;
+  font-size: 13px;
 }
 
 .safe-item {
@@ -384,23 +398,6 @@ function resetGame() {
 }
 
 /* Hint */
-.flood-hint {
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.95);
-  padding: 8px 18px;
-  border-radius: var(--radius-full);
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--color-text);
-  z-index: 10;
-  white-space: nowrap;
-  box-shadow: var(--shadow-md);
-  transition: all 300ms ease;
-}
-
 /* Feedback */
 .feedback {
   position: absolute;

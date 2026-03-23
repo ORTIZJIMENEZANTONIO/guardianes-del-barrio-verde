@@ -142,6 +142,10 @@ export const usePlayerStore = defineStore('player', {
           score: this.score,
           completedMissions: this.completedMissions.length,
           completedChapters: this.completedChapters.length,
+          screenWidth: window.innerWidth,
+          screenHeight: window.innerHeight,
+          isMobile: window.innerWidth < 768,
+          userAgent: navigator.userAgent.slice(0, 120),
         })
         return true
       }

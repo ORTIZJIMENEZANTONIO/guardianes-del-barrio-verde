@@ -1,7 +1,7 @@
 <template>
   <MinigameShell
     title="Reparar y redirigir"
-    description="Arrastra las piezas de tubería al lugar correcto para reparar la fuga."
+    description="La tuberia tiene 4 huecos (los signos de ?) que gotean agua. Arrastra las piezas correctas desde abajo hasta cada hueco. Cuidado: hay 2 piezas trampa que no sirven."
     :completed="piecesPlaced"
     :total="4"
     :is-success="isComplete"
@@ -18,8 +18,9 @@
       <SceneStreet variant="normal" />
 
       <!-- Hint -->
-      <div class="pipe-hint" :class="{ 'hint--active': !!dragging }">
-        {{ dragging ? 'Lleva la pieza al hueco correcto' : 'Arrastra una pieza de abajo al hueco' }}
+      <div class="game-hint">
+        {{ dragging ? '⬆️ Lleva la pieza a un hueco con ? que gotea' : '👆 Toca una pieza de abajo y arrastrala a un hueco con ?' }}
+        · Reparados: {{ piecesPlaced }}/4
       </div>
 
       <!-- Pipe route area -->
@@ -103,7 +104,7 @@
 
       <!-- Draggable pieces tray -->
       <div class="pieces-tray game-tray">
-        <div class="tray-label game-tray__title">Piezas de tubería:</div>
+        <div class="tray-label game-tray__title">Piezas disponibles (arrastra hacia arriba):</div>
         <div class="pieces-row">
           <div
             v-for="piece in pieces"
@@ -354,27 +355,6 @@ function resetGame() {
 }
 
 /* --- Hint --- */
-.pipe-hint {
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.95);
-  padding: 8px 18px;
-  border-radius: var(--radius-full);
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--color-text);
-  z-index: 10;
-  white-space: nowrap;
-  box-shadow: var(--shadow-md);
-  transition: all 300ms ease;
-}
-
-.hint--active {
-  background: #dbeafe;
-  border: 2px solid #3b82f6;
-}
 
 /* --- Pipe route area --- */
 .pipe-route {

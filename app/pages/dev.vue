@@ -310,6 +310,7 @@ import NeighborInviter from '~/components/chapter/chapter-6/NeighborInviter.vue'
 import FestivalProblems from '~/components/chapter/chapter-6/FestivalProblems.vue'
 import FestivalInauguration from '~/components/chapter/chapter-6/FestivalInauguration.vue'
 import FloodDragClear from '~/components/chapter/chapter-3/FloodDragClear.vue'
+import WaterWasteDetector from '~/components/chapter/chapter-3/WaterWasteDetector.vue'
 import WetlandMemory from '~/components/chapter/chapter-3/WetlandMemory.vue'
 import PipeDragFit from '~/components/chapter/chapter-3/PipeDragFit.vue'
 
@@ -375,8 +376,9 @@ const missionComponentMap: Record<string, any> = {
   'mission-5-reactivate': ParkDragRestore,
   'mission-6-bolillo-route': BolilloRoute,
   'mission-1-waste': FloodDragClear,
-  'mission-2-wetland': WetlandMemory,
-  'mission-3-repair': PipeDragFit,
+  'mission-2-detect': WaterWasteDetector,
+  'mission-3-wetland': WetlandMemory,
+  'mission-4-repair': PipeDragFit,
   // Chapter 4
   'mission-1-collect': TrashCollector,
   'mission-2-separate': WasteSeparator,
@@ -627,12 +629,44 @@ function updateSummary() {
   testSummary.value = { pass, fail, total: pass + fail }
 }
 
+// ===== Console capture helper =====
+function captureConsole() {
+  const errors: string[] = []
+  const warnings: string[] = []
+  const origError = console.error
+  const origWarn = console.warn
+  console.error = (...args: any[]) => {
+    const msg = args.map(a => String(a)).join(' ').slice(0, 120)
+    // Skip Vue internal devtools messages
+    if (!msg.includes('devtools')) errors.push(msg)
+    origError.apply(console, args)
+  }
+  console.warn = (...args: any[]) => {
+    const msg = args.map(a => String(a)).join(' ').slice(0, 120)
+    if (!msg.includes('devtools') && !msg.includes('Hydration')) warnings.push(msg)
+    origWarn.apply(console, args)
+  }
+  return {
+    errors,
+    warnings,
+    restore() { console.error = origError; console.warn = origWarn },
+    getIssues() {
+      const issues: string[] = []
+      if (errors.length > 0) issues.push(`${errors.length} error(s): ${errors[0].slice(0, 80)}`)
+      if (warnings.length > 0) issues.push(`${warnings.length} warn(s): ${warnings[0].slice(0, 80)}`)
+      return issues
+    },
+  }
+}
+
 // ===== UI / MOBILE TESTS (enhanced) =====
 
 async function uiTestMission(m: MissionConfig) {
   const issues: string[] = []
   const passed: string[] = []
   runningTest.value = `📱 UI: ${m.title}...`
+
+  const con = captureConsole()
 
   // Mount
   playingMissionId.value = m.id
@@ -794,6 +828,11 @@ async function uiTestMission(m: MissionConfig) {
   })
   if (brokenImgs > 0) issues.push(`${brokenImgs} imgs rotas`)
 
+  // 13. Console errors & warnings
+  con.restore()
+  issues.push(...con.getIssues())
+  if (con.errors.length === 0 && con.warnings.length === 0) passed.push('console-limpia')
+
   // Close
   playingMissionId.value = null
   playingMissionTitle.value = ''
@@ -838,13 +877,7 @@ async function stressTestMission(m: MissionConfig) {
   const passed: string[] = []
   runningTest.value = `🔨 Stress: ${m.title}...`
 
-  // Capture console errors during test
-  const capturedErrors: string[] = []
-  const origError = console.error
-  console.error = (...args: any[]) => {
-    capturedErrors.push(args.map(a => String(a)).join(' ').slice(0, 100))
-    origError.apply(console, args)
-  }
+  const con = captureConsole()
 
   playingMissionId.value = m.id
   playingMissionTitle.value = m.title
@@ -852,7 +885,7 @@ async function stressTestMission(m: MissionConfig) {
 
   const overlay = document.querySelector('.mission-player-area')
   if (!overlay) {
-    console.error = origError
+    con.restore()
     testResults.value[m.id] = log(false, `🔨 ${m.title}: no se montó`)
     runningTest.value = null
     return
@@ -869,7 +902,7 @@ async function stressTestMission(m: MissionConfig) {
   const gameArea = overlay.querySelector('.minigame-area') as HTMLElement | null
   if (!gameArea) {
     issues.push('no gameArea')
-    console.error = origError
+    con.restore()
     playingMissionId.value = null
     testResults.value[m.id] = log(false, `🔨 ${m.title}: ${issues.join(' | ')}`)
     runningTest.value = null
@@ -965,13 +998,10 @@ async function stressTestMission(m: MissionConfig) {
     }
   }
 
-  // 9. Check captured console errors
-  if (capturedErrors.length > 0) {
-    issues.push(`${capturedErrors.length} console.error: ${capturedErrors[0].slice(0, 60)}`)
-  }
-
-  // Restore console
-  console.error = origError
+  // 9. Console errors & warnings
+  con.restore()
+  issues.push(...con.getIssues())
+  if (con.errors.length === 0 && con.warnings.length === 0) passed.push('console-limpia')
 
   // Close
   playingMissionId.value = null
@@ -1014,7 +1044,7 @@ const missionIconMapRef: Record<string, string> = {
   'mission-4-leak': '🔧', 'mission-5-restore': '🎨',
   'mission-1-paths': '🧹', 'mission-2-soil': '🌱', 'mission-3-water': '💧',
   'mission-4-life': '🦋', 'mission-5-reactivate': '🎨', 'mission-6-bolillo-route': '🐕',
-  'mission-1-waste': '🚧', 'mission-2-wetland': '🌿', 'mission-3-repair': '🔧',
+  'mission-1-waste': '🚧', 'mission-2-detect': '🔍', 'mission-3-wetland': '🌿', 'mission-4-repair': '🔧',
   'mission-1-collect': '🧹', 'mission-2-separate': '♻️', 'mission-3-pollution': '🔍',
   'mission-4-compost': '🌱', 'mission-5-recycle': '🔄',
   'mission-0-greenroof': '🌿', 'mission-1-evaluate': '📋', 'mission-2-design': '🏗️',

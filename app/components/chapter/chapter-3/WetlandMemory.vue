@@ -1,7 +1,7 @@
 <template>
   <MinigameShell
     title="Proteger el humedal"
-    description="Encuentra las parejas para aprender sobre el humedal y como cuidarlo."
+    description="Voltea las cartas de dos en dos. Cada animal o planta tiene una pareja que explica su funcion en el humedal. Por ejemplo: Rana + Indica agua sana. Encuentra las 4 parejas."
     :completed="matchedCount"
     :total="4"
     :is-success="isComplete"
@@ -13,6 +13,10 @@
     <div class="memory-game">
       <SceneSky variant="nice" />
       <SceneStreet variant="normal" />
+
+      <div class="game-hint">
+        👆 Voltea 2 cartas: une cada ser vivo con su funcion · Parejas: {{ matchedCount }}/4
+      </div>
 
       <div class="card-grid">
         <div

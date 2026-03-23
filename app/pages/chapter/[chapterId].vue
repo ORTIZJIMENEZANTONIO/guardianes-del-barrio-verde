@@ -341,6 +341,7 @@ const WetlandMemoryPhaser = defineAsyncComponent(() => import('~/components/chap
 const PipeDragFitPhaser = defineAsyncComponent(() => import('~/components/chapter/chapter-3/PipeDragFitPhaser.vue'))
 
 import FloodDragClear from '~/components/chapter/chapter-3/FloodDragClear.vue'
+import WaterWasteDetector from '~/components/chapter/chapter-3/WaterWasteDetector.vue'
 import WetlandMemory from '~/components/chapter/chapter-3/WetlandMemory.vue'
 import PipeDragFit from '~/components/chapter/chapter-3/PipeDragFit.vue'
 
@@ -508,8 +509,9 @@ const missionComponentMap: Record<string, any> = {
   'mission-6-bolillo-route': BolilloRoute,
   // Chapter 3
   'mission-1-waste': USE_PHASER ? FloodDragClearPhaser : FloodDragClear,
-  'mission-2-wetland': USE_PHASER ? WetlandMemoryPhaser : WetlandMemory,
-  'mission-3-repair': USE_PHASER ? PipeDragFitPhaser : PipeDragFit,
+  'mission-2-detect': WaterWasteDetector,
+  'mission-3-wetland': USE_PHASER ? WetlandMemoryPhaser : WetlandMemory,
+  'mission-4-repair': USE_PHASER ? PipeDragFitPhaser : PipeDragFit,
   // Chapter 4
   'mission-1-collect': TrashCollector,
   'mission-2-separate': WasteSeparator,
@@ -726,7 +728,7 @@ function startCurrentMission() {
   missionPhase.value = 'playing'
   const { trackEvent } = useAnalytics()
   trackEvent('mission_start', playerStore.playerName, playerStore.playerAge, {
-    missionId: currentMission.value?.id,
+    missionId: currentMissionConfig.value?.id,
     chapterId: route.params.chapterId,
   })
 }
@@ -813,8 +815,9 @@ const missionIconMap: Record<string, string> = {
   'mission-6-bolillo-route': '🐕',
   // Chapter 3
   'mission-1-waste': '🚧',
-  'mission-2-wetland': '🌿',
-  'mission-3-repair': '🔧',
+  'mission-2-detect': '🔍',
+  'mission-3-wetland': '🌿',
+  'mission-4-repair': '🔧',
   // Chapter 4
   'mission-1-collect': '🧹',
   'mission-2-separate': '♻️',
