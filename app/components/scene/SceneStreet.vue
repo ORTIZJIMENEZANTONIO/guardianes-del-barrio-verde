@@ -434,6 +434,7 @@ function windowFill(index: number): string {
   right: 0;
   height: 60%;
   z-index: 1;
+  pointer-events: none;
 }
 
 .buildings-svg {

@@ -130,6 +130,7 @@ onMounted(() => {
 }
 
 .chapters-content {
+  position: relative;
   z-index: 5;
   padding: 20px;
   width: 100%;
