@@ -7,7 +7,7 @@ export const chapterBonusDialogues: Record<string, DialoguePool> = {
     context: 'Cinemática — siluetas de animales mexicanos desvaneciéndose, bosques talados',
     lines: [
       { id: 'ci-1', speaker: 'nube-gris', emotion: 'mischievous', text: '¿Animales en peligro? Bah, ya aparecerán otros. Así funciona la naturaleza, ¿no?' },
-      { id: 'ci-2', speaker: 'xani', emotion: 'angry', text: '¡No! Cuando una especie desaparece, no regresa jamás. Y México pierde parte de lo que lo hace único.' },
+      { id: 'ci-2', speaker: 'xani', emotion: 'worried', text: '¡No! Cada especie es especial. Si desaparece, ya no vuelve. Por eso hay que cuidarlas.' },
     ],
   },
 
@@ -46,7 +46,7 @@ export const chapterBonusDialogues: Record<string, DialoguePool> = {
     id: 'observation-axolotl',
     context: 'Spot del ajolote',
     lines: [
-      { id: 'oa-1', speaker: 'xani', emotion: 'sad', text: 'El ajolote solo vive en los canales de Xochimilco, Ciudad de México. La contaminación del agua lo está matando.' },
+      { id: 'oa-1', speaker: 'xani', emotion: 'sad', text: 'El ajolote solo vive en los canales de Xochimilco, Ciudad de México. La contaminación del agua le hace mucho daño.' },
       { id: 'oa-2', speaker: 'xani', emotion: 'neutral', text: 'Quedan menos de 1,000 ajolotes en libertad. Es el anfibio más amenazado del mundo.', optional: true },
     ],
   },

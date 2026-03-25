@@ -30,7 +30,9 @@
           Acerca de
         </GameButton>
 
-        <!-- Dev/Admin access via secret gesture (tap bottom-right corner 5x) -->
+        <GameButton v-if="isDev" variant="ghost" size="md" @click="router.push('/dev')" class="dev-btn">
+          🛠 Dev Tools
+        </GameButton>
       </div>
 
       <div class="home-footer animate-fade-in" style="animation-delay: 0.4s">
@@ -71,6 +73,7 @@ const showCreditsModal = ref(false)
 
 const hasSave = ref(false)
 const showEasterEgg = ref(false)
+const isDev = ref(false)
 let tapCount = 0
 let tapTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -87,6 +90,8 @@ function onLogoTap() {
 
 onMounted(() => {
   hasSave.value = playerStore.loadProgress()
+  const host = window.location.hostname
+  isDev.value = host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168')
 })
 
 function startNewGame() {
@@ -245,5 +250,10 @@ function continueGame() {
   color: var(--color-green-dark);
   font-weight: 800;
   font-size: 16px;
+}
+
+.dev-btn {
+  opacity: 0.7;
+  font-size: 13px !important;
 }
 </style>

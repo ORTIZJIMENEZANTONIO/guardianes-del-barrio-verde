@@ -16,7 +16,7 @@
       back-emoji="💧"
       back-gradient="linear-gradient(135deg, #3b82f6, #1d4ed8)"
       accent-color="#3b82f6"
-      error-message="Esas cartas no son pareja. 💡 Piensa en qué hace cada parte del humedal: ¿filtra, retiene o da hogar?"
+      error-message="Esas cartas no son pareja. 💡 Recuerda que cada parte del humedal tiene una función especial."
       success-message="¡Pareja encontrada!"
       hint="👆 Voltea 2 cartas: une cada ser vivo con su funcion"
       @complete="onComplete"

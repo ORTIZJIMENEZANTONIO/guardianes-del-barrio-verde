@@ -15,7 +15,7 @@
       :questions="questions"
       :time-per-question="15"
       accent-color="#ef4444"
-      error-message="Piensa en acciones que protejan el hábitat natural y no dañen a los animales."
+      error-message="Busca acciones que protejan el hábitat natural y no dañen a los animales."
       @complete="onComplete"
       @update="onUpdate"
     />

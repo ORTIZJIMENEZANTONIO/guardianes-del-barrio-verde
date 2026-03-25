@@ -156,7 +156,7 @@ export const chapter2Dialogues: Record<string, DialoguePool> = {
     id: 'mission-2-failure',
     context: 'Fallo misión 2',
     lines: [
-      { id: 'm2f-1', speaker: 'bolillo', emotion: 'neutral', text: 'Mmm… esas no eran pareja, {nombre}. Piensa bien, ¡tú puedes!' },
+      { id: 'm2f-1', speaker: 'bolillo', emotion: 'neutral', text: 'Mmm… esas no eran pareja, {nombre}. Intenta con otras cartas, ¡tú puedes!' },
     ],
   },
 
@@ -208,7 +208,7 @@ export const chapter2Dialogues: Record<string, DialoguePool> = {
     id: 'mission-4-failure',
     context: 'Fallo misión 4',
     lines: [
-      { id: 'm4f-1', speaker: 'bolillo', emotion: 'neutral', text: 'Piensa qué necesita cada animal, {nombre}. Yo te doy una pista: todos necesitamos un lugar seguro.' },
+      { id: 'm4f-1', speaker: 'bolillo', emotion: 'neutral', text: 'Mira qué necesita cada animal, {nombre}. Yo te doy una pista: todos necesitamos un lugar seguro.' },
     ],
   },
 
@@ -234,7 +234,7 @@ export const chapter2Dialogues: Record<string, DialoguePool> = {
     id: 'mission-5-failure',
     context: 'Fallo misión 5',
     lines: [
-      { id: 'm5f-1', speaker: 'bolillo', emotion: 'happy', text: '¡Casi lo logras, {nombre}! Piensa en qué necesita la gente para querer venir aquí.' },
+      { id: 'm5f-1', speaker: 'bolillo', emotion: 'happy', text: '¡Casi lo logras, {nombre}! Observa qué necesita la gente para querer venir aquí.' },
     ],
   },
 
@@ -271,7 +271,7 @@ export const chapter2Dialogues: Record<string, DialoguePool> = {
     id: 'mission-6-failure',
     context: 'Fallo misión 6',
     lines: [
-      { id: 'm6f-1', speaker: 'xani', emotion: 'neutral', text: 'Piensa en lo que Bolillo necesita en cada parada, {nombre}. ¡Tú puedes!' },
+      { id: 'm6f-1', speaker: 'xani', emotion: 'neutral', text: 'Revisa lo que Bolillo necesita en cada parada, {nombre}. ¡Tú puedes!' },
     ],
   },
 

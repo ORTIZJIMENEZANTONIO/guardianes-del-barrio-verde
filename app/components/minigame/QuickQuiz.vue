@@ -176,7 +176,7 @@ function selectAnswer(opt: QuizOption) {
     })
   } else {
     streakState.miss()
-    showNo(opt.message || 'Esa no era la mejor opción.')
+    showNo(opt.message || '¡Casi! Esa no era, pero sigue intentando.')
     nextTick(() => {
       const el = document.querySelector('.quiz-option--wrong')
       if (el) shakeWrong(el)

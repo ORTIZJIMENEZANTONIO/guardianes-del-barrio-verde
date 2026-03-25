@@ -157,7 +157,7 @@ export const chapter5Dialogues: Record<string, DialoguePool> = {
     context: 'Intro misión 2 — diseño del espacio en la azotea',
     lines: [
       { id: 'm2i-1', speaker: 'xani', emotion: 'excited', text: '{nombre}, ahora viene lo divertido: diseñar la azotea verde.' },
-      { id: 'm2i-2', speaker: 'timo', emotion: 'thinking', text: 'No todo cabe en un techo. ¡Piensa bien qué va en cada lugar!' },
+      { id: 'm2i-2', speaker: 'timo', emotion: 'thinking', text: 'No todo cabe en un techo. ¡Mira bien qué va en cada lugar!' },
       { id: 'm2i-3', speaker: 'nube-gris', emotion: 'mischievous', text: '¡Yo pondría una alberca! Con resbaladilla.', optional: true },
     ],
   },
@@ -173,7 +173,7 @@ export const chapter5Dialogues: Record<string, DialoguePool> = {
     id: 'mission-2-failure',
     context: 'Fallo misión 2',
     lines: [
-      { id: 'm2f-1', speaker: 'timo', emotion: 'thinking', text: 'Piensa, {nombre}: ¿eso de verdad funciona en un techo? ¡Intenta con otra solución!' },
+      { id: 'm2f-1', speaker: 'timo', emotion: 'thinking', text: 'Observa, {nombre}: ¿eso de verdad funciona en un techo? ¡Intenta con otra solución!' },
     ],
   },
 
@@ -199,7 +199,7 @@ export const chapter5Dialogues: Record<string, DialoguePool> = {
     id: 'mission-3-failure',
     context: 'Fallo misión 3',
     lines: [
-      { id: 'm3f-1', speaker: 'xani', emotion: 'neutral', text: 'Esas no son pareja, {nombre}. Piensa: ¿qué necesita esa planta para sobrevivir?' },
+      { id: 'm3f-1', speaker: 'xani', emotion: 'neutral', text: 'Esas no son pareja, {nombre}. Recuerda: cada planta necesita algo especial para sobrevivir.' },
     ],
   },
 
@@ -225,7 +225,7 @@ export const chapter5Dialogues: Record<string, DialoguePool> = {
     id: 'mission-4-failure',
     context: 'Fallo misión 4',
     lines: [
-      { id: 'm4f-1', speaker: 'timo', emotion: 'thinking', text: 'Esa pieza no encaja ahí, {nombre}. Piensa en el camino que debe seguir el agua.' },
+      { id: 'm4f-1', speaker: 'timo', emotion: 'thinking', text: 'Esa pieza no encaja ahí, {nombre}. Sigue el camino que debe recorrer el agua.' },
     ],
   },
 

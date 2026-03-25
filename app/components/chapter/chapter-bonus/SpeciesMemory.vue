@@ -39,7 +39,7 @@ const pairs: MemoryPair[] = [
   { pairId: 4, emoji: '🦋', label: 'Mariposa monarca' },
   { pairId: 4, emoji: '🌡️', label: 'Cambio climático' },
   { pairId: 5, emoji: '🐺', label: 'Lobo mexicano' },
-  { pairId: 5, emoji: '🔫', label: 'Caza furtiva' },
+  { pairId: 5, emoji: '🚫', label: 'Caza ilegal' },
 ]
 
 const gameRef = ref<InstanceType<typeof import('~/components/minigame/MemoryGame.vue').default> | null>(null)

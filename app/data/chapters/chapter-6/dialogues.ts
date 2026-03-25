@@ -54,7 +54,7 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
     id: 'mission-1-failure',
     context: 'Fallo mision 1',
     lines: [
-      { id: 'm1f-1', speaker: 'lila', emotion: 'neutral', text: 'Esa estacion no va ahi, {nombre}. Piensa en que necesita cada zona.' },
+      { id: 'm1f-1', speaker: 'lila', emotion: 'neutral', text: 'Esa estacion no va ahi, {nombre}. Mira que necesita cada zona.' },
     ],
   },
 
@@ -106,7 +106,7 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
     id: 'mission-3-failure',
     context: 'Fallo mision 3',
     lines: [
-      { id: 'm3f-1', speaker: 'timo', emotion: 'thinking', text: 'Esa no es la solucion correcta, {nombre}. Piensa: que resuelve este problema de forma sustentable?' },
+      { id: 'm3f-1', speaker: 'timo', emotion: 'thinking', text: 'Esa no es la solucion correcta, {nombre}. Busca: ¿que resuelve este problema de forma sustentable?' },
     ],
   },
 
@@ -132,7 +132,7 @@ export const chapter6Dialogues: Record<string, DialoguePool> = {
     id: 'mission-4-failure',
     context: 'Fallo mision 4',
     lines: [
-      { id: 'm4f-1', speaker: 'lila', emotion: 'neutral', text: 'Ese elemento no va ahi, {nombre}. Piensa donde quedaria mejor.' },
+      { id: 'm4f-1', speaker: 'lila', emotion: 'neutral', text: 'Ese elemento no va ahi, {nombre}. Intenta en otro lugar.' },
     ],
   },
 

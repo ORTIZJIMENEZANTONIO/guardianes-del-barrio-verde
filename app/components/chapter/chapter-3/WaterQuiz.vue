@@ -1,7 +1,7 @@
 <template>
   <MinigameShell
     title="Decisiones sobre el agua"
-    description="Se presentan 5 situaciones reales. Tienes pocos segundos para elegir la mejor acción. ¡Piensa rápido!"
+    description="Se presentan 5 situaciones reales. Tienes pocos segundos para elegir la mejor acción. ¡Elige rápido!"
     :completed="correct"
     :total="5"
     :is-success="gameRef?.allDone ?? false"

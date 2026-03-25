@@ -140,8 +140,8 @@ export const chapter3Dialogues: Record<string, DialoguePool> = {
     id: 'mission-5-intro',
     context: 'Intro misión 5 — quiz rápido sobre agua',
     lines: [
-      { id: 'm5i-1', speaker: 'lila', emotion: 'excited', text: '{nombre}, ahora veamos qué tanto aprendiste. ¡Decisiones rápidas!' },
-      { id: 'm5i-2', speaker: 'timo', emotion: 'thinking', text: 'Piensa rápido: en cada situación, ¿qué es lo mejor para el agua?' },
+      { id: 'm5i-1', speaker: 'lila', emotion: 'excited', text: '{nombre}, ahora vamos a poner en práctica lo que sabes. ¡Decisiones rápidas!' },
+      { id: 'm5i-2', speaker: 'timo', emotion: 'thinking', text: '¡Decisiones rápidas! En cada situación, ¿qué es lo mejor para el agua?' },
     ],
   },
   'mission-5-success': {

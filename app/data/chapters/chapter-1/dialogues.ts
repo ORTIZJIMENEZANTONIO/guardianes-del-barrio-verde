@@ -238,7 +238,7 @@ export const chapter1Dialogues: Record<string, DialoguePool> = {
     id: 'mission-5-failure',
     context: 'Fallo misión 5',
     lines: [
-      { id: 'm5f-1', speaker: 'timo', emotion: 'thinking', text: 'Piensa en el problema de cada lugar, {nombre}. ¡La solución correcta existe!' },
+      { id: 'm5f-1', speaker: 'timo', emotion: 'thinking', text: 'Observa el problema de cada lugar, {nombre}. ¡La solución correcta existe!' },
     ],
   },
 

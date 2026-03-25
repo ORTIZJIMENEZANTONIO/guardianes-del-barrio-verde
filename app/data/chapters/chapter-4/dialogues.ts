@@ -163,7 +163,7 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
     id: 'mission-2-failure',
     context: 'Fallo misión 2',
     lines: [
-      { id: 'm2f-1', speaker: 'vale', emotion: 'neutral', text: 'Piensa en el material, {nombre}. ¿Es orgánico, reciclable, papel o no reciclable?' },
+      { id: 'm2f-1', speaker: 'vale', emotion: 'neutral', text: 'Revisa el material, {nombre}. ¿Es orgánico, reciclable, papel o no reciclable?' },
     ],
   },
 
@@ -241,7 +241,7 @@ export const chapter4Dialogues: Record<string, DialoguePool> = {
     id: 'mission-5-failure',
     context: 'Fallo misión 5',
     lines: [
-      { id: 'm5f-1', speaker: 'timo', emotion: 'neutral', text: 'Piensa en de qué está hecho cada cosa, {nombre}. ¡Tú puedes!' },
+      { id: 'm5f-1', speaker: 'timo', emotion: 'neutral', text: 'Mira de qué está hecha cada cosa, {nombre}. ¡Tú puedes!' },
     ],
   },
 

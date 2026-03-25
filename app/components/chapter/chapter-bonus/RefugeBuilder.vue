@@ -15,7 +15,7 @@
       :steps="steps"
       :slot-labels="slotLabels"
       accent-color="#ef4444"
-      error-message="Ese no es el paso correcto aquí. 💡 Piensa: primero necesitas un lugar, luego plantas, después agua."
+      error-message="Ese no es el paso correcto aquí. 💡 Recuerda: primero necesitas un lugar, luego plantas, después agua."
       success-message="¡Paso correcto! El refugio va tomando forma."
       @complete="onComplete"
       @update="onUpdate"

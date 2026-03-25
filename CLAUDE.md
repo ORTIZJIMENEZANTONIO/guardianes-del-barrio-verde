@@ -309,16 +309,20 @@ Imágenes en `app/assets/images/bolillo/` (14 PNGs):
 
 Patrón: **"Por qué estuvo mal. 💡 Consejo suave."**
 - No dar respuesta directa
-- No usar "Piensa:" (agresivo)
-- Usar: "Fíjate en...", "Cada... tiene...", "Intenta con..."
+- **NUNCA usar "Piensa" ni "piensa"** (suena agresivo/mandón para niños)
+- Variar sinónimos amigables: "Observa...", "Mira...", "Revisa...", "Busca...", "Recuerda que...", "Intenta con...", "Sigue el..."
+- No repetir el mismo verbo en todo el juego — distribuir variedad
+- Evitar lenguaje pesado para 6-7 años: no "matando", "muere", "jamás", "destruye" → usar "le hace daño", "pone en riesgo", "ya no vuelve", "afecta"
+- No usar emojis de armas (🔫) → usar 🚫, ⛔, 🪤
+- No usar frases tipo examen: "veamos qué aprendiste" → "vamos a poner en práctica"
 
 ## Acceso secreto a Admin/Dev
 
 **Gesto secreto**: tocar **3 veces cada una de las 4 esquinas** de la pantalla (zonas de 80x80px) **en 6 segundos** desde cualquier página → navega a `/admin`. El orden de las esquinas no importa, solo que las 4 acumulen 3 taps dentro de la ventana de tiempo.
 
 - `/admin` — **Requiere gesto previo**. Si se accede por URL directa sin gesto, redirige a `/`. Tras el gesto muestra login con contraseña (SHA-256 en `admin.vue`, const `ADMIN_HASH`). Para cambiar: `echo -n "nueva-password" | shasum -a 256` y pegar el hash. Default: `barrio-verde-admin`. Cerrar sesión limpia el flag del gesto y navega a `/` (hay que repetir el gesto para volver a entrar).
-- `/dev` — Catálogo de desarrollo, **solo accesible en localhost/127.0.0.1/192.168.x.x**
-- No hay botón visible ni URL pública para acceder a ninguno
+- `/dev` — Catálogo de desarrollo, **solo accesible en localhost/127.0.0.1/192.168.x.x**. Botón "🛠 Dev Tools" visible en pantalla de inicio solo en localhost.
+- No hay botón visible ni URL pública para acceder a admin
 
 ## Panel de administración (`/admin`)
 

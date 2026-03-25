@@ -205,7 +205,7 @@ function placeInZone(zone: PlaceZone) {
       setTimeout(() => { showResult.value = true }, 1000)
     }
   } else {
-    showFB('Esa estación no es adecuada aquí. 💡 💡 Fíjate qué actividad sustentable funcionaría aquí.', false)
+    showFB('Esa estación no es adecuada aquí. 💡 Busca qué actividad sustentable funcionaría aquí.', false)
     const zoneEl = document.querySelector(`[data-zone="${zone.id}"]`)
     if (zoneEl) shakeWrong(zoneEl)
   }
