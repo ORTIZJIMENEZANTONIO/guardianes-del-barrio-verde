@@ -21,12 +21,43 @@ npm run build     # Build producción (preset: node-server)
 npm run preview   # Preview del build
 ```
 
+## Backend (Analytics)
+
+- **Repo**: `cercu-backend` (directorio hermano)
+- **Módulo**: `src/modules/guardianes/` (Express + TypeORM + MySQL)
+- **Entity**: `GuardianesEvent`, tabla `guardianes_events`
+- **Endpoints**: `POST /api/guardianes/events`, `GET /api/guardianes/stats`, `GET /api/guardianes/events`
+- **Sin auth** — es un juego para niños, no requiere login
+
+### Conexión local (desarrollo)
+
+`nuxt.config.ts` tiene `nitro.devProxy` que redirige `/cercu-backend/*` a `http://localhost:3003/` automáticamente en `npm run dev`. Para que funcione:
+
+```bash
+# Terminal 1: backend
+cd ../cercu-backend && npm run dev   # Puerto 3003
+
+# Terminal 2: frontend
+npm run dev                          # Puerto 3000, proxy activo
+```
+
+El admin (`/admin` → sección "Sistema") mostrará "Conectado a /cercu-backend" si el backend está corriendo.
+
+### Conexión en producción
+
+Nginx proxea `/cercu-backend/` al backend Express (ver `cercu-frontend/deploy/nginx.conf`):
+```
+location /cercu-backend/ {
+    proxy_pass http://127.0.0.1:3003/;
+}
+```
+
 ## Deploy
 
 - Servidor: VPS `72.62.200.124`
 - Ruta: `/var/www/cercu-frontend/guardianes/`
 - PM2 process: `guardianes` en puerto **3004**
-- Nginx: `guardianes.cercu.com.mx` → proxy a `127.0.0.1:3004`
+- Nginx: `guardianes.cercu.com.mx` → proxy a `127.0.0.1:3004` + `/cercu-backend/` → `127.0.0.1:3003`
 
 ```bash
 # Deploy rápido
@@ -356,7 +387,7 @@ Eventos rastreados:
 
 Almacenamiento dual:
 - **Local**: `guardianes-analytics-v1` en localStorage (máx 5000 eventos)
-- **Backend**: POST a `/cercu-backend/api/guardianes/events` → módulo `guardianes` en cercu-backend (Express + TypeORM + MySQL). Entity: `GuardianesEvent`, tabla: `guardianes_events`. Sin auth. Endpoints: `POST /api/guardianes/events`, `GET /api/guardianes/stats`, `GET /api/guardianes/events`.
+- **Backend**: POST a `/cercu-backend/api/guardianes/events` (ver sección "Backend (Analytics)" arriba para conexión local y producción)
 
 ## Catálogo dev (`/dev`)
 
