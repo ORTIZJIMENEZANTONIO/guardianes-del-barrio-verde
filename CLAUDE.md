@@ -125,7 +125,7 @@ app/
 
 ## Componentes reutilizables de minijuegos
 
-8 componentes base + 2 UI transversales en `app/components/minigame/`. Cada minijuego del capítulo es un wrapper delgado (~50 líneas) que pasa datos al componente base.
+8 componentes base + 3 UI transversales en `app/components/minigame/`. Cada minijuego del capítulo es un wrapper delgado (~50 líneas) que pasa datos al componente base.
 
 | Componente | Mecánica | Props clave | Usado en |
 |-----------|----------|-------------|----------|
@@ -139,6 +139,7 @@ app/
 | `RouteTracer.vue` | Trazar ruta tocando nodos en orden | `nodeData` (con `correctOrder`), `segments` | IrrigationBuilder |
 | `StreakBadge.vue` | Badge animado de racha/combo | `streak`, `label` | Todos los componentes base (transversal) |
 | `GameMascot.vue` | Mini personaje reactivo (44px) que cambia emoción según progreso | `characterId`, `progress`, `lastResult`, `streak` | MinigameShell (via `mascotCharacterId` prop, activo en 21 wrappers) |
+| `ParticleOverlay.vue` | Partículas ambientales DOM+CSS (hojas, gotas, destellos, calor) | `preset` (heat/nature/water/sparkle/celebration), `intensity`, `progress` | MinigameShell (via `particlePreset` prop, activo en 17 wrappers) |
 
 ### Composables de juego
 
@@ -146,7 +147,7 @@ app/
 |-----------|---------|-----------|
 | `useGameFeedback.ts` | Toast de feedback con timer (`showOk`/`showNo`/`clear`) | Todos los componentes base |
 | `useDragDrop.ts` | Pointer handling con RAF, hover detection, dragStyle | Juegos drag-drop |
-| `useGameAnimations.ts` | GSAP: celebrateSuccess, confettiBurst, shakeWrong, popIn, heartbeat | Todos |
+| `useGameAnimations.ts` | GSAP 22 helpers: celebrateSuccess, confettiBurst, shakeWrong, popIn, heartbeat + popSuccess, softWrong, milestonePulse, streakEnter/Break, sparkles, characterReact, missionCompleteSequence, scorePop, progressFillBurst | Todos |
 | `useStreakSystem.ts` | Rachas/combos reutilizable: hit/miss, milestones (2/3/5/7/10), streakLabel, isOnFire | MemoryGame, TapDetect, Swipe, Quiz, Sequence |
 | `useSceneProgress.ts` | Progreso 0-100% con milestones (25/50/75/100%), CSS vars reactivas (dirtyOpacity, cleanOpacity) | TapDetect, Memory, Swipe, Sequence |
 | `useMiniCelebrations.ts` | Micro-celebraciones intermedias: confetti escalado, flash pantalla, emoji flotante | Todos los componentes base |
@@ -430,16 +431,20 @@ Log en terminal oscuro. Banner amarillo cuando corre. Resumen PASS/FAIL.
 ## Estado actual
 
 - **6 capítulos + 1 bonus, 37 minijuegos** jugables (10 mecánicas diferentes)
-- **8 componentes base + 2 UI transversales** (MemoryGame, TapDetectGame, SequenceGame, SwipeClassifier, LineMatchGame, QuickQuiz, SpotDifference, RouteTracer + StreakBadge, GameMascot)
+- **8 componentes base + 3 UI transversales** (MemoryGame, TapDetectGame, SequenceGame, SwipeClassifier, LineMatchGame, QuickQuiz, SpotDifference, RouteTracer + StreakBadge, GameMascot, ParticleOverlay)
 - **6 composables de juego** (useGameFeedback, useDragDrop, useGameAnimations, useStreakSystem, useSceneProgress, useMiniCelebrations)
 - **Sistema de rachas** transversal: badge animado en 5 juegos base, milestones en 2/3/5/7/10 aciertos consecutivos
 - **Micro-celebraciones** intermedias: confetti escalado + flash pantalla en milestones de progreso (50%, 75%) y rachas (x3, x5, x7)
 - **GameMascot** reactivo en 21 wrappers: mini CharacterFace que cambia emoción (thinking→neutral→happy→excited→proud), shake en error, bounce en racha. Personaje por capítulo: timo (cap1), bolillo (cap2), xani (cap3,5,bonus), vale (cap4), lila (cap6)
 - **Transformación visual progresiva**: overlay dirty→clean que se desvanece con el avance (TapDetect)
+- **Partículas ambientales** (ParticleOverlay): hojas flotando (cap2, bonus), gotas cayendo (cap3), destellos (cap5), calor (cap1). DOM+CSS animations, pointer-events:none, activo en 17 wrappers
+- **GSAP avanzado**: 22 helpers (12 originales + 10 nuevos): popSuccess, softWrong, milestonePulse, streakEnter/Break, sparkles, characterReact, missionCompleteSequence, scorePop, progressFillBurst
+- **Score reactivo**: contador ✅ en MinigameShell hace bounce verde cada vez que avanza + missionCompleteSequence al terminar
+- **LineMatchGame mejorado**: curvas bezier en vez de líneas rectas, animación drawLine, glow en línea activa, punto pulsante, nodos con pulso y escala, layout mobile-first (30%/40%/30%)
 - **Edades 6-12 + modo 12+** (solo misiones difíciles, timer ×0.6)
 - **Dificultad adaptativa**: `difficulty: 1|2|3` por misión, `shouldSkipMission()` por edad
 - **Registro**: nombre + edad (6-12, 12+) + avatar = personaje existente
-- **Bolillo** con capas PNG expresivas + easter egg + CharacterFace en BolilloRoute
+- **Bolillo** con capas PNG expresivas + easter egg en CharacterBody Y CharacterFace (5 taps = corazones ❤️💛 en cualquier lugar donde aparezca)
 - **Mensajes de error** educativos y amigables
 - **Admin dashboard** con 15 secciones de estadísticas (local + backend)
 - **Acceso secreto** a admin via gesto (3 taps x 4 esquinas en 6s) + login con password

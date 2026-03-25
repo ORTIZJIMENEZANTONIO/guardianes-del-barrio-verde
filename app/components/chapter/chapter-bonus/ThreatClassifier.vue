@@ -2,6 +2,7 @@
   <MinigameShell
     title="Clasificar amenazas"
     mascot-character-id="xani"
+    particle-preset="nature"
     description="Desliza cada amenaza: ¿es causada por humanos o es natural?"
     :completed="classified"
     :total="8"

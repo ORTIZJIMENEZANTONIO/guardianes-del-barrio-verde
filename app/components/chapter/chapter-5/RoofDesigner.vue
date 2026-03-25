@@ -2,6 +2,7 @@
   <MinigameShell
     title="Diseñar el espacio"
     mascot-character-id="xani"
+    particle-preset="sparkle"
     description="Selecciona una solución y colócala en la zona correcta de la azotea."
     :completed="itemsPlaced"
     :total="6"

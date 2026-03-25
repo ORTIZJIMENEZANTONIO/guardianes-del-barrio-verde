@@ -2,6 +2,7 @@
   <MinigameShell
     title="Despejar senderos"
     mascot-character-id="bolillo"
+    particle-preset="nature"
     description="Arrastra cada obstaculo fuera del camino para abrir los senderos."
     :completed="cleared"
     :total="6"

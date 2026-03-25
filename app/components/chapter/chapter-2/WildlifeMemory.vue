@@ -2,6 +2,7 @@
   <MinigameShell
     title="Vida en el parque"
     mascot-character-id="bolillo"
+    particle-preset="nature"
     description="Conecta cada animal con lo que necesita para vivir en el parque. Toca un animal a la izquierda y arrastra hasta su necesidad a la derecha."
     :completed="matched"
     :total="4"

@@ -2,6 +2,7 @@
   <MinigameShell
     title="Evaluar la azotea"
     mascot-character-id="xani"
+    particle-preset="sparkle"
     description="Toca cada zona de la azotea. Encuentra las 4 condiciones que necesitas verificar."
     :completed="found"
     :total="4"

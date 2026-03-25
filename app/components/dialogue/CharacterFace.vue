@@ -702,17 +702,27 @@
       <circle cx="76" cy="52" r="2.5" fill="#fbbf24" />
     </template>
 
-    <!-- BOLILLO — PNG portrait con capas posicionadas -->
+    <!-- BOLILLO — PNG portrait con capas posicionadas + easter egg -->
     <template v-else-if="characterId === 'bolillo'">
       <foreignObject x="0" y="0" width="100" height="80">
-        <div class="bolillo-portrait">
+        <div
+          class="bolillo-portrait"
+          :class="{ 'bolillo-portrait--petted': bolilloPetted }"
+          @pointerdown.prevent="petBolillo"
+        >
           <img
             src="~/assets/images/bolillo/bolillo-base.png"
             alt="Bolillo"
             class="bolillo-portrait__base"
           />
-          <img :src="bolilloFaceEyes" alt="" class="bolillo-portrait__eyes" />
-          <img :src="bolilloFaceMouth" alt="" class="bolillo-portrait__mouth" />
+          <img :src="bolilloPetted ? bolilloEyesHappyImg : bolilloFaceEyes" alt="" class="bolillo-portrait__eyes" />
+          <img :src="bolilloPetted ? bolilloMouthWideImg : bolilloFaceMouth" alt="" class="bolillo-portrait__mouth" />
+          <!-- Pet hearts easter egg -->
+          <div v-if="bolilloPetted" class="bolillo-portrait__hearts">
+            <span class="bolillo-portrait__heart" style="left:10%;animation-delay:0s">❤️</span>
+            <span class="bolillo-portrait__heart" style="left:45%;animation-delay:0.2s">💛</span>
+            <span class="bolillo-portrait__heart" style="left:75%;animation-delay:0.4s">❤️</span>
+          </div>
         </div>
       </foreignObject>
     </template>
@@ -898,6 +908,34 @@ const bolilloFaceMouth = computed(() => {
     return bolilloMouthWideImg;
   return bolilloMouthClosedImg;
 });
+
+// Easter egg: pet Bolillo 5 rapid taps → happy reaction with hearts
+const bolilloPetCount = ref(0);
+const bolilloPetted = ref(false);
+let bolilloPetTimer: ReturnType<typeof setTimeout> | null = null;
+let bolilloPetResetTimer: ReturnType<typeof setTimeout> | null = null;
+let lastBolilloPetTime = 0;
+
+function petBolillo() {
+  if (bolilloPetted.value) return;
+  const now = Date.now();
+  if (now - lastBolilloPetTime < 100) return;
+  lastBolilloPetTime = now;
+  bolilloPetCount.value++;
+  if (bolilloPetResetTimer) clearTimeout(bolilloPetResetTimer);
+  bolilloPetResetTimer = setTimeout(() => { bolilloPetCount.value = 0; }, 3000);
+  if (bolilloPetCount.value >= 5) {
+    bolilloPetted.value = true;
+    bolilloPetCount.value = 0;
+    if (bolilloPetTimer) clearTimeout(bolilloPetTimer);
+    bolilloPetTimer = setTimeout(() => { bolilloPetted.value = false; }, 3000);
+  }
+}
+
+onUnmounted(() => {
+  if (bolilloPetTimer) clearTimeout(bolilloPetTimer);
+  if (bolilloPetResetTimer) clearTimeout(bolilloPetResetTimer);
+});
 </script>
 
 <style scoped>
@@ -934,5 +972,37 @@ const bolilloFaceMouth = computed(() => {
   top: 21%;
   pointer-events: none;
   object-fit: contain;
+}
+
+/* Easter egg: petted state */
+.bolillo-portrait--petted {
+  animation: bolilloPetWiggle 0.3s ease 3;
+}
+
+.bolillo-portrait__hearts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.bolillo-portrait__heart {
+  position: absolute;
+  bottom: 60%;
+  font-size: 12px;
+  animation: heartFloat 1s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes bolilloPetWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-4deg); }
+  75% { transform: rotate(4deg); }
+}
+
+@keyframes heartFloat {
+  0% { opacity: 1; transform: translateY(0) scale(0.5); }
+  50% { opacity: 1; transform: translateY(-15px) scale(1); }
+  100% { opacity: 0; transform: translateY(-30px) scale(0.8); }
 }
 </style>

@@ -2,6 +2,7 @@
   <MinigameShell
     title="Decisiones de conservación"
     mascot-character-id="xani"
+    particle-preset="nature"
     description="¿Qué acciones ayudan a conservar la fauna mexicana? Responde rápido."
     :completed="answered"
     :total="5"

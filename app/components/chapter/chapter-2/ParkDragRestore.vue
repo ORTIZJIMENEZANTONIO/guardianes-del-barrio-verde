@@ -2,6 +2,7 @@
   <MinigameShell
     title="Reactivar el parque"
     mascot-character-id="bolillo"
+    particle-preset="nature"
     description="Arrastra cada elemento al lugar correcto para restaurar el parque."
     :completed="itemsPlaced"
     :total="5"

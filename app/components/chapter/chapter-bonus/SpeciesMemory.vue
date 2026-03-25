@@ -2,6 +2,7 @@
   <MinigameShell
     title="Conocer las especies"
     mascot-character-id="xani"
+    particle-preset="nature"
     description="Encuentra las parejas: cada animal en peligro tiene una amenaza principal."
     :completed="matched"
     :total="5"

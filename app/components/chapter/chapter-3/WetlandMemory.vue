@@ -2,6 +2,7 @@
   <MinigameShell
     title="Proteger el humedal"
     mascot-character-id="xani"
+    particle-preset="water"
     description="Voltea las cartas de dos en dos. Cada animal o planta tiene una pareja que explica su funcion en el humedal. Por ejemplo: Rana + Indica agua sana. Encuentra las 4 parejas."
     :completed="matched"
     :total="4"

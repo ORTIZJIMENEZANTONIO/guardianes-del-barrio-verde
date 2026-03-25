@@ -7,7 +7,7 @@
         <div v-if="timeLimit" ref="timerRef" class="minigame-timer" :class="{ 'timer--warning': timeRemaining <= 10 }">
           ⏱ {{ timerDisplay }}
         </div>
-        <div class="minigame-score">
+        <div ref="scoreRef" class="minigame-score">
           ✅ {{ completed }}/{{ total }}
         </div>
       </div>
@@ -37,6 +37,13 @@
         :last-result="lastResult"
         :streak="streak"
       />
+      <!-- Ambient particles — last child so it renders on top of backgrounds -->
+      <ParticleOverlay
+        v-if="particlePreset !== 'none'"
+        :preset="particlePreset"
+        :intensity="particleIntensity"
+        :progress="total > 0 ? completed / total : 0"
+      />
     </div>
 
     <!-- Result overlay -->
@@ -63,10 +70,11 @@
 import { useGameAnimations } from '~/composables/useGameAnimations'
 import { usePlayerStore } from '~/stores/usePlayerStore'
 
-const { popIn, slideUpBounce, heartbeat, killAll } = useGameAnimations()
+const { popIn, slideUpBounce, heartbeat, killAll, scorePop, missionCompleteSequence } = useGameAnimations()
 const playerStore = usePlayerStore()
 
 const timerRef = ref<HTMLElement | null>(null)
+const scoreRef = ref<HTMLElement | null>(null)
 let heartbeatAnim: ReturnType<typeof heartbeat> | null = null
 
 const props = withDefaults(defineProps<{
@@ -80,10 +88,14 @@ const props = withDefaults(defineProps<{
   mascotCharacterId?: string
   lastResult?: 'ok' | 'error' | null
   streak?: number
+  particlePreset?: 'heat' | 'nature' | 'water' | 'sparkle' | 'celebration' | 'none'
+  particleIntensity?: number
 }>(), {
   mascotCharacterId: '',
   lastResult: null,
   streak: 0,
+  particlePreset: 'none',
+  particleIntensity: 0.4,
 })
 
 const emit = defineEmits<{
@@ -152,10 +164,19 @@ function restartTimer() {
   startTimer()
 }
 
-// Stop timer when objective is complete
-watch(() => props.completed, (val) => {
+// Stop timer when objective is complete + animate score
+watch(() => props.completed, (val, oldVal) => {
   if (val >= props.total) {
     stopTimer()
+    // Mission complete celebration
+    nextTick(() => {
+      const shell = document.querySelector('.minigame-shell')
+      if (shell) missionCompleteSequence(shell)
+    })
+  }
+  // Animate score on increment
+  if (val > (oldVal ?? 0) && scoreRef.value) {
+    scorePop(scoreRef.value)
   }
 })
 

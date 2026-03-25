@@ -460,7 +460,7 @@ const bolilloTailSrc = computed(() => {
 /* Eyes: ~47% wide, positioned at ~26% left, ~26% top of base */
 .bolillo-eyes {
   width: 40%;
-  left: 20%;
+  left: 23%;
   top: 29%;
   z-index: 3;
 }
@@ -468,7 +468,7 @@ const bolilloTailSrc = computed(() => {
 /* Brows: ~47% wide, just above eyes */
 .bolillo-brows {
   width: 42%;
-  left: 20%;
+  left: 22%;
   top: 27%;
   z-index: 4;
 }
@@ -476,7 +476,7 @@ const bolilloTailSrc = computed(() => {
 /* Mouth: ~42% wide, below nose area */
 .bolillo-mouth {
   width: 40%;
-  left: 20%;
+  left: 22%;
   top: 32%;
   z-index: 3;
 }

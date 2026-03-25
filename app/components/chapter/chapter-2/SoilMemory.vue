@@ -2,6 +2,7 @@
   <MinigameShell
     title="Cuidar el suelo"
     mascot-character-id="bolillo"
+    particle-preset="nature"
     description="Encuentra las parejas: cada problema del suelo tiene una solución."
     :completed="matched"
     :total="4"
