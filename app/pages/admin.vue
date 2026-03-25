@@ -61,7 +61,7 @@
         <div class="stat-card">
           <div class="stat-value">{{ stats.avgProgressPct }}<span class="stat-unit">%</span></div>
           <div class="stat-label">Progreso promedio</div>
-          <div class="stat-note">Capitulos completados / 6</div>
+          <div class="stat-note">Capitulos completados / 7</div>
         </div>
         <div class="stat-card">
           <div class="stat-value">{{ stats.gameCompleters }}</div>
@@ -349,6 +349,8 @@ import { chapter5 } from '~/data/chapters/chapter-5'
 import { chapter5Missions } from '~/data/chapters/chapter-5/missions'
 import { chapter6 } from '~/data/chapters/chapter-6'
 import { chapter6Missions } from '~/data/chapters/chapter-6/missions'
+import { chapterBonus } from '~/data/chapters/chapter-bonus'
+import { chapterBonusMissions } from '~/data/chapters/chapter-bonus/missions'
 
 const router = useRouter()
 const { getEvents, getStats, clearEvents, fetchBackendStats } = useAnalytics()
@@ -399,12 +401,13 @@ const chapterList = [
   { id: 'chapter-3', icon: chapter3.icon, title: chapter3.title },
   { id: 'chapter-4', icon: chapter4.icon, title: chapter4.title },
   { id: 'chapter-5', icon: chapter5.icon, title: chapter5.title },
+  { id: 'chapter-bonus', icon: chapterBonus.icon, title: chapterBonus.title },
   { id: 'chapter-6', icon: chapter6.icon, title: chapter6.title },
 ]
 
 const missionList = [
   ...chapter1Missions, ...chapter2Missions, ...chapter3Missions,
-  ...chapter4Missions, ...chapter5Missions, ...chapter6Missions,
+  ...chapter4Missions, ...chapter5Missions, ...chapterBonusMissions, ...chapter6Missions,
 ]
 
 const ageLabels = [6, 7, 8, 9, 10, 11, 12, 13]

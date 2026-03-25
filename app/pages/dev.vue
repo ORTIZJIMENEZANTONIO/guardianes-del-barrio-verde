@@ -277,6 +277,8 @@ import { chapter5 } from '~/data/chapters/chapter-5'
 import { chapter5Missions } from '~/data/chapters/chapter-5/missions'
 import { chapter6 } from '~/data/chapters/chapter-6'
 import { chapter6Missions } from '~/data/chapters/chapter-6/missions'
+import { chapterBonus } from '~/data/chapters/chapter-bonus'
+import { chapterBonusMissions } from '~/data/chapters/chapter-bonus/missions'
 import { useGameStore } from '~/stores/useGameStore'
 import { usePlayerStore } from '~/stores/usePlayerStore'
 import type { Emotion } from '~/shared/types/character'
@@ -310,6 +312,11 @@ import FestivalSetup from '~/components/chapter/chapter-6/FestivalSetup.vue'
 import NeighborInviter from '~/components/chapter/chapter-6/NeighborInviter.vue'
 import FestivalProblems from '~/components/chapter/chapter-6/FestivalProblems.vue'
 import FestivalInauguration from '~/components/chapter/chapter-6/FestivalInauguration.vue'
+import EndangeredSpotter from '~/components/chapter/chapter-bonus/EndangeredSpotter.vue'
+import SpeciesMemory from '~/components/chapter/chapter-bonus/SpeciesMemory.vue'
+import ThreatClassifier from '~/components/chapter/chapter-bonus/ThreatClassifier.vue'
+import ConservationQuiz from '~/components/chapter/chapter-bonus/ConservationQuiz.vue'
+import RefugeBuilder from '~/components/chapter/chapter-bonus/RefugeBuilder.vue'
 import FloodDragClear from '~/components/chapter/chapter-3/FloodDragClear.vue'
 import WaterWasteDetector from '~/components/chapter/chapter-3/WaterWasteDetector.vue'
 import WetlandMemory from '~/components/chapter/chapter-3/WetlandMemory.vue'
@@ -345,7 +352,7 @@ function toggleSpeak(charId: string) {
   speakingChar.value = speakingChar.value === charId ? null : charId
 }
 
-const chaptersData = [chapter1, chapter2, chapter3, chapter4, chapter5, chapter6]
+const chaptersData = [chapter1, chapter2, chapter3, chapter4, chapter5, chapterBonus, chapter6]
 
 const allMissions = [
   { chapter: 'Cap. 1 — La Calle Caliente', missions: chapter1Missions },
@@ -353,6 +360,7 @@ const allMissions = [
   { chapter: 'Cap. 3 — La Fuga Infinita', missions: chapter3Missions },
   { chapter: 'Cap. 4 — La Ruta de la Basura', missions: chapter4Missions },
   { chapter: 'Cap. 5 — Azoteas con Vida', missions: chapter5Missions },
+  { chapter: 'Bonus — Fauna en Peligro', missions: chapterBonusMissions },
   { chapter: 'Cap. 6 — El Gran Festival Verde', missions: chapter6Missions },
 ]
 
@@ -395,6 +403,12 @@ const missionComponentMap: Record<string, any> = {
   'mission-3-plants': PlantMatcher,
   'mission-4-irrigation': IrrigationBuilder,
   'mission-5-difference': RoofDifference,
+  // Chapter Bonus
+  'bonus-1-spotter': EndangeredSpotter,
+  'bonus-2-memory': SpeciesMemory,
+  'bonus-3-threats': ThreatClassifier,
+  'bonus-4-quiz': ConservationQuiz,
+  'bonus-5-refuge': RefugeBuilder,
   // Chapter 6
   'mission-1-prepare': FestivalSetup,
   'mission-2-invite': NeighborInviter,
@@ -422,6 +436,7 @@ import { chapter3Dialogues } from '~/data/chapters/chapter-3/dialogues'
 import { chapter4Dialogues } from '~/data/chapters/chapter-4/dialogues'
 import { chapter5Dialogues } from '~/data/chapters/chapter-5/dialogues'
 import { chapter6Dialogues } from '~/data/chapters/chapter-6/dialogues'
+import { chapterBonusDialogues } from '~/data/chapters/chapter-bonus/dialogues'
 
 interface TestResult { ok: boolean; message: string }
 const testResults = ref<Record<string, TestResult>>({})
@@ -429,7 +444,7 @@ const testLog = ref<TestResult[]>([])
 const runningTest = ref<string | null>(null)
 const testSummary = ref<{ pass: number; fail: number; total: number } | null>(null)
 
-const dialogueSets = [chapter1Dialogues, chapter2Dialogues, chapter3Dialogues, chapter4Dialogues, chapter5Dialogues, chapter6Dialogues]
+const dialogueSets = [chapter1Dialogues, chapter2Dialogues, chapter3Dialogues, chapter4Dialogues, chapter5Dialogues, chapterBonusDialogues, chapter6Dialogues]
 
 function log(ok: boolean, message: string) {
   const entry = { ok, message }
@@ -1053,6 +1068,8 @@ const missionIconMapRef: Record<string, string> = {
   'mission-4-compost': '🌱', 'mission-5-recycle': '🔄',
   'mission-0-greenroof': '🌿', 'mission-1-evaluate': '📋', 'mission-2-design': '🏗️',
   'mission-3-plants': '🌱', 'mission-4-irrigation': '💧', 'mission-5-difference': '🔍',
+  'bonus-1-spotter': '🔍', 'bonus-2-memory': '🧠', 'bonus-3-threats': '⚠️',
+  'bonus-4-quiz': '❓', 'bonus-5-refuge': '🏠',
   'mission-1-prepare': '🎪', 'mission-2-invite': '📣', 'mission-3-solve': '🧩', 'mission-4-inaugurate': '🎉',
 }
 

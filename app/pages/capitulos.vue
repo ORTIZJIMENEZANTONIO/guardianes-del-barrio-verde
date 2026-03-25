@@ -39,7 +39,7 @@
           @click="selectChapter(ch.id)"
         >
           <span class="chapter-icon">{{ ch.icon }}</span>
-          <span class="chapter-number">Capítulo {{ ch.number }}</span>
+          <span class="chapter-number">{{ ch.number === 0 ? 'Bonus' : `Capítulo ${ch.number}` }}</span>
           <span class="chapter-name">{{ ch.title }}</span>
           <span v-if="ch.complete" class="chapter-badge">✅</span>
           <span v-else-if="ch.locked" class="chapter-lock">🔒</span>
@@ -79,6 +79,7 @@ const chapters = computed<ChapterEntry[]>(() => {
     { id: 'chapter-3', number: 3, title: 'La Fuga Infinita', icon: '💧' },
     { id: 'chapter-4', number: 4, title: 'La Ruta de la Basura', icon: '🗑️' },
     { id: 'chapter-5', number: 5, title: 'Azoteas con Vida', icon: '🌱' },
+    { id: 'chapter-bonus', number: 0, title: 'Fauna en Peligro', icon: '🦎' },
     { id: 'chapter-6', number: 6, title: 'El Gran Festival Verde', icon: '🎉' },
   ]
 

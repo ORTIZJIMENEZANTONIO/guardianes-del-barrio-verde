@@ -306,6 +306,9 @@ import { chapter5Missions } from '~/data/chapters/chapter-5/missions'
 import { chapter6 } from '~/data/chapters/chapter-6'
 import { chapter6Dialogues } from '~/data/chapters/chapter-6/dialogues'
 import { chapter6Missions } from '~/data/chapters/chapter-6/missions'
+import { chapterBonus } from '~/data/chapters/chapter-bonus'
+import { chapterBonusDialogues } from '~/data/chapters/chapter-bonus/dialogues'
+import { chapterBonusMissions } from '~/data/chapters/chapter-bonus/missions'
 import type { MissionConfig } from '~/shared/types/mission'
 import type { DialoguePool } from '~/shared/types/character'
 
@@ -367,6 +370,13 @@ import NeighborInviter from '~/components/chapter/chapter-6/NeighborInviter.vue'
 import FestivalProblems from '~/components/chapter/chapter-6/FestivalProblems.vue'
 import FestivalInauguration from '~/components/chapter/chapter-6/FestivalInauguration.vue'
 
+// Chapter Bonus
+import EndangeredSpotter from '~/components/chapter/chapter-bonus/EndangeredSpotter.vue'
+import SpeciesMemory from '~/components/chapter/chapter-bonus/SpeciesMemory.vue'
+import ThreatClassifier from '~/components/chapter/chapter-bonus/ThreatClassifier.vue'
+import ConservationQuiz from '~/components/chapter/chapter-bonus/ConservationQuiz.vue'
+import RefugeBuilder from '~/components/chapter/chapter-bonus/RefugeBuilder.vue'
+
 const route = useRoute()
 const router = useRouter()
 const gameStore = useGameStore()
@@ -406,6 +416,7 @@ const chapter = computed(() => {
   if (route.params.chapterId === 'chapter-4') return chapter4
   if (route.params.chapterId === 'chapter-5') return chapter5
   if (route.params.chapterId === 'chapter-6') return chapter6
+  if (route.params.chapterId === 'chapter-bonus') return chapterBonus
   return null
 })
 
@@ -416,6 +427,7 @@ const chapterDialogues = computed<Record<string, DialoguePool>>(() => {
   if (route.params.chapterId === 'chapter-4') return chapter4Dialogues
   if (route.params.chapterId === 'chapter-5') return chapter5Dialogues
   if (route.params.chapterId === 'chapter-6') return chapter6Dialogues
+  if (route.params.chapterId === 'chapter-bonus') return chapterBonusDialogues
   return chapter1Dialogues
 })
 
@@ -425,6 +437,7 @@ const chapterMissions = computed<MissionConfig[]>(() => {
   if (route.params.chapterId === 'chapter-4') return chapter4Missions
   if (route.params.chapterId === 'chapter-5') return chapter5Missions
   if (route.params.chapterId === 'chapter-6') return chapter6Missions
+  if (route.params.chapterId === 'chapter-bonus') return chapterBonusMissions
   return chapter1Missions
 })
 
@@ -447,6 +460,7 @@ const chapterLandmarks = computed(() => {
     'chapter-3': 'occidente',  // Jalisco, Michoacán
     'chapter-4': 'norte',      // Monterrey, Chihuahua
     'chapter-5': 'oriente',    // Querétaro, Puebla, Veracruz
+    'chapter-bonus': 'sur',     // Fauna: Chiapas, Oaxaca (biodiversidad)
     'chapter-6': 'centro',     // Festival en CDMX
   }
   return map[route.params.chapterId as string] ?? 'default'
@@ -528,6 +542,12 @@ const missionComponentMap: Record<string, any> = {
   'mission-3-plants': PlantMatcher,
   'mission-4-irrigation': IrrigationBuilder,
   'mission-5-difference': RoofDifference,
+  // Chapter Bonus
+  'bonus-1-spotter': EndangeredSpotter,
+  'bonus-2-memory': SpeciesMemory,
+  'bonus-3-threats': ThreatClassifier,
+  'bonus-4-quiz': ConservationQuiz,
+  'bonus-5-refuge': RefugeBuilder,
   // Chapter 6
   'mission-1-prepare': FestivalSetup,
   'mission-2-invite': NeighborInviter,
@@ -582,6 +602,16 @@ const chapter4Spots: ObservationSpot[] = [
   { id: 'obs-ok-2', label: '', emoji: '🏠', dialogueId: 'observation-ok-2', x: 70, y: 65, found: false },
 ]
 
+const chapterBonusSpots: ObservationSpot[] = [
+  { id: 'obs-axolotl', label: 'Ajolote', emoji: '🦎', dialogueId: 'observation-axolotl', x: 15, y: 40, found: false },
+  { id: 'obs-vaquita', label: 'Vaquita marina', emoji: '🐬', dialogueId: 'observation-vaquita', x: 40, y: 30, found: false },
+  { id: 'obs-jaguar', label: 'Jaguar', emoji: '🐆', dialogueId: 'observation-jaguar', x: 65, y: 50, found: false },
+  { id: 'obs-monarch', label: 'Mariposa monarca', emoji: '🦋', dialogueId: 'observation-monarch', x: 80, y: 35, found: false },
+  { id: 'obs-wolf', label: 'Lobo mexicano', emoji: '🐺', dialogueId: 'observation-wolf', x: 30, y: 60, found: false },
+  { id: 'obs-ok-1', label: '', emoji: '🐦', dialogueId: 'observation-ok-1', x: 50, y: 20, found: false },
+  { id: 'obs-ok-2', label: '', emoji: '🐤', dialogueId: 'observation-ok-2', x: 20, y: 55, found: false },
+]
+
 const chapter5Spots: ObservationSpot[] = [
   { id: 'obs-weight', label: '', emoji: '⚖️', dialogueId: 'observation-weight', x: 20, y: 40, found: false },
   { id: 'obs-sun', label: '', emoji: '☀️', dialogueId: 'observation-sun', x: 50, y: 30, found: false },
@@ -595,6 +625,7 @@ const defaultSpots = computed(() => {
   if (route.params.chapterId === 'chapter-2') return chapter2Spots
   if (route.params.chapterId === 'chapter-4') return chapter4Spots
   if (route.params.chapterId === 'chapter-5') return chapter5Spots
+  if (route.params.chapterId === 'chapter-bonus') return chapterBonusSpots
   return chapter1Spots
 })
 
@@ -836,6 +867,12 @@ const missionIconMap: Record<string, string> = {
   'mission-3-plants': '🌱',
   'mission-4-irrigation': '💧',
   'mission-5-difference': '🔍',
+  // Chapter Bonus
+  'bonus-1-spotter': '🔍',
+  'bonus-2-memory': '🧠',
+  'bonus-3-threats': '⚠️',
+  'bonus-4-quiz': '❓',
+  'bonus-5-refuge': '🏠',
   // Chapter 6
   'mission-1-prepare': '🎪',
   'mission-2-invite': '📣',
@@ -868,6 +905,12 @@ const transformEmojis = computed(() => {
     return {
       before: [['🏗️', '☀️', '🧱'], ['😰', '🏚️', '🌡️']],
       after: [['🌱', '🌿', '🌻'], ['💧', '🦋', '😊']],
+    }
+  }
+  if (route.params.chapterId === 'chapter-bonus') {
+    return {
+      before: [['🦎', '🐆', '🐺'], ['😰', '🪓', '🏭']],
+      after: [['🦎', '🐆', '🦋'], ['🌿', '🏡', '😊']],
     }
   }
   if (route.params.chapterId === 'chapter-6') {
@@ -938,6 +981,20 @@ const summaryData = computed(() => {
       unlockLabel: 'Zona 6: El Gran Festival Verde',
     }
   }
+  if (route.params.chapterId === 'chapter-bonus') {
+    return {
+      heading: 'La fauna del barrio cambió porque:',
+      learnings: [
+        'Se identificaron las especies en peligro de México',
+        'Se aprendió qué amenaza a cada animal',
+        'Se clasificaron las amenazas humanas y naturales',
+        'Se tomaron decisiones de conservación informadas',
+        'Se construyó un refugio para la vida silvestre',
+      ],
+      message: 'Cada especie que protegemos es una victoria para México. Y tú puedes ayudar desde tu barrio.',
+      unlockLabel: 'Capítulo completado',
+    }
+  }
   if (route.params.chapterId === 'chapter-6') {
     return {
       heading: 'El barrio entero cambió porque:',
@@ -973,6 +1030,7 @@ const chapterMeta: Record<string, { icon: string; title: string }> = {
   'chapter-3': { icon: '💧', title: 'La Fuga Infinita' },
   'chapter-4': { icon: '🗑️', title: 'La Ruta de la Basura' },
   'chapter-5': { icon: '🌱', title: 'Azoteas con Vida' },
+  'chapter-bonus': { icon: '🦎', title: 'Fauna en Peligro' },
   'chapter-6': { icon: '🎉', title: 'El Gran Festival Verde' },
 }
 const storyNextMap: Record<string, string> = {
@@ -981,6 +1039,7 @@ const storyNextMap: Record<string, string> = {
   'chapter-3': 'chapter-4',
   'chapter-4': 'chapter-5',
   'chapter-5': 'chapter-6',
+  'chapter-bonus': 'chapter-6',
 }
 const hookData = computed(() => {
   const storyNext = storyNextMap[route.params.chapterId as string]
@@ -1027,6 +1086,15 @@ const cinematicFloats = computed(() => {
       { emoji: '☀️', style: 'top: 35%; left: 30%; animation-delay: 0.6s;', class: 'heat-wave' },
       { emoji: '💧', style: 'top: 20%; left: 55%; animation-delay: 1.8s;', class: '' },
       { emoji: '🌿', style: 'top: 30%; right: 25%; animation-delay: 2.4s;', class: '' },
+    ]
+  }
+  if (route.params.chapterId === 'chapter-bonus') {
+    return [
+      { emoji: '🦎', style: 'top: 12%; left: 15%; animation-delay: 0s;', class: '' },
+      { emoji: '🐆', style: 'top: 25%; right: 12%; animation-delay: 1.2s;', class: '' },
+      { emoji: '🦋', style: 'top: 35%; left: 30%; animation-delay: 0.6s;', class: '' },
+      { emoji: '🐺', style: 'top: 20%; left: 55%; animation-delay: 1.8s;', class: '' },
+      { emoji: '🐬', style: 'top: 30%; right: 25%; animation-delay: 2.4s;', class: '' },
     ]
   }
   if (route.params.chapterId === 'chapter-6') {
@@ -1097,6 +1165,7 @@ onMounted(() => {
       return
     }
   }
+
 
   // Track chapter start
   const { trackEvent } = useAnalytics()

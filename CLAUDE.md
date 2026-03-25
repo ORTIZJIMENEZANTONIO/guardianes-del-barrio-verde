@@ -51,7 +51,8 @@ app/
     minigame/                   # MinigameShell + 8 componentes reutilizables (ver abajo)
     reward/                     # RewardPopup
     phaser/                     # PhaserCanvas (wrapper Phaser)
-    chapter/chapter-1/ a 6/     # 32 minijuegos (wrappers delgados que usan componentes reutilizables)
+    chapter/chapter-1/ a 6/     # 37 minijuegos (wrappers delgados que usan componentes reutilizables)
+    chapter/chapter-bonus/      # 5 minijuegos bonus (fauna en peligro)
   composables/
     useGameAnimations.ts        # GSAP helpers (celebrateSuccess, confettiBurst, shakeWrong)
     useGameFeedback.ts          # Feedback toast reutilizable (show/showOk/showNo/clear)
@@ -63,7 +64,7 @@ app/
   pages/
     index.vue                   # Pantalla de inicio
     registro.vue                # Registro: nombre + edad + avatar personaje (4 pasos)
-    capitulos.vue               # Selector de 6 capítulos
+    capitulos.vue               # Selector de 6 capítulos + 1 bonus
     chapter/[chapterId].vue     # Motor del juego (dificultad adaptativa por edad)
     admin.vue                   # Dashboard de estadísticas (gesto secreto + login)
     dev.vue                     # Catálogo dev + Testing Autobots (solo localhost)
@@ -73,7 +74,8 @@ app/
     useDialogueStore.ts         # Diálogos, typewriter, {nombre}, filtro por edad
   data/
     characters/                 # 8 personajes
-    chapters/chapter-1/ a 6/    # 6 capítulos (index, dialogues, missions con difficulty)
+    chapters/chapter-1/ a 6/    # 6 capítulos + 1 bonus (index, dialogues, missions con difficulty)
+    chapters/chapter-bonus/     # Capítulo bonus: Fauna en Peligro
   shared/types/                 # TypeScript (MissionConfig con difficulty: 1|2|3)
 ```
 
@@ -83,12 +85,12 @@ app/
 
 | Componente | Mecánica | Props clave | Usado en |
 |-----------|----------|-------------|----------|
-| `MemoryGame.vue` | Memorama (voltear cartas, encontrar parejas) | `pairs`, `backEmoji`, `backGradient`, `accentColor` | SoilMemory, WetlandMemory, RecycleMemory, PlantMatcher, FestivalProblems |
-| `TapDetectGame.vue` | Tocar zonas para detectar/clasificar | `spotData`, `total`, `targetBadge`, `foundEmoji` | HeatDetector, PollutionDetector, RoofEvaluator, WaterWasteDetector |
-| `SequenceGame.vue` | Ordenar pasos en secuencia correcta | `steps` (con `correctPosition`), `slotLabels` | CompostBuilder |
-| `SwipeClassifier.vue` | Swipe izq/der para clasificar + botones | `items` (con `category`), `leftLabel`, `rightLabel` | WasteSeparator |
+| `MemoryGame.vue` | Memorama (voltear cartas, encontrar parejas) | `pairs`, `backEmoji`, `backGradient`, `accentColor` | SoilMemory, WetlandMemory, RecycleMemory, PlantMatcher, FestivalProblems, SpeciesMemory |
+| `TapDetectGame.vue` | Tocar zonas para detectar/clasificar | `spotData`, `total`, `targetBadge`, `foundEmoji` | HeatDetector, PollutionDetector, RoofEvaluator, WaterWasteDetector, EndangeredSpotter |
+| `SequenceGame.vue` | Ordenar pasos en secuencia correcta | `steps` (con `correctPosition`), `slotLabels` | CompostBuilder, RefugeBuilder |
+| `SwipeClassifier.vue` | Swipe izq/der para clasificar + botones | `items` (con `category`), `leftLabel`, `rightLabel` | WasteSeparator, ThreatClassifier |
 | `LineMatchGame.vue` | Dibujar líneas conectando parejas | `pairs` (left/right), `accentColor` | WildlifeMemory |
-| `QuickQuiz.vue` | Quiz con timer por pregunta | `questions` (con opciones), `timePerQuestion` | WaterQuiz |
+| `QuickQuiz.vue` | Quiz con timer por pregunta | `questions` (con opciones), `timePerQuestion` | WaterQuiz, ConservationQuiz |
 | `SpotDifference.vue` | Encontrar diferencias entre escenas | `differences`, `maxHints`, before/after variants | RoofDifference |
 | `RouteTracer.vue` | Trazar ruta tocando nodos en orden | `nodeData` (con `correctOrder`), `segments` | IrrigationBuilder |
 
@@ -104,8 +106,8 @@ app/
 
 ```
 Home → Registro (nombre + edad + personaje) → Capítulos → Capítulo
-         4 pasos                               6 caps      Escenas adaptadas por edad
-         (6-12 + botón 12+)                    desbloqueados
+         4 pasos                               6 caps +    Escenas adaptadas por edad
+         (6-12 + botón 12+)                    1 bonus
 ```
 
 ## Sistema de registro y personalización
@@ -225,6 +227,22 @@ Recompensa: 60 pts.
 
 Recompensa: 60 pts.
 
+## Capítulo Bonus — Fauna en Peligro
+
+11 escenas, 5 misiones. Tema: animales en peligro de extinción en México y acciones de conservación. **Opcional** — no requerido para desbloquear Cap. 6. Disponible desde el inicio. Protagonistas: Xani + Bolillo + Lila.
+
+| # | Misión | Componente | Mecánica | Diff |
+|---|--------|------------|----------|:----:|
+| 1 | Identificar especies | `EndangeredSpotter` | tap-detect (4 de 7: ajolote, vaquita, jaguar, lobo) | 1 |
+| 2 | Conocer especies | `SpeciesMemory` | memorama (5 parejas: animal→amenaza) | 2 |
+| 3 | Clasificar amenazas | `ThreatClassifier` | **swipe** (8 items: humana↔natural) | 2 |
+| 4 | Decisiones de conservación | `ConservationQuiz` | **quiz** (5 preguntas, 15s c/u) | 2 |
+| 5 | Construir refugio | `RefugeBuilder` | **sequence** (5 pasos en orden) | 3 |
+
+Especies destacadas: ajolote (Xochimilco), vaquita marina (Golfo de California), jaguar (Selva Lacandona), lobo mexicano (Sierra Madre), mariposa monarca (Michoacán).
+
+Recompensa: 60 pts, "Guardián de la Fauna".
+
 ## Capítulo 6 — El Gran Festival Verde
 
 9 escenas, 4 misiones. Tema: comunidad, cierre. TODOS los personajes.
@@ -250,6 +268,7 @@ Recompensa: 80 pts.
 | Separación de residuos | Cap. 1 (general) + Cap. 4 (swipe con datos) | Diferenciados |
 | **Composta** | Cap. 4 | Misión dedicada (CompostBuilder, secuencia) |
 | **Techos verdes** | Cap. 5 | Capítulo completo (CIIEMAD/IPN, 6 misiones) |
+| **Fauna en peligro de extinción** | Bonus | Capítulo completo (5 misiones, opcional) |
 | Comunidad / activación | Cap. 6 | Capítulo completo (festival) |
 
 ## Personajes
@@ -258,12 +277,12 @@ Recompensa: 80 pts.
 |-----------|-----|-------|:------:|-------------|
 | Lila | Líder | #2d9d5e | ✅ | Todos |
 | Timo | Inventor | #f97316 | ✅ | Cap. 1, 4, 5 |
-| Xani | Naturaleza | #8b5cf6 | ✅ | Cap. 2, 3, 5 |
+| Xani | Naturaleza | #8b5cf6 | ✅ | Cap. 2, 3, 5, Bonus |
 | Don Toño | Vecino | #8b6f47 | ✅ | Cap. 1, 2 |
 | Nube Gris | Antagonista | #6b7280 | ❌ | Todos (sarcasmo) |
 | Nico | Deportista | #3b82f6 | ✅ | Cap. 1, 2 |
 | Vale | Comerciante | #fbbf24 | ✅ | Cap. 4, 6 |
-| Bolillo | Perrito mestizo | #c89850 | ❌ | Cap. 2, 6 |
+| Bolillo | Perrito mestizo | #c89850 | ❌ | Cap. 2, 6, Bonus |
 
 ### Bolillo — Sistema de capas PNG
 
@@ -335,7 +354,7 @@ Almacenamiento dual:
 Solo localhost. Secciones:
 - **Personajes**: emociones + hablar
 - **Capítulos**: "▶ Jugar este capítulo"
-- **Misiones**: 32 minijuegos con "▶ Jugar" (overlay Teleport)
+- **Misiones**: 37 minijuegos con "▶ Jugar" (overlay Teleport)
 - **🤖 Testing / Autobots** (captura console.error + console.warn):
 
 | Botón | Función |
@@ -351,7 +370,7 @@ Log en terminal oscuro. Banner amarillo cuando corre. Resumen PASS/FAIL.
 
 ## Estado actual
 
-- **6 capítulos, 32 minijuegos** jugables (10 mecánicas diferentes)
+- **6 capítulos + 1 bonus, 37 minijuegos** jugables (10 mecánicas diferentes)
 - **8 componentes reutilizables** (MemoryGame, TapDetectGame, SequenceGame, SwipeClassifier, LineMatchGame, QuickQuiz, SpotDifference, RouteTracer)
 - **3 composables de juego** (useGameFeedback, useDragDrop, useGameAnimations)
 - **Edades 6-12 + modo 12+** (solo misiones difíciles, timer ×0.6)
