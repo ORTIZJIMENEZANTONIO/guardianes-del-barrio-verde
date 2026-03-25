@@ -19,7 +19,7 @@
 
       <!-- Hint -->
       <div class="game-hint">
-        {{ dragging ? '⬆️ Lleva la pieza a un hueco con ? que gotea' : '👆 Toca una pieza de abajo y arrastrala a un hueco con ?' }}
+        {{ dragging ? '⬆️ Lleva la pieza a un hueco con ? que gotea' : selectedPiece ? '👆 Ahora toca un hueco con ?' : '👆 Toca o arrastra una pieza hacia un hueco con ?' }}
         · Reparados: {{ piecesPlaced }}/4
       </div>
 
@@ -78,6 +78,7 @@
           }"
           :style="{ left: slot.x + '%', top: slot.y + '%' }"
           :data-slot="slot.id"
+          @click="onSlotClick(slot)"
         >
           <template v-if="slot.filled">
             <span class="slot-emoji">{{ slot.placedEmoji }}</span>
@@ -113,9 +114,11 @@
             :class="{
               'piece-item--used game-item--used': piece.used,
               'piece-item--dragging game-item--dragging': dragging?.id === piece.id,
+              'piece-item--selected game-item--selected': selectedPiece?.id === piece.id,
             }"
             :style="pieceStyle(piece)"
             @pointerdown.prevent="onPointerDown(piece, $event)"
+            @click="onPieceClick(piece)"
           >
             <span class="piece-emoji game-item__emoji">{{ piece.emoji }}</span>
             <span class="piece-name game-item__label">{{ piece.name }}</span>
@@ -178,6 +181,9 @@ const isComplete = computed(() => piecesPlaced.value >= 4)
 const showResult = ref(false)
 const feedback = ref<{ message: string; ok: boolean } | null>(null)
 let feedbackTimer: ReturnType<typeof setTimeout> | null = null
+
+// Click/tap selection state
+const selectedPiece = ref<PipePiece | null>(null)
 
 // Drag state
 const dragging = ref<PipePiece | null>(null)
@@ -268,6 +274,19 @@ function onPointerUp(e: PointerEvent) {
   hoveredSlot.value = null
 }
 
+// --- Click/tap handlers ---
+function onPieceClick(piece: PipePiece) {
+  if (dragStarted.value || piece.used) return
+  selectedPiece.value = selectedPiece.value?.id === piece.id ? null : piece
+}
+
+function onSlotClick(slot: PipeSlot) {
+  if (dragStarted.value || slot.filled || !selectedPiece.value) return
+  const piece = selectedPiece.value
+  selectedPiece.value = null
+  tryPlace(piece, slot.id)
+}
+
 function tryPlace(piece: PipePiece, slotId: string) {
   const slot = slots.value.find(s => s.id === slotId)
   if (!slot || slot.filled) return
@@ -339,6 +358,7 @@ function resetGame() {
   dragging.value = null
   dragStarted.value = false
   hoveredSlot.value = null
+  selectedPiece.value = null
   feedback.value = null
 }
 </script>
@@ -560,6 +580,13 @@ function resetGame() {
 
 .piece-item:active {
   cursor: grabbing;
+}
+
+.piece-item--selected {
+  border-color: var(--color-yellow);
+  background: rgba(251, 191, 36, 0.2);
+  transform: scale(1.12);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
 }
 
 .piece-item--used {

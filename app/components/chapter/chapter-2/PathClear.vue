@@ -45,6 +45,7 @@
           }"
           :style="obstacleStyle(obs)"
           @pointerdown.prevent="onPointerDown(obs, $event)"
+          @click="onObstacleClick(obs)"
         >
           <span class="obstacle__emoji game-item__emoji">{{ obs.emoji }}</span>
           <span class="obstacle__name game-item__label">{{ obs.name }}</span>
@@ -221,6 +222,12 @@ function onPointerUp(e: PointerEvent) {
 
   dragging.value = null
   dragStarted.value = false
+}
+
+// --- Click/tap handler ---
+function onObstacleClick(obs: Obstacle) {
+  if (dragStarted.value || obs.cleared) return
+  clearObstacle(obs)
 }
 
 function clearObstacle(obs: Obstacle) {

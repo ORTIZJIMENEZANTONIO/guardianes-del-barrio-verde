@@ -23,11 +23,12 @@
           :class="{
             'plant-slot--planted game-zone--filled': slot.planted,
             'plant-slot--wrong game-zone--wrong': slot.wrongAttempt,
-            'plant-slot--highlight game-zone--highlight': !!dragging && !slot.planted,
+            'plant-slot--highlight game-zone--highlight': (!!dragging || !!selectedSeed) && !slot.planted,
             'plant-slot--hover game-zone--hover': hoveredSlot === slot.id && !slot.planted,
           }"
           :style="{ left: slot.x + '%', top: slot.y + '%' }"
           :data-slot="slot.id"
+          @click="onSlotClick(slot)"
         >
           <template v-if="slot.planted">
             <span class="planted-tree">🌳</span>
@@ -60,14 +61,16 @@
             :class="{
               'seed-item--used game-item--used': seed.used,
               'seed-item--dragging game-item--dragging': dragging?.id === seed.id && dragStarted,
+              'seed-item--selected game-item--selected': selectedSeed?.id === seed.id,
             }"
             :style="dragging?.id === seed.id && dragStarted ? dragStyle : {}"
             @pointerdown.prevent="onPointerDown(seed, $event)"
+            @click="onSeedClick(seed)"
           >
             <span class="seed-item__emoji">🌳</span>
           </div>
         </div>
-        <div class="seed-tray__hint">{{ dragging ? '⬆ Suelta en un buen lugar' : '👆 Arrastra un árbol a la calle' }}</div>
+        <div class="seed-tray__hint">{{ dragging ? '⬆ Suelta en un buen lugar' : selectedSeed ? '👆 Ahora toca un lugar en la calle' : '👆 Arrastra o toca un árbol' }}</div>
       </div>
     </div>
   </MinigameShell>
@@ -114,6 +117,9 @@ const isComplete = computed(() => treesPlanted.value >= 4)
 const showResult = ref(false)
 const feedback = ref<{ message: string; ok: boolean } | null>(null)
 let feedbackTimer: ReturnType<typeof setTimeout> | null = null
+
+// Click/tap selection state
+const selectedSeed = ref<Seed | null>(null)
 
 // Drag state
 const dragging = ref<Seed | null>(null)
@@ -184,6 +190,19 @@ function onPointerUp(e: PointerEvent) {
   hoveredSlot.value = null
 }
 
+// --- Click/tap handlers ---
+function onSeedClick(seed: Seed) {
+  if (dragStarted.value || seed.used) return
+  selectedSeed.value = selectedSeed.value?.id === seed.id ? null : seed
+}
+
+function onSlotClick(slot: PlantSlot) {
+  if (dragStarted.value || slot.planted || !selectedSeed.value) return
+  const seed = selectedSeed.value
+  selectedSeed.value = null
+  tryPlant(seed, slot.id)
+}
+
 function tryPlant(seed: Seed, slotId: string) {
   const slot = plantSlots.value.find(s => s.id === slotId)
   if (!slot || slot.planted) return
@@ -234,6 +253,7 @@ function resetGame() {
   showResult.value = false
   dragging.value = null
   dragStarted.value = false
+  selectedSeed.value = null
 }
 </script>
 
@@ -359,6 +379,13 @@ function resetGame() {
 }
 
 .seed-item:active { cursor: grabbing; }
+
+.seed-item--selected {
+  border-color: var(--color-yellow);
+  background: rgba(251, 191, 36, 0.2);
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+}
 
 .seed-item--used {
   opacity: 0.2;

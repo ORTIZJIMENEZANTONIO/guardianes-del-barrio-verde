@@ -34,6 +34,7 @@
           }"
           :style="obstacleStyle(item)"
           @pointerdown.prevent="onPointerDown(item, $event)"
+          @click="onObstacleClick(item)"
         >
           <span class="obstacle__emoji game-item__emoji">{{ item.emoji }}</span>
           <span class="obstacle__name game-item__label">{{ item.name }}</span>
@@ -186,6 +187,12 @@ function isInSafeZone(clientX: number): boolean {
   const rect = gameAreaRef.value.getBoundingClientRect()
   const threshold = rect.left + rect.width * 0.80
   return clientX >= threshold
+}
+
+// --- Click/tap handler ---
+function onObstacleClick(item: Obstacle) {
+  if (dragStarted.value || item.cleared) return
+  clearObstacle(item)
 }
 
 function clearObstacle(item: Obstacle) {

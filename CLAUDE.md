@@ -188,21 +188,21 @@ Cada misión tiene `difficulty: 1 | 2 | 3` (fácil, medio, difícil).
 
 Cada capítulo dura máximo ~15 minutos. El `shouldSkipMission()` en `[chapterId].vue` auto-avanza las misiones que no corresponden a la edad. El HUD muestra solo las misiones activas (`activeMissionCount`).
 
-## Mecánicas de juego (10 tipos)
+## Mecánicas de juego (11 tipos)
 
-| Mecánica | Tipo | Componente base | Descripción |
-|----------|------|----------------|-------------|
-| drag-drop | Arrastrar items a zonas | `useDragDrop.ts` | Pointer handling + RAF + hover |
-| memorama | Voltear cartas | `MemoryGame.vue` | 2 cols mobile, 4 cols tablet |
-| tap-detect | Tocar spots | `TapDetectGame.vue` | Spots con isTarget boolean |
-| placement | Seleccionar + colocar | — (manual) | selectedItem + zones |
-| pipe-fit | Colocar piezas en huecos SVG | — (manual) | SVG pipe con slots |
-| **sequence** | Ordenar pasos | `SequenceGame.vue` | Slots numerados + tray |
-| **swipe** | Clasificar izq/der | `SwipeClassifier.vue` | Card + botones + rachas |
-| **line-match** | Conectar con líneas | `LineMatchGame.vue` | SVG live drawing |
-| **quiz** | Decisiones rápidas | `QuickQuiz.vue` | Timer por pregunta |
-| **spot-difference** | Encontrar diferencias | `SpotDifference.vue` | Antes/después + pistas |
-| **route-trace** | Trazar ruta en orden | `RouteTracer.vue` | Nodos + SVG path |
+| Mecánica | Tipo | Componente base | Descripción | Capítulos |
+|----------|------|----------------|-------------|-----------|
+| drag-drop | Arrastrar items a zonas (+ tap fallback) | `useDragDrop.ts` | Pointer handling + RAF + hover. Todos soportan click como alternativa. | 1, 2, 3, 6 |
+| memorama | Voltear cartas | `MemoryGame.vue` | 2 cols mobile, 4 cols tablet | 2, 3, 4, 5, 6, Bonus |
+| tap-detect | Tocar spots | `TapDetectGame.vue` | Spots con isTarget boolean | 1, 3, 4, 5, Bonus |
+| placement | Seleccionar + colocar | — (manual) | selectedItem + zones | 1, 2, 5, 6 |
+| pipe-fit | Colocar piezas en huecos SVG (+ tap fallback) | — (manual) | SVG pipe con slots | 1, 3 |
+| sequence | Ordenar pasos | `SequenceGame.vue` | Slots numerados + tray | 4, Bonus |
+| swipe | Clasificar izq/der | `SwipeClassifier.vue` | Card + botones + rachas | 4, Bonus |
+| line-match | Conectar con líneas | `LineMatchGame.vue` | SVG live drawing | 2 |
+| quiz | Decisiones rápidas | `QuickQuiz.vue` | Timer por pregunta | 3, Bonus |
+| spot-difference | Encontrar diferencias | `SpotDifference.vue` | Antes/después + pistas | 5 |
+| route-trace | Trazar ruta en orden | `RouteTracer.vue` | Nodos + SVG path | 5 |
 
 ## Capítulo 1 — La Calle Caliente
 
@@ -412,12 +412,18 @@ Solo localhost. Secciones:
 
 | Botón | Función |
 |-------|---------|
-| 🤖 Verificar TODOS | Checa componente + diálogos + icon + objectives + reward |
+| 🤖 Verificar datos | Checa componente + diálogos + icon + objectives + reward |
 | 📱 UI/Mobile | Render, overflow, touch targets, drag stability, FPS, console |
 | 🔨 Stress | Random taps, wrong drags, spam clicks, console errors |
-| ▶ Correr TODOS | Abre cada misión secuencialmente (1.5s), completa, cierra |
+| ▶ Correr TODOS | Juega visualmente cada minijuego: verifica datos, abre, se equivoca 2-3 veces (feedback rojo), luego completa correctamente, cierra. Soporta las 11 mecánicas incluido drag-drop via tap. |
 | ⚡ Completar | Marca done instantáneamente |
 | 🔄 Reset | Limpia progreso |
+
+Todos los botones disponibles en 3 niveles: global, por capítulo, por misión.
+
+### Soporte de tap en juegos drag-drop
+
+Todos los juegos drag-drop soportan **click como alternativa al drag**: click en item (selecciona) → click en zona (coloca). Esto permite que los bots de testing los completen sin necesitar pointer events reales. Juegos con tap nativo agregado: ShadePlanter, PathClear, WaterDragDrop, ParkDragRestore, FloodDragClear, PipeDragFit, FestivalInauguration.
 
 Log en terminal oscuro. Banner amarillo cuando corre. Resumen PASS/FAIL.
 

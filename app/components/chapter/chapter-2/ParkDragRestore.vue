@@ -24,11 +24,12 @@
           class="drop-zone game-zone"
           :class="{
             'drop-zone--filled game-zone--filled': zone.filled,
-            'drop-zone--highlight game-zone--highlight': !!dragging && !zone.filled,
+            'drop-zone--highlight game-zone--highlight': (!!dragging || !!selectedItem) && !zone.filled,
             'drop-zone--hover game-zone--hover': hoveredZone === zone.id && !zone.filled,
           }"
           :style="{ left: zone.x, top: zone.y }"
           :data-zone="zone.id"
+          @click="onZoneClick(zone)"
         >
           <template v-if="zone.filled">
             <span class="placed-emoji">{{ zone.placedEmoji }}</span>
@@ -79,9 +80,11 @@
             :class="{
               'drag-item--used game-item--used': item.used,
               'drag-item--dragging game-item--dragging': dragging?.id === item.id && dragStarted,
+              'drag-item--selected game-item--selected': selectedItem?.id === item.id,
             }"
             :style="dragging?.id === item.id && dragStarted ? dragStyle : {}"
             @pointerdown.prevent="onPointerDown(item, $event)"
+            @click="onItemClick(item)"
           >
             <span class="drag-item__emoji game-item__emoji">{{ item.emoji }}</span>
             <span class="drag-item__name game-item__label">{{ item.name }}</span>
@@ -142,6 +145,9 @@ const itemsPlaced = ref(0)
 const transformLevel = ref(0)
 const isComplete = computed(() => itemsPlaced.value >= 5)
 const showResult = ref(false)
+
+// Click/tap selection state
+const selectedItem = ref<DragItem | null>(null)
 
 // Drag state
 const dragging = ref<DragItem | null>(null)
@@ -230,6 +236,19 @@ function onPointerUp(e: PointerEvent) {
   hoveredZone.value = null
 }
 
+// --- Click/tap handlers ---
+function onItemClick(item: DragItem) {
+  if (dragStarted.value || item.used) return
+  selectedItem.value = selectedItem.value?.id === item.id ? null : item
+}
+
+function onZoneClick(zone: DropZone) {
+  if (dragStarted.value || zone.filled || !selectedItem.value) return
+  const item = selectedItem.value
+  selectedItem.value = null
+  attemptPlace(item, zone.id)
+}
+
 function attemptPlace(item: DragItem, zoneId: string) {
   const zone = zones.value.find(z => z.id === zoneId)
   if (!zone || zone.filled) return
@@ -269,6 +288,7 @@ function resetGame() {
   dragging.value = null
   dragStarted.value = false
   hoveredZone.value = null
+  selectedItem.value = null
   showResult.value = false
   feedback.value = null
 }
@@ -415,6 +435,13 @@ function resetGame() {
 
 .drag-item:active {
   cursor: grabbing;
+}
+
+.drag-item--selected {
+  border-color: var(--color-yellow);
+  background: rgba(251, 191, 36, 0.2);
+  transform: scale(1.12);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
 }
 
 .drag-item--used {

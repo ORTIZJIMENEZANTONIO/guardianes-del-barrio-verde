@@ -20,7 +20,7 @@
 
       <!-- Hint -->
       <div class="water-hint">
-        {{ dragging ? '⬇️ Suelta sobre una planta' : '👆 Arrastra una gota del pozo a una planta' }}
+        {{ dragging ? '⬇️ Suelta sobre una planta' : selectedDrop ? '👆 Ahora toca una planta' : '👆 Arrastra o toca una gota del pozo' }}
       </div>
 
       <!-- Game layout -->
@@ -39,9 +39,11 @@
                   :class="{
                     'water-drop--used game-item--used': drop.used,
                     'water-drop--dragging game-item--dragging': dragging?.id === drop.id,
+                    'water-drop--selected game-item--selected': selectedDrop?.id === drop.id,
                   }"
                   :style="dropStyle(drop)"
                   @pointerdown.prevent="onPointerDown(drop, $event)"
+                  @click="onDropClick(drop)"
                 >
                   <span class="water-drop__emoji">💧</span>
                 </div>
@@ -65,6 +67,7 @@
               'plant-zone--hover game-zone--hover': hoveredPlant === plant.id,
             }"
             :data-plant-id="plant.id"
+            @click="onPlantClick(plant)"
           >
             <span class="plant-zone__emoji">{{ plant.watered ? '💦' : plant.emoji }}</span>
             <span class="plant-zone__label">{{ plant.label }}</span>
@@ -135,6 +138,9 @@ const isComplete = computed(() => plantsWatered.value >= 4)
 const showResult = ref(false)
 const dropsRemaining = computed(() => drops.value.filter(d => !d.used).length)
 
+// Click/tap selection state
+const selectedDrop = ref<WaterDrop | null>(null)
+
 // Drag state
 const dragging = ref<WaterDrop | null>(null)
 const dragPos = ref({ x: 0, y: 0 })
@@ -195,6 +201,20 @@ function onPointerUp(e: PointerEvent) {
   dragging.value = null
   dragStarted.value = false
   hoveredPlant.value = null
+}
+
+// --- Click/tap handlers ---
+function onDropClick(drop: WaterDrop) {
+  if (dragStarted.value || drop.used) return
+  selectedDrop.value = selectedDrop.value?.id === drop.id ? null : drop
+}
+
+function onPlantClick(plant: PlantZone) {
+  if (dragStarted.value || !selectedDrop.value) return
+  if (plant.watered || plant.wasted) return
+  const drop = selectedDrop.value
+  selectedDrop.value = null
+  handleDrop(drop, plant.id)
 }
 
 function handleDrop(drop: WaterDrop, plantId: string) {
@@ -271,6 +291,7 @@ function resetGame() {
   showResult.value = false
   dragging.value = null
   hoveredPlant.value = null
+  selectedDrop.value = null
 }
 </script>
 
@@ -378,6 +399,13 @@ function resetGame() {
 
 .water-drop:active {
   cursor: grabbing;
+}
+
+.water-drop--selected {
+  border-color: var(--color-yellow);
+  background: rgba(251, 191, 36, 0.35);
+  transform: scale(1.2);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
 }
 
 .water-drop--used {

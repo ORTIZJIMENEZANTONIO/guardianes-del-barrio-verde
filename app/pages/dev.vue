@@ -167,11 +167,8 @@
           <button class="test-btn test-btn--yellow" :disabled="!!runningTest" @click="stressTestAll" title="Simula mal uso: taps aleatorios, drags a zonas incorrectas, spam clicks, 3 cartas rápidas en memorama. Detecta crashes">
             🔨 Stress (errores)
           </button>
-          <button class="test-btn test-btn--purple" :disabled="!!runningTest" @click="runAllChapters" title="Abre cada misión 1.5s, verifica datos, marca completada en store y cierra. No juega visualmente">
+          <button class="test-btn test-btn--purple" :disabled="!!runningTest" @click="runAllChapters" title="Juega cada minijuego visualmente (se equivoca y luego completa), verifica datos y marca completado">
             ▶ Correr TODOS
-          </button>
-          <button class="test-btn test-btn--purple" :disabled="!!runningTest" @click="simulateAll" style="background: linear-gradient(135deg, #7c3aed, #a855f7)" title="Juega cada minijuego visualmente: se equivoca 2-3 veces (feedback rojo visible) y luego lo completa correctamente">
-            🎮 Simular TODOS
           </button>
           <button class="test-btn test-btn--blue" @click="autoCompleteAll" title="Marca todas las misiones y capítulos como completados instantáneamente en el store (sin abrir juegos)">
             ⚡ Completar TODO
@@ -205,11 +202,8 @@
               <button class="test-btn test-btn--small test-btn--yellow" :disabled="!!runningTest" @click="stressTestChapter(ch)" title="Stress test: taps aleatorios, drags incorrectos, spam">
                 🔨
               </button>
-              <button class="test-btn test-btn--small test-btn--purple" :disabled="!!runningTest" @click="runChapter(ch)" title="Abrir y completar cada misión rápido (1.5s c/u, sin jugar)">
+              <button class="test-btn test-btn--small test-btn--purple" :disabled="!!runningTest" @click="runChapter(ch)" title="Juega visualmente cada misión, se equivoca y luego completa">
                 ▶
-              </button>
-              <button class="test-btn test-btn--small test-btn--purple" :disabled="!!runningTest" @click="simulateChapter(ch)" style="background: linear-gradient(135deg, #7c3aed, #a855f7)" title="Jugar visualmente: se equivoca y luego completa cada misión">
-                🎮
               </button>
               <button class="test-btn test-btn--small test-btn--blue" @click="autoCompleteChapter(ch)" title="Marcar todo el capítulo como completado (instantáneo)">
                 ⚡ OK
@@ -225,8 +219,7 @@
                   <button class="test-btn test-btn--tiny test-btn--green" @click="autoTestMission(m)" title="Verificar datos: componente, diálogos, icono, objectives, reward">🤖</button>
                   <button class="test-btn test-btn--tiny test-btn--orange" :disabled="!!runningTest" @click="uiTestMission(m)" title="UI/Mobile: render, overflow, touch ≥40px, drag, FPS, consola">📱</button>
                   <button class="test-btn test-btn--tiny test-btn--yellow" :disabled="!!runningTest" @click="stressTestMission(m)" title="Stress: taps random, drag incorrecto, spam, memorama 3 cartas">🔨</button>
-                  <button class="test-btn test-btn--tiny test-btn--purple" :disabled="!!runningTest" @click="runMission(m)" title="Abrir 2s, completar en store y cerrar (sin jugar)">▶</button>
-                  <button class="test-btn test-btn--tiny test-btn--purple" :disabled="!!runningTest" @click="simulateMission(m)" style="background: linear-gradient(135deg, #7c3aed, #a855f7)" title="Jugar visualmente: se equivoca y luego completa">🎮</button>
+                  <button class="test-btn test-btn--tiny test-btn--purple" :disabled="!!runningTest" @click="runMission(m)" title="Juega visualmente: se equivoca y luego completa">▶</button>
                   <button class="test-btn test-btn--tiny test-btn--blue" @click="autoCompleteMission(m)" title="Marcar completada + dar puntos (instantáneo)">⚡</button>
                 </div>
                 <div v-if="testResults[m.id]" class="test-result" :class="testResults[m.id].ok ? 'test-result--pass' : 'test-result--fail'">
@@ -378,11 +371,17 @@ const allMissions = [
 ]
 
 const mechanics = [
-  { type: 'drag-drop', icon: '👆', desc: 'Arrastrar ítems con touch/mouse a zonas destino', chapters: 'Cap. 1, 2, 3' },
-  { type: 'memorama', icon: '🃏', desc: 'Voltear cartas para encontrar parejas (flip 3D)', chapters: 'Cap. 2, 3' },
-  { type: 'tap-detect', icon: '👉', desc: 'Tocar spots para descubrir/clasificar', chapters: 'Cap. 1' },
-  { type: 'placement', icon: '📌', desc: 'Seleccionar ítem + tocar zona para colocar', chapters: 'Cap. 1' },
-  { type: 'pipe-fit', icon: '🔧', desc: 'Colocar piezas de tubería en huecos', chapters: 'Cap. 1' },
+  { type: 'drag-drop', icon: '👆', desc: 'Arrastrar o tocar ítems hacia zonas/contenedores destino', chapters: 'Cap. 1, 2, 3, 6' },
+  { type: 'memorama', icon: '🃏', desc: 'Voltear cartas para encontrar parejas (flip 3D)', chapters: 'Cap. 2, 3, 4, 5, 6, Bonus' },
+  { type: 'tap-detect', icon: '👉', desc: 'Tocar spots para descubrir/clasificar (target vs no-target)', chapters: 'Cap. 1, 3, 4, 5, Bonus' },
+  { type: 'placement', icon: '📌', desc: 'Seleccionar ítem + tocar zona para colocar', chapters: 'Cap. 1, 2, 5, 6' },
+  { type: 'pipe-fit', icon: '🔧', desc: 'Colocar piezas de tubería en huecos SVG', chapters: 'Cap. 1, 3' },
+  { type: 'sequence', icon: '🔢', desc: 'Ordenar pasos en secuencia correcta (slots numerados)', chapters: 'Cap. 4, Bonus' },
+  { type: 'swipe', icon: '👈👉', desc: 'Deslizar o tocar botones para clasificar izq/der', chapters: 'Cap. 4, Bonus' },
+  { type: 'line-match', icon: '🔗', desc: 'Dibujar líneas SVG conectando parejas', chapters: 'Cap. 2' },
+  { type: 'quiz', icon: '❓', desc: 'Preguntas con timer por pregunta y opciones múltiples', chapters: 'Cap. 3, Bonus' },
+  { type: 'spot-difference', icon: '🔍', desc: 'Encontrar diferencias entre escenas antes/después', chapters: 'Cap. 5' },
+  { type: 'route-trace', icon: '🗺️', desc: 'Trazar ruta tocando nodos en orden correcto', chapters: 'Cap. 5' },
 ]
 
 // Mission component map for individual play
@@ -529,64 +528,86 @@ function autoCompleteMission(m: MissionConfig) {
 }
 
 // --- RUN MISSION (open, auto-complete after 2s, close) ---
+// --- RUN MISSION (simulate visually: verify data → play with mistakes → complete) ---
 async function runMission(m: MissionConfig) {
-  runningTest.value = `Corriendo: ${m.title}...`
+  if (!playerStore.isRegistered) playerStore.setProfile('TestBot', 10)
+  runningTest.value = `▶ ${m.title}...`
 
-  // Verify first
+  // 1. Verify data integrity
   autoTestMission(m)
   if (!testResults.value[m.id]?.ok) {
     runningTest.value = null
     return
   }
 
-  // Open the minigame
+  // 2. Open minigame
   playingMissionId.value = m.id
   playingMissionTitle.value = m.title
+  await sleep(1200)
 
-  // Wait 2s for it to mount and render
-  await new Promise(r => setTimeout(r, 2000))
+  const overlay = document.querySelector('.mission-player-area')
+  if (!overlay) {
+    testResults.value[m.id] = log(false, `▶ ${m.title}: no se montó`)
+    playingMissionId.value = null
+    runningTest.value = null
+    return
+  }
 
-  // Auto-complete and close
+  // 3. Click "Empezar"
+  const startBtn = overlay.querySelector('.minigame-instructions button') as HTMLElement
+  if (startBtn) {
+    startBtn.click()
+    await sleep(800)
+  }
+
+  // 4. Simulate gameplay (mistakes then correct)
+  const gameArea = overlay.querySelector('.minigame-area') as HTMLElement
+  if (gameArea) {
+    if (gameArea.querySelector('.memory-card')) {
+      await simulateMemoryGame(gameArea)
+    } else if (gameArea.querySelector('.detect-spot')) {
+      await simulateTapDetectGame(gameArea)
+    } else if (gameArea.querySelector('.swipe-btn')) {
+      await simulateSwipeGame(gameArea)
+    } else if (gameArea.querySelector('.quiz-option')) {
+      await simulateQuizGame(gameArea)
+    } else if (gameArea.querySelector('.seq-slot')) {
+      await simulateSequenceGame(gameArea)
+    } else if (gameArea.querySelector('.game-item')) {
+      await simulateGenericGame(gameArea)
+    }
+  }
+
+  // 5. Wait for result screen
+  await sleep(2000)
+
+  // 6. Click result button if visible
+  const resultBtn = overlay.querySelector('.minigame-result button') as HTMLElement
+  if (resultBtn) {
+    resultBtn.click()
+    await sleep(500)
+  }
+
+  // 7. Ensure complete in store
   autoCompleteMission(m)
   playingMissionId.value = null
   playingMissionTitle.value = ''
 
-  log(true, `▶ ${m.title}: abierta, renderizada, completada ✓`)
+  testResults.value[m.id] = log(true, `▶ ${m.title}: jugada, verificada y completada ✓`)
   runningTest.value = null
 }
 
-// --- RUN CHAPTER (run all missions sequentially) ---
+// --- RUN CHAPTER (run all missions sequentially with simulation) ---
 async function runChapter(ch: ChapterConfig) {
-  const missions = getMissionsForChapter(ch)
-  runningTest.value = `Corriendo capítulo: ${ch.title} (0/${missions.length})...`
-
-  // Ensure profile exists
   if (!playerStore.isRegistered) playerStore.setProfile('TestBot', 10)
+  const missions = getMissionsForChapter(ch)
 
   for (let i = 0; i < missions.length; i++) {
-    const m = missions[i]
-    runningTest.value = `${ch.icon} ${ch.title}: ${m.title} (${i + 1}/${missions.length})...`
-
-    autoTestMission(m)
-    if (!testResults.value[m.id]?.ok) {
-      log(false, `▶ ${ch.title}: falló en ${m.title}`)
-      runningTest.value = null
-      return
-    }
-
-    // Open minigame
-    playingMissionId.value = m.id
-    playingMissionTitle.value = m.title
-    await new Promise(r => setTimeout(r, 1500))
-
-    // Complete and close
-    autoCompleteMission(m)
-    playingMissionId.value = null
-    playingMissionTitle.value = ''
-    await new Promise(r => setTimeout(r, 300))
+    runningTest.value = `${ch.icon} ${ch.title}: ${missions[i].title} (${i + 1}/${missions.length})...`
+    await runMission(missions[i])
+    await sleep(500)
   }
 
-  // Complete chapter
   playerStore.completeChapter(ch.id)
   playerStore.addScore(ch.completionReward.points)
   playerStore.awardBadge(ch.completionReward.badge, ch.completionReward.badgeTitle)
@@ -1205,138 +1226,104 @@ async function simulateSequenceGame(area: HTMLElement) {
 }
 
 async function simulateGenericGame(area: HTMLElement) {
-  // For placement / drag-drop games: click items then zones
+  // Covers ALL game types: drag-drop, placement, tap-only, zone-less
+  // Uses click-based interaction (all games support tap as fallback)
+
+  // Broad item selectors covering all game components
+  const ITEM_SELECTORS = [
+    '.game-item:not(.game-item--used):not(.game-item--sorted):not(.game-item--rejected):not([disabled])',
+    '.trash-item:not([style*="display: none"])',
+    '.seed-item:not(.seed-item--used)',
+    '.obstacle:not(.obstacle--cleared)',
+    '.water-drop:not(.water-drop--used)',
+    '.drag-item:not(.drag-item--used)',
+    '.piece-item:not(.piece-item--used)',
+    '.piece-btn:not(.piece-btn--used):not([disabled])',
+    '.item-btn:not(.item-btn--used):not([disabled])',
+    '.neighbor-spot:not(.neighbor-spot--invited)',
+  ].join(', ')
+
+  // Broad zone selectors covering all game components
+  const ZONE_SELECTORS = [
+    '.game-zone:not(.game-zone--filled)',
+    '.game-bin:not(.bin--done)',
+    '[data-bin-id]:not(.bin--done)',
+    '[data-zone]:not(.place-zone--filled):not(.drop-zone--filled)',
+    '[data-slot]:not(.plant-slot--planted):not(.roof-slot--filled):not(.pipe-slot--filled)',
+    '[data-gap]:not(.gap-zone--filled)',
+    '[data-plant-id]:not(.plant-zone--watered)',
+    '[data-stop]:not(.route-stop--fulfilled)',
+  ].join(', ')
+
+  const getVisible = (selector: string) => Array.from(area.querySelectorAll(selector)).filter(el => {
+    const s = window.getComputedStyle(el)
+    return s.display !== 'none' && s.visibility !== 'hidden' && parseFloat(s.opacity) > 0.1
+  }) as HTMLElement[]
+
+  const getItems = () => getVisible(ITEM_SELECTORS)
+  const getZones = () => getVisible(ZONE_SELECTORS)
+
   let attempts = 0
-  while (attempts < 40) {
-    const items = Array.from(area.querySelectorAll('.game-item:not(.game-item--used)')) as HTMLElement[]
-    const zones = Array.from(area.querySelectorAll('.game-zone:not(.game-zone--filled)')) as HTMLElement[]
-    if (items.length === 0 || zones.length === 0) break
+  let stuckCount = 0
 
-    items[0].click()
-    await sleep(400)
+  while (attempts < 100) {
+    const items = getItems()
+    if (items.length === 0) break
 
-    // First 2: try wrong zone, then iterate
+    const zones = getZones()
+    const beforeCount = items.length
+
+    // --- Pattern C: Tap-only (TrashCollector, NeighborInviter) — no zones needed ---
+    if (zones.length === 0) {
+      items[0].click()
+      await sleep(600)
+      attempts++
+      if (getItems().length >= beforeCount) { stuckCount++; if (stuckCount > 8) break }
+      else stuckCount = 0
+      continue
+    }
+
+    // --- Pattern A/B: Select item + click zone ---
+
+    // First 2 attempts: try wrong zone (visible error feedback)
     if (attempts < 2 && zones.length > 1) {
+      items[0].click()
+      await sleep(400)
       zones[zones.length - 1].click()
       await sleep(1000)
-      if (area.querySelectorAll('.game-item:not(.game-item--used)').length === items.length) {
-        // Was wrong — try all zones
-        for (const z of zones) {
-          items[0]?.click()
-          await sleep(200)
-          z.click()
-          await sleep(800)
-          if (area.querySelectorAll('.game-item:not(.game-item--used)').length < items.length) break
+      // Re-check — wrong placement clears selection, so re-select below
+    }
+
+    // Try EVERY item against EVERY zone until one pair works
+    let placed = false
+    for (const item of items) {
+      if (placed) break
+      for (const z of zones) {
+        // Select the item (click to select)
+        item.click()
+        await sleep(250)
+
+        // Click the zone (attempt placement)
+        z.click()
+        await sleep(500)
+
+        // Check if item count decreased (placement succeeded)
+        if (getItems().length < beforeCount) {
+          placed = true
+          stuckCount = 0
+          break
         }
       }
-    } else {
-      for (const z of zones) {
-        items[0]?.click()
-        await sleep(200)
-        z.click()
-        await sleep(800)
-        if (area.querySelectorAll('.game-item:not(.game-item--used)').length < items.length) break
-      }
     }
+
+    if (!placed) {
+      stuckCount++
+      if (stuckCount > 5) break
+    }
+
     attempts++
+    await sleep(200)
   }
-}
-
-async function simulateMission(m: MissionConfig) {
-  if (!playerStore.isRegistered) playerStore.setProfile('TestBot', 10)
-  runningTest.value = `🎮 Simulando: ${m.title}...`
-
-  // Open minigame
-  playingMissionId.value = m.id
-  playingMissionTitle.value = m.title
-  await sleep(1200)
-
-  const overlay = document.querySelector('.mission-player-area')
-  if (!overlay) {
-    testResults.value[m.id] = log(false, `🎮 ${m.title}: no se montó`)
-    playingMissionId.value = null
-    runningTest.value = null
-    return
-  }
-
-  // Click "Empezar"
-  const startBtn = overlay.querySelector('.minigame-instructions button') as HTMLElement
-  if (startBtn) {
-    startBtn.click()
-    await sleep(800)
-  }
-
-  const gameArea = overlay.querySelector('.minigame-area') as HTMLElement
-  if (!gameArea) {
-    testResults.value[m.id] = log(false, `🎮 ${m.title}: no hay gameArea`)
-    playingMissionId.value = null
-    runningTest.value = null
-    return
-  }
-
-  // Detect game type and simulate
-  if (gameArea.querySelector('.memory-card')) {
-    await simulateMemoryGame(gameArea)
-  } else if (gameArea.querySelector('.detect-spot')) {
-    await simulateTapDetectGame(gameArea)
-  } else if (gameArea.querySelector('.swipe-btn')) {
-    await simulateSwipeGame(gameArea)
-  } else if (gameArea.querySelector('.quiz-option')) {
-    await simulateQuizGame(gameArea)
-  } else if (gameArea.querySelector('.seq-slot')) {
-    await simulateSequenceGame(gameArea)
-  } else if (gameArea.querySelector('.game-item')) {
-    await simulateGenericGame(gameArea)
-  }
-
-  // Wait for result screen
-  await sleep(2000)
-
-  // Click result button if visible
-  const resultBtn = overlay.querySelector('.minigame-result button') as HTMLElement
-  if (resultBtn) {
-    resultBtn.click()
-    await sleep(500)
-  }
-
-  // Ensure mission is complete in store
-  autoCompleteMission(m)
-  playingMissionId.value = null
-  playingMissionTitle.value = ''
-
-  testResults.value[m.id] = log(true, `🎮 ${m.title}: simulado con errores y completado ✓`)
-  runningTest.value = null
-}
-
-async function simulateChapter(ch: ChapterConfig) {
-  if (!playerStore.isRegistered) playerStore.setProfile('TestBot', 10)
-  const missions = getMissionsForChapter(ch)
-
-  for (let i = 0; i < missions.length; i++) {
-    runningTest.value = `🎮 ${ch.icon} ${ch.title}: ${missions[i].title} (${i + 1}/${missions.length})...`
-    await simulateMission(missions[i])
-    await sleep(500)
-  }
-
-  playerStore.completeChapter(ch.id)
-  playerStore.addScore(ch.completionReward.points)
-  playerStore.awardBadge(ch.completionReward.badge, ch.completionReward.badgeTitle)
-  playerStore.saveProgress()
-  log(true, `🎮 ${ch.icon} ${ch.title}: capítulo simulado (${missions.length} misiones) ✓`)
-  runningTest.value = null
-}
-
-async function simulateAll() {
-  if (!playerStore.isRegistered) playerStore.setProfile('TestBot', 10)
-  testLog.value = []
-  testResults.value = {}
-
-  for (const ch of chaptersData) {
-    await simulateChapter(ch)
-  }
-
-  updateSummary()
-  log(true, '=== 🎮 SIMULACIÓN COMPLETA ===')
 }
 
 function goToChapter(chapterId: string) {
