@@ -48,7 +48,7 @@ El admin (`/admin` → sección "Sistema") mostrará "Conectado a /cercu-backend
 - **Servidor**: Alpine Linux `72.62.200.124` (srv1420267)
 - **Nginx**: `/etc/nginx/http.d/cercu.conf` — bloque `guardianes.cercu.com.mx` con `location /cercu-backend/` que proxea a `127.0.0.1:3003`
 - **PM2**: proceso `cercu-backend` (id 0) corre `dist/index.js` en puerto 3003
-- **MySQL**: tabla `guardianes_events` en `cercu_db` (creada manualmente, `synchronize` está off en prod)
+- **MySQL**: tabla `guardianes_events` en `cercu_db` (creada manualmente, `synchronize` está off en prod). BIGINT timestamp se parsea como `Number()` en el service porque el driver MySQL devuelve string.
 - **Referencia local**: `cercu-frontend/deploy/nginx.conf` tiene la config de referencia
 
 ```nginx
