@@ -35,7 +35,7 @@
             <div class="shade-circle" />
           </template>
           <template v-else>
-            <span class="slot-icon">{{ slot.emoji }}</span>
+            <GameIcon :emoji="slot.emoji" :size="22" class="slot-icon" />
             <span class="slot-label">{{ slot.label }}</span>
           </template>
         </div>
@@ -67,7 +67,7 @@
             @pointerdown.prevent="onPointerDown(seed, $event)"
             @click="onSeedClick(seed)"
           >
-            <span class="seed-item__emoji">🌳</span>
+            <GameIcon emoji="🌳" :size="24" class="seed-item__emoji" />
           </div>
         </div>
         <div class="seed-tray__hint">{{ dragging ? '⬆ Suelta en un buen lugar' : selectedSeed ? '👆 Ahora toca un lugar en la calle' : '👆 Arrastra o toca un árbol' }}</div>

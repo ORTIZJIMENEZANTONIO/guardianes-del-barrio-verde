@@ -36,7 +36,7 @@
           @pointerdown.prevent="onPointerDown(item, $event)"
           @click="onObstacleClick(item)"
         >
-          <span class="obstacle__emoji game-item__emoji">{{ item.emoji }}</span>
+          <GameIcon :emoji="item.emoji" :size="28" class="obstacle__emoji game-item__emoji" />
           <span class="obstacle__name game-item__label">{{ item.name }}</span>
         </div>
 
@@ -50,7 +50,7 @@
             :key="item.id"
             class="safe-item"
           >
-            <span class="safe-item__emoji">{{ item.emoji }}</span>
+            <GameIcon :emoji="item.emoji" :size="22" class="safe-item__emoji" />
             <span class="safe-item__name">{{ item.name }}</span>
           </div>
 
@@ -60,7 +60,7 @@
             :key="item.id"
             class="safe-item safe-item--cleared"
           >
-            <span class="safe-item__emoji">{{ item.emoji }}</span>
+            <GameIcon :emoji="item.emoji" :size="22" class="safe-item__emoji" />
             <span class="safe-item__name">{{ item.name }}</span>
           </div>
         </div>

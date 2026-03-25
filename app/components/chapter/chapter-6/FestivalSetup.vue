@@ -29,10 +29,10 @@
           @click="placeInZone(zone)"
         >
           <template v-if="zone.filled">
-            <span class="placed-emoji game-zone__placed">{{ zone.placedEmoji }}</span>
+            <GameIcon :emoji="zone.placedEmoji" :size="28" class="placed-emoji game-zone__placed" />
           </template>
           <template v-else>
-            <span class="zone-icon game-zone__icon">{{ zone.icon }}</span>
+            <GameIcon :emoji="zone.icon" :size="22" class="zone-icon game-zone__icon" />
             <span class="zone-label game-zone__label">{{ zone.label }}</span>
           </template>
         </div>
@@ -72,7 +72,7 @@
             :disabled="item.used || item.rejected"
             @click="selectItem(item)"
           >
-            <span class="item-emoji game-item__emoji">{{ item.emoji }}</span>
+            <GameIcon :emoji="item.emoji" :size="22" class="item-emoji game-item__emoji" />
             <span class="item-name game-item__label">{{ item.name }}</span>
           </button>
         </div>

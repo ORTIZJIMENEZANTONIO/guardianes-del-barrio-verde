@@ -56,7 +56,7 @@
           :data-stop="stop.id"
           @click="tryFulfill(stop, i)"
         >
-          <span class="route-stop__emoji">{{ stop.fulfilled ? '✅' : stop.needEmoji }}</span>
+          <GameIcon :emoji="stop.fulfilled ? '✅' : stop.needEmoji" :size="20" class="route-stop__emoji" />
           <span class="route-stop__label">{{ stop.label }}</span>
         </div>
       </div>
@@ -84,7 +84,7 @@
             :disabled="item.used || item.wrong"
             @click="selectItem(item)"
           >
-            <span class="item-emoji game-item__emoji">{{ item.emoji }}</span>
+            <GameIcon :emoji="item.emoji" :size="20" class="item-emoji game-item__emoji" />
             <span class="item-name game-item__label">{{ item.name }}</span>
           </button>
         </div>

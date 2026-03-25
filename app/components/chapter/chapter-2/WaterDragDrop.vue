@@ -70,7 +70,7 @@
             :data-plant-id="plant.id"
             @click="onPlantClick(plant)"
           >
-            <span class="plant-zone__emoji">{{ plant.watered ? '💦' : plant.emoji }}</span>
+            <GameIcon :emoji="plant.watered ? '💦' : plant.emoji" :size="28" class="plant-zone__emoji" />
             <span class="plant-zone__label">{{ plant.label }}</span>
           </div>
         </div>

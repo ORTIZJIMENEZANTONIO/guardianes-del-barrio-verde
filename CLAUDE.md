@@ -140,6 +140,7 @@ app/
 | `StreakBadge.vue` | Badge animado de racha/combo | `streak`, `label` | Todos los componentes base (transversal) |
 | `GameMascot.vue` | Mini personaje reactivo (44px) que cambia emoción según progreso | `characterId`, `progress`, `lastResult`, `streak` | MinigameShell (via `mascotCharacterId` prop, activo en 21 wrappers) |
 | `ParticleOverlay.vue` | Partículas ambientales DOM+CSS (hojas, gotas, destellos, calor) | `preset` (heat/nature/water/sparkle/celebration), `intensity`, `progress` | MinigameShell (via `particlePreset` prop, activo en 17 wrappers) |
+| `GameIcon.vue` (ui/) | Renderiza iconos Iconify (noto SVG) en vez de emojis nativos | `emoji`, `size` | Todos los componentes base + 15 wrappers. ~100 emojis mapeados, fallback a emoji nativo. |
 
 ### Composables de juego
 
@@ -431,7 +432,7 @@ Log en terminal oscuro. Banner amarillo cuando corre. Resumen PASS/FAIL.
 ## Estado actual
 
 - **6 capítulos + 1 bonus, 37 minijuegos** jugables (10 mecánicas diferentes)
-- **8 componentes base + 3 UI transversales** (MemoryGame, TapDetectGame, SequenceGame, SwipeClassifier, LineMatchGame, QuickQuiz, SpotDifference, RouteTracer + StreakBadge, GameMascot, ParticleOverlay)
+- **8 componentes base + 3 UI transversales + GameIcon** (MemoryGame, TapDetectGame, SequenceGame, SwipeClassifier, LineMatchGame, QuickQuiz, SpotDifference, RouteTracer + StreakBadge, GameMascot, ParticleOverlay, GameIcon)
 - **6 composables de juego** (useGameFeedback, useDragDrop, useGameAnimations, useStreakSystem, useSceneProgress, useMiniCelebrations)
 - **Sistema de rachas** transversal: badge animado en 5 juegos base, milestones en 2/3/5/7/10 aciertos consecutivos
 - **Micro-celebraciones** intermedias: confetti escalado + flash pantalla en milestones de progreso (50%, 75%) y rachas (x3, x5, x7)
@@ -441,6 +442,9 @@ Log en terminal oscuro. Banner amarillo cuando corre. Resumen PASS/FAIL.
 - **GSAP avanzado**: 22 helpers (12 originales + 10 nuevos): popSuccess, softWrong, milestonePulse, streakEnter/Break, sparkles, characterReact, missionCompleteSequence, scorePop, progressFillBurst
 - **Score reactivo**: contador ✅ en MinigameShell hace bounce verde cada vez que avanza + missionCompleteSequence al terminar
 - **LineMatchGame mejorado**: curvas bezier en vez de líneas rectas, animación drawLine, glow en línea activa, punto pulsante, nodos con pulso y escala, layout mobile-first (30%/40%/30%)
+- **Iconify (noto)**: emojis reemplazados por SVGs vectoriales de `@iconify-json/noto` via `GameIcon.vue` (img src API). ~100 emojis mapeados. Fallback a emoji nativo si no hay mapeo. Activo en 6 componentes base + 15 wrappers.
+- **MemoryGame feedback**: match ya no muestra texto — celebra con sparkles (6 por carta) + confetti final (30 partículas). Error sí muestra texto educativo.
+- **Feedback animation fix**: `@keyframes feedbackIn` incluye translate(-50%,-50%) en cada paso para evitar salto diagonal al aparecer
 - **Edades 6-12 + modo 12+** (solo misiones difíciles, timer ×0.6)
 - **Dificultad adaptativa**: `difficulty: 1|2|3` por misión, `shouldSkipMission()` por edad
 - **Registro**: nombre + edad (6-12, 12+) + avatar = personaje existente

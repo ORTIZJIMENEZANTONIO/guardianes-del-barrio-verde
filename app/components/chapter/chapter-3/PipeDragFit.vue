@@ -81,7 +81,7 @@
           @click="onSlotClick(slot)"
         >
           <template v-if="slot.filled">
-            <span class="slot-emoji">{{ slot.placedEmoji }}</span>
+            <GameIcon :emoji="slot.placedEmoji" :size="28" class="slot-emoji" />
           </template>
           <template v-else>
             <span class="slot-placeholder">?</span>
@@ -120,7 +120,7 @@
             @pointerdown.prevent="onPointerDown(piece, $event)"
             @click="onPieceClick(piece)"
           >
-            <span class="piece-emoji game-item__emoji">{{ piece.emoji }}</span>
+            <GameIcon :emoji="piece.emoji" :size="28" class="piece-emoji game-item__emoji" />
             <span class="piece-name game-item__label">{{ piece.name }}</span>
           </div>
         </div>

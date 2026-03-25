@@ -48,7 +48,7 @@
           @pointerdown.prevent="onPointerDown(obs, $event)"
           @click="onObstacleClick(obs)"
         >
-          <span class="obstacle__emoji game-item__emoji">{{ obs.emoji }}</span>
+          <GameIcon :emoji="obs.emoji" :size="28" class="obstacle__emoji game-item__emoji" />
           <span class="obstacle__name game-item__label">{{ obs.name }}</span>
         </div>
 
@@ -65,7 +65,7 @@
               :key="item.id"
               class="cleanup-zone__item"
             >
-              {{ item.emoji }}
+              <GameIcon :emoji="item.emoji" :size="22" />
             </span>
           </div>
         </div>

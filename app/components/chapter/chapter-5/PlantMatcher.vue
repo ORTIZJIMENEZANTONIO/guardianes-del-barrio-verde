@@ -37,7 +37,7 @@ const pairs: MemoryPair[] = [
   { pairId: 2, emoji: '💧', label: 'Poca agua' },
   { pairId: 2, emoji: '🌵', label: 'Cactus' },
   { pairId: 3, emoji: '💨', label: 'Viento fuerte' },
-  { pairId: 3, emoji: '💜', label: 'Lavanda' },
+  { pairId: 3, emoji: '🌸', label: 'Lavanda' },
   { pairId: 4, emoji: '🌑', label: 'Sombra' },
   { pairId: 4, emoji: '🌿', label: 'Helecho' },
 ]

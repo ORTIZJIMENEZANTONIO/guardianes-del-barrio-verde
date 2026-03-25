@@ -23,7 +23,7 @@
         >
           <span class="seq-slot__number">{{ i + 1 }}</span>
           <template v-if="slot.item">
-            <span class="seq-slot__emoji">{{ slot.item.emoji }}</span>
+            <GameIcon :emoji="slot.item.emoji" :size="22" class="seq-slot__emoji" />
             <span class="seq-slot__label">{{ slot.item.label }}</span>
           </template>
           <template v-else>
@@ -41,7 +41,7 @@
             class="result-layer"
             :class="{ 'result-layer--active': slot.correct }"
           >
-            <span v-if="slot.correct">{{ slot.item?.emoji }}</span>
+            <GameIcon v-if="slot.correct && slot.item" :emoji="slot.item.emoji" :size="18" />
           </div>
         </div>
         <div class="result-label">{{ correctCount }}/{{ steps.length }}</div>
@@ -63,7 +63,7 @@
           :disabled="item.placed"
           @click="selectItem(item)"
         >
-          <span class="game-item__emoji">{{ item.emoji }}</span>
+          <GameIcon :emoji="item.emoji" :size="22" class="game-item__emoji" />
           <span class="game-item__label">{{ item.label }}</span>
         </button>
       </div>

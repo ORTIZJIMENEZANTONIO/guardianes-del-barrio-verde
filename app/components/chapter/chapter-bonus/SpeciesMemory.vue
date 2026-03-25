@@ -39,7 +39,7 @@ const pairs: MemoryPair[] = [
   { pairId: 3, emoji: '🐆', label: 'Jaguar' },
   { pairId: 3, emoji: '🪓', label: 'Deforestación' },
   { pairId: 4, emoji: '🦋', label: 'Mariposa monarca' },
-  { pairId: 4, emoji: '🌡️', label: 'Cambio climático' },
+  { pairId: 4, emoji: '🔥', label: 'Cambio climático' },
   { pairId: 5, emoji: '🐺', label: 'Lobo mexicano' },
   { pairId: 5, emoji: '🚫', label: 'Caza ilegal' },
 ]

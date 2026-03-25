@@ -3,7 +3,7 @@
     title="Proteger el humedal"
     mascot-character-id="xani"
     particle-preset="water"
-    description="Voltea las cartas de dos en dos. Cada animal o planta tiene una pareja que explica su funcion en el humedal. Por ejemplo: Rana + Indica agua sana. Encuentra las 4 parejas."
+    description="Cada animal del humedal ayuda de una forma especial. Voltea las cartas y une cada animal con lo que hace. Por ejemplo: Ranas + Se comen a los mosquitos."
     :completed="matched"
     :total="4"
     :is-success="gameRef?.isComplete ?? false"
@@ -18,9 +18,9 @@
       back-emoji="💧"
       back-gradient="linear-gradient(135deg, #3b82f6, #1d4ed8)"
       accent-color="#3b82f6"
-      error-message="Esas cartas no son pareja. 💡 Recuerda que cada parte del humedal tiene una función especial."
+      error-message="Esas no son pareja. 💡 Cada animal ayuda de una forma diferente: ¿quién filtra, quién come insectos, quién esparce semillas?"
       success-message="¡Pareja encontrada!"
-      hint="👆 Voltea 2 cartas: une cada ser vivo con su funcion"
+      hint="👆 Une cada animal con lo que hace en el humedal"
       @complete="onComplete"
       @update="onUpdate"
     />
@@ -33,14 +33,14 @@ import type { MemoryPair } from '~/components/minigame/MemoryGame.vue'
 defineEmits<{ complete: [] }>()
 
 const pairs: MemoryPair[] = [
-  { pairId: 1, emoji: '🌾', label: 'Juncos' },
-  { pairId: 1, emoji: '🧹', label: 'Filtran el agua' },
-  { pairId: 2, emoji: '🐸', label: 'Rana' },
-  { pairId: 2, emoji: '🌡️', label: 'Indica agua sana' },
-  { pairId: 3, emoji: '💧', label: 'Humedal' },
-  { pairId: 3, emoji: '🧽', label: 'Retiene agua como esponja' },
-  { pairId: 4, emoji: '🦆', label: 'Aves acuáticas' },
-  { pairId: 4, emoji: '🏠', label: 'Necesitan hábitat limpio' },
+  { pairId: 1, emoji: '🪷', label: 'Plantas de agua (lirios, carrizos)' },
+  { pairId: 1, emoji: '🚿', label: 'Filtran la basura del agua' },
+  { pairId: 2, emoji: '🐸', label: 'Ranas' },
+  { pairId: 2, emoji: '🦟', label: 'Se comen a los mosquitos' },
+  { pairId: 3, emoji: '🦆', label: 'Patos' },
+  { pairId: 3, emoji: '🌱', label: 'Esparcen semillas de plantas' },
+  { pairId: 4, emoji: '🐟', label: 'Peces' },
+  { pairId: 4, emoji: '🍃', label: 'Mantienen el agua en movimiento' },
 ]
 
 const gameRef = ref<InstanceType<typeof import('~/components/minigame/MemoryGame.vue').default> | null>(null)

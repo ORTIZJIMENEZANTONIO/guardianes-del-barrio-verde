@@ -32,7 +32,7 @@
               @click="placeInSlot(slot)"
             >
               <template v-if="slot.filled">
-                <span class="slot-emoji">{{ slot.placedEmoji }}</span>
+                <GameIcon :emoji="slot.placedEmoji" :size="22" class="slot-emoji" />
                 <span class="slot-name">{{ slot.placedName }}</span>
               </template>
               <template v-else>
@@ -72,7 +72,7 @@
             :disabled="item.used || item.rejected"
             @click="selectItem(item)"
           >
-            <span class="item-emoji game-item__emoji">{{ item.emoji }}</span>
+            <GameIcon :emoji="item.emoji" :size="22" class="item-emoji game-item__emoji" />
             <span class="item-name game-item__label">{{ item.name }}</span>
           </button>
         </div>

@@ -21,10 +21,10 @@
       >
         <div class="card-inner">
           <div class="card-back" :style="{ background: backGradient }">
-            <span class="card-back-emoji">{{ backEmoji }}</span>
+            <GameIcon :emoji="backEmoji" :size="28" class="card-back-emoji" />
           </div>
           <div class="card-front" :class="{ 'card-front--matched': card.matched }" :style="matchedStyle(card)">
-            <span class="card-front-emoji">{{ card.emoji }}</span>
+            <GameIcon :emoji="card.emoji" :size="26" class="card-front-emoji" />
             <span class="card-front-label">{{ card.label }}</span>
           </div>
         </div>
@@ -85,7 +85,7 @@ const emit = defineEmits<{
   update: [matched: number, total: number]
 }>()
 
-const { shakeWrong, celebrateSuccess, confettiBurst } = useGameAnimations()
+const { shakeWrong, celebrateSuccess, confettiBurst, sparkles } = useGameAnimations()
 
 // Streak + celebrations
 const celebrations = useMiniCelebrations(() => document.querySelector('.memory-game') as HTMLElement)
@@ -178,13 +178,13 @@ function checkMatch() {
     matchedCount.value++
     streakState.hit()
     sceneState.increment()
-    showFB(props.successMessage, true)
 
+    // Mini confetti on each matched pair (no text message)
     nextTick(() => {
       const el1 = document.querySelector(`[data-card="${first.id}"]`)
       const el2 = document.querySelector(`[data-card="${second.id}"]`)
-      if (el1) celebrateSuccess(el1)
-      if (el2) celebrateSuccess(el2)
+      if (el1) { celebrateSuccess(el1); sparkles(el1, 6) }
+      if (el2) { celebrateSuccess(el2); sparkles(el2, 6) }
     })
 
     setTimeout(() => {
@@ -196,7 +196,7 @@ function checkMatch() {
 
     if (isComplete.value) {
       const gameEl = document.querySelector('.memory-game')
-      if (gameEl) confettiBurst(gameEl, 20)
+      if (gameEl) confettiBurst(gameEl, 30)
       setTimeout(() => { emit('complete') }, 1000)
     }
   } else {
@@ -321,7 +321,6 @@ defineExpose({ start, reset, matchedCount, isComplete })
 }
 
 .card-back-emoji {
-  font-size: 28px;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 
@@ -335,7 +334,7 @@ defineExpose({ start, reset, matchedCount, isComplete })
 }
 
 .card-front-emoji {
-  font-size: 26px;
+  /* size controlled by GameIcon :size prop */
 }
 
 .card-front-label {
@@ -348,9 +347,7 @@ defineExpose({ start, reset, matchedCount, isComplete })
 }
 
 @media (max-width: 380px) {
-  .card-front-emoji { font-size: 22px; }
   .card-front-label { font-size: 8px; }
-  .card-back-emoji { font-size: 24px; }
 }
 
 .memory-streak {

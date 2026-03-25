@@ -150,7 +150,7 @@
           @click="placeInGap(gap)"
         >
           <template v-if="gap.filled">
-            <span class="gap-emoji gap-emoji--placed">{{ gap.placedEmoji }}</span>
+            <GameIcon :emoji="gap.placedEmoji" :size="24" class="gap-emoji gap-emoji--placed" />
           </template>
           <template v-else>
             <span class="gap-hint">{{ gap.hintEmoji }}</span>
@@ -184,7 +184,7 @@
             :disabled="piece.used"
             @click="selectPiece(piece)"
           >
-            <span class="piece-emoji">{{ piece.emoji }}</span>
+            <GameIcon :emoji="piece.emoji" :size="22" class="piece-emoji" />
             <span class="piece-name">{{ piece.name }}</span>
           </button>
         </div>

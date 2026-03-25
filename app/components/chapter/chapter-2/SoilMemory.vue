@@ -33,7 +33,7 @@ defineEmits<{ complete: [] }>()
 
 const pairs: MemoryPair[] = [
   { pairId: 1, emoji: '🪨', label: 'Suelo compacto' },
-  { pairId: 1, emoji: '🔨', label: 'Aflojar tierra' },
+  { pairId: 1, emoji: '⛏️', label: 'Aflojar la tierra' },
   { pairId: 2, emoji: '🗑️', label: 'Basura enterrada' },
   { pairId: 2, emoji: '🧹', label: 'Limpiar residuos' },
   { pairId: 3, emoji: '🏜️', label: 'Tierra seca' },

@@ -33,7 +33,7 @@
         @pointermove.prevent="onPointerMove"
         @pointerup.prevent="onPointerUp"
       >
-        <span class="swipe-card__emoji">{{ currentItem.emoji }}</span>
+        <GameIcon :emoji="currentItem.emoji" :size="48" class="swipe-card__emoji" />
         <span class="swipe-card__label">{{ currentItem.label }}</span>
         <span v-if="currentItem.detail" class="swipe-card__detail">{{ currentItem.detail }}</span>
       </div>

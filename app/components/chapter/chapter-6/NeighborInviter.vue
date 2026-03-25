@@ -27,7 +27,7 @@
           :style="{ left: neighbor.x + '%', top: neighbor.y + '%' }"
           @click="inviteNeighbor(neighbor)"
         >
-          <span class="neighbor-spot__emoji game-zone__icon">{{ neighbor.emoji }}</span>
+          <GameIcon :emoji="neighbor.emoji" :size="24" class="neighbor-spot__emoji game-zone__icon" />
           <span class="neighbor-spot__label game-zone__label">{{ neighbor.label }}</span>
           <div v-if="neighbor.invited" class="neighbor-spot__check">✅</div>
         </div>

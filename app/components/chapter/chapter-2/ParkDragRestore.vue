@@ -33,7 +33,7 @@
           @click="onZoneClick(zone)"
         >
           <template v-if="zone.filled">
-            <span class="placed-emoji">{{ zone.placedEmoji }}</span>
+            <GameIcon :emoji="zone.placedEmoji" :size="28" class="placed-emoji" />
           </template>
           <template v-else>
             <span class="zone-placeholder">&#11036;</span>
@@ -87,7 +87,7 @@
             @pointerdown.prevent="onPointerDown(item, $event)"
             @click="onItemClick(item)"
           >
-            <span class="drag-item__emoji game-item__emoji">{{ item.emoji }}</span>
+            <GameIcon :emoji="item.emoji" :size="24" class="drag-item__emoji game-item__emoji" />
             <span class="drag-item__name game-item__label">{{ item.name }}</span>
           </div>
         </div>

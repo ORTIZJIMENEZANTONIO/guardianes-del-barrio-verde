@@ -28,7 +28,7 @@
           :style="{ left: item.x + '%', top: item.y + '%' }"
           @click="collectItem(item)"
         >
-          <span class="trash-item__emoji game-item__emoji">{{ item.emoji }}</span>
+          <GameIcon :emoji="item.emoji" :size="28" class="trash-item__emoji game-item__emoji" />
           <span class="trash-item__name game-item__label">{{ item.name }}</span>
         </div>
       </div>
@@ -42,7 +42,7 @@
             :key="item.id"
             class="counter-item"
           >
-            {{ item.emoji }}
+            <GameIcon :emoji="item.emoji" :size="20" />
           </span>
         </div>
         <div class="counter-label">{{ collected }}/8 recolectados</div>

@@ -16,7 +16,7 @@
     <div class="quiz-area">
       <div v-if="currentQuestion" class="quiz-card" :class="{ 'quiz-card--answered': answered }">
         <div class="quiz-scenario">
-          <span class="quiz-scenario__emoji">{{ currentQuestion.emoji }}</span>
+          <GameIcon :emoji="currentQuestion.emoji" :size="36" class="quiz-scenario__emoji" />
           <p class="quiz-scenario__text">{{ currentQuestion.scenario }}</p>
         </div>
 
@@ -33,7 +33,7 @@
             :disabled="answered"
             @click="selectAnswer(opt)"
           >
-            <span class="quiz-option__emoji">{{ opt.emoji }}</span>
+            <GameIcon :emoji="opt.emoji" :size="22" class="quiz-option__emoji" />
             <span class="quiz-option__label">{{ opt.label }}</span>
           </button>
         </div>

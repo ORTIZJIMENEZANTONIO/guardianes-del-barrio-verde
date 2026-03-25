@@ -20,7 +20,7 @@
         :style="{ left: spot.x + '%', top: spot.y + '%', width: spot.w + 'px', height: spot.h + 'px' }"
         @click="tapSpot(spot)"
       >
-        <span class="detect-spot__icon game-zone__icon">{{ spot.emoji }}</span>
+        <GameIcon :emoji="spot.emoji" :size="24" class="detect-spot__icon game-zone__icon" />
         <span class="detect-spot__label game-zone__label">{{ spot.label }}</span>
         <div v-if="spot.tapped" class="detect-spot__badge">
           {{ spot.isTarget ? targetBadge : okBadge }}

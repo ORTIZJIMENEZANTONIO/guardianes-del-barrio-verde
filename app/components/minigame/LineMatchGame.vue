@@ -76,7 +76,7 @@
           :data-node="item.id"
           @pointerdown.prevent="startConnect(item, 'left', $event)"
         >
-          <span class="match-node__emoji">{{ item.emoji }}</span>
+          <GameIcon :emoji="item.emoji" :size="26" class="match-node__emoji" />
           <span class="match-node__label">{{ item.label }}</span>
         </div>
       </div>
@@ -94,7 +94,7 @@
           :data-node="item.id"
           @pointerup.prevent="endConnect(item)"
         >
-          <span class="match-node__emoji">{{ item.emoji }}</span>
+          <GameIcon :emoji="item.emoji" :size="26" class="match-node__emoji" />
           <span class="match-node__label">{{ item.label }}</span>
         </div>
       </div>

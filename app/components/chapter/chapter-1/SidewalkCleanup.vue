@@ -36,7 +36,7 @@
           @pointerdown.prevent="onPointerDown(item, $event)"
           @click="onItemClick(item)"
         >
-          <span class="trash-item__emoji game-item__emoji">{{ item.emoji }}</span>
+          <GameIcon :emoji="item.emoji" :size="28" class="trash-item__emoji game-item__emoji" />
           <span class="trash-item__name game-item__label">{{ item.name }}</span>
         </div>
       </div>
@@ -58,7 +58,7 @@
         >
           <div class="bin__body">
             <div class="bin__lid" />
-            <div class="bin__icon">{{ bin.emoji }}</div>
+            <div class="bin__icon"><GameIcon :emoji="bin.emoji" :size="16" /></div>
           </div>
           <div class="bin__label">{{ bin.label }}</div>
           <div class="bin__count">{{ bin.count }}/{{ bin.target }}</div>
