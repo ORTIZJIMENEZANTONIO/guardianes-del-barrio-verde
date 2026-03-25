@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Regar con estrategia"
+    mascot-character-id="bolillo"
     description="Arrastra las gotas de agua a las plantas que las necesitan. ¡No la desperdicies!"
     :completed="plantsWatered"
     :total="4"

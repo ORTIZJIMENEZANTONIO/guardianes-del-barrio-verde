@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Diseñar el espacio"
+    mascot-character-id="xani"
     description="Selecciona una solución y colócala en la zona correcta de la azotea."
     :completed="itemsPlaced"
     :total="6"

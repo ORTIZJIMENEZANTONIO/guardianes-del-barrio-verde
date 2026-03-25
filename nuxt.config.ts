@@ -35,4 +35,14 @@ export default defineNuxtConfig({
 
   // SPA mode
   ssr: false,
+
+  // Proxy /cercu-backend to local Express backend in dev
+  nitro: {
+    devProxy: {
+      '/cercu-backend/': {
+        target: 'http://localhost:3003/',
+        changeOrigin: true,
+      },
+    },
+  },
 })

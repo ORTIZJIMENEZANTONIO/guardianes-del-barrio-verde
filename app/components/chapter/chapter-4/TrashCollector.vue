@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Recolectar basura"
+    mascot-character-id="vale"
     description="Toca cada residuo tirado en la calle para recolectarlo."
     :completed="collected"
     :total="8"

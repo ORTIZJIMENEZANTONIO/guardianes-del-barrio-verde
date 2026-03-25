@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Construir refugio"
+    mascot-character-id="xani"
     description="Ordena los pasos para crear un refugio de vida silvestre en el barrio."
     :completed="placed"
     :total="5"

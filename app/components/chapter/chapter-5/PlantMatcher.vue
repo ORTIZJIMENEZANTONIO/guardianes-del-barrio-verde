@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Elegir plantas"
+    mascot-character-id="xani"
     description="Encuentra las parejas: cada planta tiene una condición ideal de sol, agua o viento."
     :completed="matched"
     :total="4"

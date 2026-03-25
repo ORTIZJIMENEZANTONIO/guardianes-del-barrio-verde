@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Decisiones de conservación"
+    mascot-character-id="xani"
     description="¿Qué acciones ayudan a conservar la fauna mexicana? Responde rápido."
     :completed="answered"
     :total="5"

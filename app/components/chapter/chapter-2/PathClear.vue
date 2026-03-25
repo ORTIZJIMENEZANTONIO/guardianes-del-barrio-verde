@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Despejar senderos"
+    mascot-character-id="bolillo"
     description="Arrastra cada obstaculo fuera del camino para abrir los senderos."
     :completed="cleared"
     :total="6"

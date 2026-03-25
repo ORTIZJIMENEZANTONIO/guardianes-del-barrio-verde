@@ -385,7 +385,7 @@ const dialogueStore = useDialogueStore()
 
 const showPauseModal = ref(false)
 
-// Infinite scroll loop for exploration
+// Infinite scroll loop for exploration (both directions)
 let isScrollAdjusting = false
 function onExplorationScroll() {
   if (isScrollAdjusting) return
@@ -398,6 +398,12 @@ function onExplorationScroll() {
   if (el.scrollLeft >= panelWidth) {
     isScrollAdjusting = true
     el.scrollLeft -= panelWidth
+    requestAnimationFrame(() => { isScrollAdjusting = false })
+  }
+  // Scrolled before panel A start → jump forward to equivalent in panel B
+  if (el.scrollLeft < 2) {
+    isScrollAdjusting = true
+    el.scrollLeft += panelWidth
     requestAnimationFrame(() => { isScrollAdjusting = false })
   }
 }
@@ -1221,7 +1227,6 @@ onBeforeRouteLeave((_to, _from, next) => {
   position: absolute; inset: 0; z-index: 2;
   overflow-x: auto; overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
 }
 
 .exploration-street {

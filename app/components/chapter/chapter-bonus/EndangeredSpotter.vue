@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Identificar especies en peligro"
+    mascot-character-id="xani"
     description="Toca los animales en peligro de extinción en México. ¡Algunos están fuera de riesgo!"
     :completed="found"
     :total="4"

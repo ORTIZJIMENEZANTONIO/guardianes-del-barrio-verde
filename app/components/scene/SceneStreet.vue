@@ -64,6 +64,86 @@
           <rect x="160" y="100" width="14" height="2" fill="#9ca3af" opacity="0.3" />
           <rect x="160" y="120" width="14" height="2" fill="#9ca3af" opacity="0.3" />
           <rect x="160" y="140" width="14" height="2" fill="#9ca3af" opacity="0.3" />
+          <!-- Guerrero Chimalli de Chimalhuacán — fiel al monumento real -->
+          <!-- Centrado en x=200 para mobile. Pose: de pie, piernas abiertas, -->
+          <!-- penacho grande en abanico, chimalli extendido izq, macuahuitl levantado der -->
+          <g opacity="0.9">
+            <!-- Base piramidal escalonada (como el monumento real) -->
+            <rect x="188" y="168" width="44" height="5" rx="1" fill="#7a3333" opacity="0.35" />
+            <rect x="192" y="163" width="36" height="6" rx="1" fill="#8b3a3a" opacity="0.3" />
+            <rect x="196" y="158" width="28" height="6" rx="1" fill="#7a3333" opacity="0.25" />
+
+            <!-- Pierna izquierda — stance abierto, firme -->
+            <path d="M205 130 L196 158" stroke="#8b3a3a" stroke-width="3.5" stroke-linecap="round" />
+            <!-- Pierna derecha -->
+            <path d="M215 130 L224 158" stroke="#8b3a3a" stroke-width="3.5" stroke-linecap="round" />
+            <!-- Maxtlatl (faldilla/taparrabos) -->
+            <path d="M200 126 L210 138 L220 126" fill="#8b3a3a" opacity="0.6" />
+
+            <!-- Torso — ancho, musculoso, ligeramente girado -->
+            <path d="M200 95 L196 126 L224 126 L220 95 Z" fill="#8b3a3a" />
+            <!-- Línea central del pecho -->
+            <line x1="210" y1="98" x2="210" y2="120" stroke="#a05050" stroke-width="0.5" opacity="0.4" />
+            <!-- Hombros anchos -->
+            <path d="M196 95 Q193 93 190 95" stroke="#8b3a3a" stroke-width="2" stroke-linecap="round" fill="none" />
+            <path d="M224 95 Q227 93 230 95" stroke="#8b3a3a" stroke-width="2" stroke-linecap="round" fill="none" />
+
+            <!-- Brazo izquierdo — extendido sosteniendo chimalli -->
+            <path d="M196 97 L180 108 L172 105" stroke="#8b3a3a" stroke-width="3" stroke-linecap="round" fill="none" />
+
+            <!-- Chimalli (escudo redondo grande) — extendido al lado izquierdo -->
+            <circle cx="168" cy="105" r="16" fill="#8b3a3a" opacity="0.7" />
+            <circle cx="168" cy="105" r="16" fill="none" stroke="#a05050" stroke-width="1.5" />
+            <circle cx="168" cy="105" r="10" fill="none" stroke="#a05050" stroke-width="0.8" opacity="0.5" />
+            <circle cx="168" cy="105" r="4" fill="#a05050" opacity="0.4" />
+            <!-- Diseño de cruz en el escudo -->
+            <line x1="168" y1="90" x2="168" y2="120" stroke="#a05050" stroke-width="0.8" opacity="0.4" />
+            <line x1="153" y1="105" x2="183" y2="105" stroke="#a05050" stroke-width="0.8" opacity="0.4" />
+            <!-- Plumas colgando del escudo -->
+            <path d="M157 118 Q155 130 153 135" stroke="#a05050" stroke-width="1.2" fill="none" opacity="0.5" />
+            <path d="M163 120 Q162 132 161 137" stroke="#8b3a3a" stroke-width="1.2" fill="none" opacity="0.5" />
+            <path d="M169 121 Q169 133 169 138" stroke="#a05050" stroke-width="1.2" fill="none" opacity="0.5" />
+            <path d="M175 120 Q176 132 177 137" stroke="#8b3a3a" stroke-width="1.2" fill="none" opacity="0.5" />
+            <path d="M180 118 Q182 130 184 135" stroke="#a05050" stroke-width="1.2" fill="none" opacity="0.5" />
+
+            <!-- Brazo derecho — levantado con macuahuitl -->
+            <path d="M224 97 L234 88 L238 68" stroke="#8b3a3a" stroke-width="3" stroke-linecap="round" fill="none" />
+
+            <!-- Macuahuitl (espada de obsidiana) — levantado arriba -->
+            <rect x="236" y="42" width="5" height="28" rx="1.5" fill="#8b3a3a" />
+            <!-- Dientes de obsidiana a los lados -->
+            <rect x="234" y="46" width="2" height="3" rx="0.5" fill="#a05050" opacity="0.6" />
+            <rect x="242" y="46" width="2" height="3" rx="0.5" fill="#a05050" opacity="0.6" />
+            <rect x="234" y="52" width="2" height="3" rx="0.5" fill="#a05050" opacity="0.6" />
+            <rect x="242" y="52" width="2" height="3" rx="0.5" fill="#a05050" opacity="0.6" />
+            <rect x="234" y="58" width="2" height="3" rx="0.5" fill="#a05050" opacity="0.6" />
+            <rect x="242" y="58" width="2" height="3" rx="0.5" fill="#a05050" opacity="0.6" />
+
+            <!-- Cabeza -->
+            <circle cx="210" cy="86" r="8" fill="#8b3a3a" />
+
+            <!-- Penacho grande en abanico — plumas largas radiando hacia arriba y atrás -->
+            <!-- 9 plumas en abanico amplio, rasgo más distintivo del monumento -->
+            <path d="M202 80 Q192 58 186 38" stroke="#a05050" stroke-width="2" fill="none" stroke-linecap="round" />
+            <path d="M204 78 Q196 54 192 32" stroke="#8b3a3a" stroke-width="2" fill="none" stroke-linecap="round" />
+            <path d="M206 77 Q200 50 198 28" stroke="#a05050" stroke-width="2" fill="none" stroke-linecap="round" />
+            <path d="M208 76 Q206 48 206 24" stroke="#8b3a3a" stroke-width="2.5" fill="none" stroke-linecap="round" />
+            <path d="M210 76 Q212 46 214 22" stroke="#a05050" stroke-width="2.5" fill="none" stroke-linecap="round" />
+            <path d="M212 76 Q218 48 222 26" stroke="#8b3a3a" stroke-width="2.5" fill="none" stroke-linecap="round" />
+            <path d="M214 77 Q222 52 228 32" stroke="#a05050" stroke-width="2" fill="none" stroke-linecap="round" />
+            <path d="M216 78 Q226 56 232 38" stroke="#8b3a3a" stroke-width="2" fill="none" stroke-linecap="round" />
+            <path d="M218 80 Q228 62 234 46" stroke="#a05050" stroke-width="1.5" fill="none" stroke-linecap="round" />
+            <!-- Puntas de plumas (pequeños trazos al final) -->
+            <circle cx="186" cy="37" r="1.5" fill="#a05050" opacity="0.5" />
+            <circle cx="192" cy="31" r="1.5" fill="#8b3a3a" opacity="0.5" />
+            <circle cx="198" cy="27" r="1.5" fill="#a05050" opacity="0.5" />
+            <circle cx="206" cy="23" r="1.5" fill="#8b3a3a" opacity="0.6" />
+            <circle cx="214" cy="21" r="1.5" fill="#a05050" opacity="0.6" />
+            <circle cx="222" cy="25" r="1.5" fill="#8b3a3a" opacity="0.6" />
+            <circle cx="228" cy="31" r="1.5" fill="#a05050" opacity="0.5" />
+            <circle cx="232" cy="37" r="1.5" fill="#8b3a3a" opacity="0.5" />
+          </g>
+
           <!-- Ángel de la Independencia — pedestal escalonado + columna + victoria dorada -->
           <rect x="368" y="170" width="22" height="30" rx="2" fill="#6b7280" />
           <rect x="372" y="155" width="14" height="18" rx="1" fill="#9ca3af" />

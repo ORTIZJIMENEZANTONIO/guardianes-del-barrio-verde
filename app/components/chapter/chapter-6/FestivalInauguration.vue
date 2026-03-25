@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Inaugurar el festival"
+    mascot-character-id="lila"
     description="Arrastra cada elemento a su lugar para la gran inauguracion."
     :completed="itemsPlaced"
     :total="5"

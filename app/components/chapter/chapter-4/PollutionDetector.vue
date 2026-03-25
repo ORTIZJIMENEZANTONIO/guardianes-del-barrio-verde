@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Detectar contaminación"
+    mascot-character-id="vale"
     description="Toca cada zona del barrio para revisar. Encuentra los 4 puntos de contaminación."
     :completed="found"
     :total="4"

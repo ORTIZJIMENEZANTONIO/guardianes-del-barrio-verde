@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Instalar riego"
+    mascot-character-id="xani"
     description="Traza la ruta del agua tocando los nodos en el orden correcto: desde el captador de lluvia hasta las plantas."
     :completed="connected"
     :total="5"

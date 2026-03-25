@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Clasificar amenazas"
+    mascot-character-id="xani"
     description="Desliza cada amenaza: ¿es causada por humanos o es natural?"
     :completed="classified"
     :total="8"

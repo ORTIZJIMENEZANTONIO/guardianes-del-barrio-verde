@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Reactivar el parque"
+    mascot-character-id="bolillo"
     description="Arrastra cada elemento al lugar correcto para restaurar el parque."
     :completed="itemsPlaced"
     :total="5"

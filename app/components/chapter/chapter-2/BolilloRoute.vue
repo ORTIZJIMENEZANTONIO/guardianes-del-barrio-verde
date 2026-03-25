@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="La Ruta de Bolillo"
+    mascot-character-id="bolillo"
     description="Sigue a Bolillo por el parque. En cada parada, dale lo que necesita."
     :completed="needsMet"
     :total="5"

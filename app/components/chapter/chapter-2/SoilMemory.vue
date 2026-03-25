@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Cuidar el suelo"
+    mascot-character-id="bolillo"
     description="Encuentra las parejas: cada problema del suelo tiene una solución."
     :completed="matched"
     :total="4"

@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Antes y después"
+    mascot-character-id="xani"
     description="Compara las dos escenas: la azotea antes era gris y caliente. Después se transformó. Toca en la escena de 'Después' donde veas algo nuevo. Tienes 2 pistas."
     :completed="found"
     :total="5"

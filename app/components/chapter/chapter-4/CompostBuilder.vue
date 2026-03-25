@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Hacer composta"
+    mascot-character-id="vale"
     description="Coloca cada capa en el orden correcto para armar la composta. Selecciona un material y toca la posición donde va."
     :completed="correct"
     :total="5"

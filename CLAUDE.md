@@ -94,7 +94,7 @@ app/
 | `SpotDifference.vue` | Encontrar diferencias entre escenas | `differences`, `maxHints`, before/after variants | RoofDifference |
 | `RouteTracer.vue` | Trazar ruta tocando nodos en orden | `nodeData` (con `correctOrder`), `segments` | IrrigationBuilder |
 | `StreakBadge.vue` | Badge animado de racha/combo | `streak`, `label` | Todos los componentes base (transversal) |
-| `GameMascot.vue` | Mini personaje reactivo (44px) que cambia emoción según progreso | `characterId`, `progress`, `lastResult`, `streak` | MinigameShell (opcional via `mascotCharacterId` prop) |
+| `GameMascot.vue` | Mini personaje reactivo (44px) que cambia emoción según progreso | `characterId`, `progress`, `lastResult`, `streak` | MinigameShell (via `mascotCharacterId` prop, activo en 21 wrappers) |
 
 ### Composables de juego
 
@@ -384,7 +384,7 @@ Log en terminal oscuro. Banner amarillo cuando corre. Resumen PASS/FAIL.
 - **6 composables de juego** (useGameFeedback, useDragDrop, useGameAnimations, useStreakSystem, useSceneProgress, useMiniCelebrations)
 - **Sistema de rachas** transversal: badge animado en 5 juegos base, milestones en 2/3/5/7/10 aciertos consecutivos
 - **Micro-celebraciones** intermedias: confetti escalado + flash pantalla en milestones de progreso (50%, 75%) y rachas (x3, x5, x7)
-- **GameMascot** reactivo: mini CharacterFace en MinigameShell que cambia emoción (thinking→neutral→happy→excited→proud), shake en error, bounce en racha
+- **GameMascot** reactivo en 21 wrappers: mini CharacterFace que cambia emoción (thinking→neutral→happy→excited→proud), shake en error, bounce en racha. Personaje por capítulo: timo (cap1), bolillo (cap2), xani (cap3,5,bonus), vale (cap4), lila (cap6)
 - **Transformación visual progresiva**: overlay dirty→clean que se desvanece con el avance (TapDetect)
 - **Edades 6-12 + modo 12+** (solo misiones difíciles, timer ×0.6)
 - **Dificultad adaptativa**: `difficulty: 1|2|3` por misión, `shouldSkipMission()` por edad
@@ -396,7 +396,7 @@ Log en terminal oscuro. Banner amarillo cuando corre. Resumen PASS/FAIL.
 - **Analytics** rastrean: registro, sesiones, capítulos, misiones (localStorage + /cercu-backend)
 - **Dev tools** con autobots (verificar, UI/mobile, stress, correr, simular, completar) + captura console
 - **Mobile-first**: 2 cols memorama, flex-shrink paneles, overflow hidden, touch-action
-- **Exploración**: scroll horizontal con loop (2 paneles duplicados)
-- **Siluetas de monumentos mexicanos**: 20 landmarks regionales por capítulo (opacity 0.35)
+- **Exploración**: scroll horizontal con loop bidireccional infinito tipo Pac-Man (2 paneles duplicados, salto invisible en ambas direcciones)
+- **Siluetas de monumentos mexicanos**: 20+ landmarks regionales por capítulo (opacity 0.35) + Guerrero Chimalli de Chimalhuacán en rojo terracota (región centro, cap 1 y 6)
 - Integración Phaser.js preparada (`USE_PHASER = false`)
 - Deploy en guardianes.cercu.com.mx

@@ -1,6 +1,7 @@
 <template>
   <MinigameShell
     title="Evaluar la azotea"
+    mascot-character-id="xani"
     description="Toca cada zona de la azotea. Encuentra las 4 condiciones que necesitas verificar."
     :completed="found"
     :total="4"
