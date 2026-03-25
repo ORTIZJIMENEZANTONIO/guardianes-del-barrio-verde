@@ -43,20 +43,33 @@ npm run dev                          # Puerto 3000, proxy activo
 
 El admin (`/admin` → sección "Sistema") mostrará "Conectado a /cercu-backend" si el backend está corriendo.
 
-### Conexión en producción
+### Conexión en producción (ya configurado y funcionando)
 
-Nginx proxea `/cercu-backend/` al backend Express (ver `cercu-frontend/deploy/nginx.conf`):
-```
+- **Servidor**: Alpine Linux `72.62.200.124` (srv1420267)
+- **Nginx**: `/etc/nginx/http.d/cercu.conf` — bloque `guardianes.cercu.com.mx` con `location /cercu-backend/` que proxea a `127.0.0.1:3003`
+- **PM2**: proceso `cercu-backend` (id 0) corre `dist/index.js` en puerto 3003
+- **MySQL**: tabla `guardianes_events` en `cercu_db` (creada manualmente, `synchronize` está off en prod)
+- **Referencia local**: `cercu-frontend/deploy/nginx.conf` tiene la config de referencia
+
+```nginx
+# En /etc/nginx/http.d/cercu.conf, dentro del server guardianes.cercu.com.mx:
 location /cercu-backend/ {
     proxy_pass http://127.0.0.1:3003/;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
 }
 ```
 
+Después de cambios en Nginx: `nginx -t && rc-service nginx reload` (Alpine usa `rc-service`, no `systemctl`).
+
 ## Deploy
 
-- Servidor: VPS `72.62.200.124`
+- Servidor: VPS `72.62.200.124` (Alpine Linux, srv1420267)
 - Ruta: `/var/www/cercu-frontend/guardianes/`
-- PM2 process: `guardianes` en puerto **3004**
+- PM2 processes: `guardianes` (puerto 3004), `cercu-backend` (puerto 3003)
 - Nginx: `guardianes.cercu.com.mx` → proxy a `127.0.0.1:3004` + `/cercu-backend/` → `127.0.0.1:3003`
 
 ```bash
