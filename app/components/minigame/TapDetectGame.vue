@@ -28,6 +28,11 @@
       </div>
     </div>
 
+    <!-- Streak badge -->
+    <div class="detect-streak">
+      <StreakBadge :streak="streakState.streak.value" :label="streakState.streakLabel.value" />
+    </div>
+
     <!-- Progress panel -->
     <div class="detect-meter">
       <div class="meter-label">{{ meterLabel }}</div>
@@ -37,6 +42,14 @@
         </span>
       </div>
     </div>
+
+    <!-- Scene progress overlay (dirty→clean) -->
+    <div class="scene-dirty-overlay" :style="{ opacity: sceneState.dirtyOpacity.value }" />
+
+    <!-- Celebration flash -->
+    <Transition name="fade">
+      <div v-if="celebrations.showFlash.value" class="celebration-flash" />
+    </Transition>
 
     <!-- Feedback -->
     <Transition name="fade">
@@ -50,6 +63,9 @@
 <script setup lang="ts">
 import { useGameAnimations } from '~/composables/useGameAnimations'
 import { useGameFeedback } from '~/composables/useGameFeedback'
+import { useStreakSystem } from '~/composables/useStreakSystem'
+import { useSceneProgress } from '~/composables/useSceneProgress'
+import { useMiniCelebrations } from '~/composables/useMiniCelebrations'
 
 export interface TapSpot {
   id: string
@@ -99,14 +115,29 @@ const fb = { feedback: ref<{ message: string; ok: boolean } | null>(null) } as R
 const feedbackComposable = useGameFeedback()
 fb.feedback = feedbackComposable.feedback
 
+// Streak system
+const celebrations = useMiniCelebrations(() => document.querySelector('.detect-game') as HTMLElement)
+const streakState = useStreakSystem((milestone) => {
+  celebrations.onStreakMilestone(milestone.streak)
+})
+
+// Scene progress
+const sceneState = useSceneProgress((pct) => {
+  celebrations.onProgressMilestone(pct)
+})
+
 const spots = ref<(TapSpot & { tapped: boolean })[]>([])
 const found = ref(0)
+const lastResult = ref<'ok' | 'error' | null>(null)
 const isComplete = computed(() => found.value >= props.total)
 
 function start() {
   spots.value = props.spotData.map(s => ({ ...s, tapped: false }))
   found.value = 0
+  lastResult.value = null
   feedbackComposable.clear()
+  streakState.reset()
+  sceneState.reset(props.total)
 }
 
 function tapSpot(spot: TapSpot & { tapped: boolean }) {
@@ -115,14 +146,22 @@ function tapSpot(spot: TapSpot & { tapped: boolean }) {
 
   if (spot.isTarget) {
     found.value++
+    streakState.hit()
+    sceneState.increment()
+    lastResult.value = 'ok'
     feedbackComposable.showOk(spot.message)
     nextTick(() => {
       const el = document.querySelector('.detect-spot--success:last-of-type')
       if (el) celebrateSuccess(el)
     })
   } else {
+    streakState.miss()
+    lastResult.value = 'error'
     feedbackComposable.showNo(spot.message)
   }
+
+  // Clear lastResult after animation
+  setTimeout(() => { lastResult.value = null }, 600)
 
   emit('update', found.value, props.total)
 
@@ -225,6 +264,36 @@ defineExpose({ start, reset, found, isComplete })
 @keyframes scaleIn {
   from { transform: scale(0); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+.detect-streak {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 20;
+}
+
+.scene-dirty-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(180, 120, 60, 0.15), rgba(120, 80, 40, 0.1));
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.6s ease;
+}
+
+.celebration-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.2), transparent 70%);
+  pointer-events: none;
+  z-index: 30;
+  animation: flashPulse 0.4s ease-out forwards;
+}
+
+@keyframes flashPulse {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }

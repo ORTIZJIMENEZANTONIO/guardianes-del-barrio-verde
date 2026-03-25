@@ -46,6 +46,16 @@
       </div>
     </div>
 
+    <!-- Streak badge -->
+    <div class="quiz-streak">
+      <StreakBadge :streak="streakState.streak.value" :label="streakState.streakLabel.value" />
+    </div>
+
+    <!-- Celebration flash -->
+    <Transition name="fade">
+      <div v-if="celebrations.showFlash.value" class="celebration-flash" />
+    </Transition>
+
     <!-- Feedback -->
     <Transition name="fade">
       <div v-if="feedback" class="game-feedback" :class="feedback.ok ? 'game-feedback--ok' : 'game-feedback--no'">
@@ -58,6 +68,8 @@
 <script setup lang="ts">
 import { useGameAnimations } from '~/composables/useGameAnimations'
 import { useGameFeedback } from '~/composables/useGameFeedback'
+import { useStreakSystem } from '~/composables/useStreakSystem'
+import { useMiniCelebrations } from '~/composables/useMiniCelebrations'
 
 export interface QuizOption {
   id: string
@@ -93,6 +105,12 @@ const emit = defineEmits<{
 const { celebrateSuccess, shakeWrong, confettiBurst } = useGameAnimations()
 const { feedback, showOk, showNo, clear: clearFeedback } = useGameFeedback()
 
+// Streak + celebrations
+const celebrations = useMiniCelebrations(() => document.querySelector('.quiz-game') as HTMLElement)
+const streakState = useStreakSystem((milestone) => {
+  celebrations.onStreakMilestone(milestone.streak)
+})
+
 const queue = ref<QuizQuestion[]>([])
 const currentIndex = ref(0)
 const correctCount = ref(0)
@@ -112,6 +130,7 @@ function start() {
   answered.value = false
   answeredId.value = null
   allDone.value = false
+  streakState.reset()
   clearFeedback()
   startTimer()
   emit('update', 0, props.questions.length)
@@ -149,12 +168,14 @@ function selectAnswer(opt: QuizOption) {
 
   if (opt.correct) {
     correctCount.value++
+    streakState.hit()
     showOk(opt.message || '¡Correcto!')
     nextTick(() => {
       const el = document.querySelector('.quiz-option--correct')
       if (el) celebrateSuccess(el)
     })
   } else {
+    streakState.miss()
     showNo(opt.message || 'Esa no era la mejor opción.')
     nextTick(() => {
       const el = document.querySelector('.quiz-option--wrong')
@@ -306,6 +327,27 @@ defineExpose({ start, reset, correctCount, allDone })
 
 .quiz-done__emoji { font-size: 48px; }
 .quiz-done__text { font-size: 18px; font-weight: 900; color: var(--color-green-dark); }
+
+.quiz-streak {
+  position: absolute;
+  top: 40px;
+  right: 8px;
+  z-index: 20;
+}
+
+.celebration-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.2), transparent 70%);
+  pointer-events: none;
+  z-index: 30;
+  animation: flashPulse 0.4s ease-out forwards;
+}
+
+@keyframes flashPulse {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }

@@ -31,6 +31,16 @@
       </div>
     </div>
 
+    <!-- Streak badge -->
+    <div class="memory-streak">
+      <StreakBadge :streak="streakState.streak.value" :label="streakState.streakLabel.value" />
+    </div>
+
+    <!-- Celebration flash -->
+    <Transition name="fade">
+      <div v-if="celebrations.showFlash.value" class="celebration-flash" />
+    </Transition>
+
     <Transition name="fade">
       <div v-if="feedback" class="game-feedback" :class="feedback.ok ? 'game-feedback--ok' : 'game-feedback--no'">
         {{ feedback.message }}
@@ -41,6 +51,9 @@
 
 <script setup lang="ts">
 import { useGameAnimations } from '~/composables/useGameAnimations'
+import { useStreakSystem } from '~/composables/useStreakSystem'
+import { useSceneProgress } from '~/composables/useSceneProgress'
+import { useMiniCelebrations } from '~/composables/useMiniCelebrations'
 
 export interface MemoryPair {
   pairId: number
@@ -73,6 +86,15 @@ const emit = defineEmits<{
 }>()
 
 const { shakeWrong, celebrateSuccess, confettiBurst } = useGameAnimations()
+
+// Streak + celebrations
+const celebrations = useMiniCelebrations(() => document.querySelector('.memory-game') as HTMLElement)
+const streakState = useStreakSystem((milestone) => {
+  celebrations.onStreakMilestone(milestone.streak)
+})
+const sceneState = useSceneProgress((pct) => {
+  celebrations.onProgressMilestone(pct)
+})
 
 interface MemoryCard {
   id: string
@@ -124,6 +146,8 @@ function start() {
   flippedCards = []
   lockBoard = false
   feedback.value = null
+  streakState.reset()
+  sceneState.reset(pairCount.value)
   emit('update', 0, pairCount.value)
 }
 
@@ -152,6 +176,8 @@ function checkMatch() {
     first.matched = true
     second.matched = true
     matchedCount.value++
+    streakState.hit()
+    sceneState.increment()
     showFB(props.successMessage, true)
 
     nextTick(() => {
@@ -174,6 +200,7 @@ function checkMatch() {
       setTimeout(() => { emit('complete') }, 1000)
     }
   } else {
+    streakState.miss()
     showFB(props.errorMessage, false)
 
     nextTick(() => {
@@ -324,6 +351,27 @@ defineExpose({ start, reset, matchedCount, isComplete })
   .card-front-emoji { font-size: 22px; }
   .card-front-label { font-size: 8px; }
   .card-back-emoji { font-size: 24px; }
+}
+
+.memory-streak {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 20;
+}
+
+.celebration-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.2), transparent 70%);
+  pointer-events: none;
+  z-index: 30;
+  animation: flashPulse 0.4s ease-out forwards;
+}
+
+@keyframes flashPulse {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }

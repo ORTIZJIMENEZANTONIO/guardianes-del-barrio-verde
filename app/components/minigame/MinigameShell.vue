@@ -29,6 +29,14 @@
     <!-- Game area -->
     <div class="minigame-area">
       <slot />
+      <!-- Mascot reacting to gameplay -->
+      <GameMascot
+        v-if="mascotCharacterId && !showInstructions && !showResult"
+        :character-id="mascotCharacterId"
+        :progress="total > 0 ? completed / total : 0"
+        :last-result="lastResult"
+        :streak="streak"
+      />
     </div>
 
     <!-- Result overlay -->
@@ -61,7 +69,7 @@ const playerStore = usePlayerStore()
 const timerRef = ref<HTMLElement | null>(null)
 let heartbeatAnim: ReturnType<typeof heartbeat> | null = null
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   title: string
   description: string
   completed: number
@@ -69,7 +77,14 @@ const props = defineProps<{
   timeLimit?: number
   isSuccess: boolean
   showResult: boolean
-}>()
+  mascotCharacterId?: string
+  lastResult?: 'ok' | 'error' | null
+  streak?: number
+}>(), {
+  mascotCharacterId: '',
+  lastResult: null,
+  streak: 0,
+})
 
 const emit = defineEmits<{
   start: []

@@ -44,10 +44,15 @@
       </div>
     </div>
 
-    <!-- Streak / combo -->
-    <div v-if="streak >= 3" class="swipe-combo">
-      🔥 Racha: {{ streak }}
+    <!-- Streak badge (shared system) -->
+    <div class="swipe-streak">
+      <StreakBadge :streak="streakState.streak.value" :label="streakState.streakLabel.value" />
     </div>
+
+    <!-- Celebration flash -->
+    <Transition name="fade">
+      <div v-if="celebrations.showFlash.value" class="celebration-flash" />
+    </Transition>
 
     <!-- Swipe buttons (fallback for no-swipe) -->
     <div class="swipe-buttons">
@@ -71,6 +76,9 @@
 <script setup lang="ts">
 import { useGameAnimations } from '~/composables/useGameAnimations'
 import { useGameFeedback } from '~/composables/useGameFeedback'
+import { useStreakSystem } from '~/composables/useStreakSystem'
+import { useSceneProgress } from '~/composables/useSceneProgress'
+import { useMiniCelebrations } from '~/composables/useMiniCelebrations'
 
 export interface SwipeItem {
   id: string
@@ -104,9 +112,17 @@ const emit = defineEmits<{
 const { celebrateSuccess, shakeWrong } = useGameAnimations()
 const { feedback, showOk, showNo, clear: clearFeedback } = useGameFeedback()
 
+// Shared streak + celebrations
+const celebrations = useMiniCelebrations(() => document.querySelector('.swipe-game') as HTMLElement)
+const streakState = useStreakSystem((milestone) => {
+  celebrations.onStreakMilestone(milestone.streak)
+})
+const sceneState = useSceneProgress((pct) => {
+  celebrations.onProgressMilestone(pct)
+})
+
 const queue = ref<SwipeItem[]>([])
 const classified = ref(0)
-const streak = ref(0)
 const allDone = computed(() => queue.value.length === 0 && classified.value > 0)
 const currentItem = computed(() => queue.value[0] ?? null)
 
@@ -143,7 +159,8 @@ function shuffle<T>(arr: T[]): T[] {
 function start() {
   queue.value = shuffle([...props.items])
   classified.value = 0
-  streak.value = 0
+  streakState.reset()
+  sceneState.reset(props.items.length)
   flyDir.value = null
   flyResult.value = null
   locked.value = false
@@ -198,10 +215,11 @@ function classify(dir: 'left' | 'right') {
   })
 
   if (correct) {
-    streak.value++
+    streakState.hit()
+    sceneState.increment()
     showOk(item.message || '¡Correcto!')
   } else {
-    streak.value = 0
+    streakState.miss()
     const correctLabel = item.category === 'left' ? props.leftLabel : props.rightLabel
     showNo(`Ese va en "${correctLabel}". ${item.message || ''}`)
   }
@@ -323,20 +341,26 @@ defineExpose({ start, reset, classified, allDone })
 
 .swipe-done { font-size: 48px; }
 
-/* Combo */
-.swipe-combo {
+.swipe-streak {
   position: absolute;
   top: 50%;
   right: 8px;
   transform: translateY(-50%);
-  background: rgba(249, 115, 22, 0.9);
-  color: white;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: 900;
   z-index: 10;
-  animation: scaleIn 0.3s ease;
+}
+
+.celebration-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.2), transparent 70%);
+  pointer-events: none;
+  z-index: 30;
+  animation: flashPulse 0.4s ease-out forwards;
+}
+
+@keyframes flashPulse {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 /* Buttons */

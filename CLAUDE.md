@@ -81,7 +81,7 @@ app/
 
 ## Componentes reutilizables de minijuegos
 
-8 componentes base en `app/components/minigame/`. Cada minijuego del capítulo es un wrapper delgado (~50 líneas) que pasa datos al componente base.
+8 componentes base + 2 UI transversales en `app/components/minigame/`. Cada minijuego del capítulo es un wrapper delgado (~50 líneas) que pasa datos al componente base.
 
 | Componente | Mecánica | Props clave | Usado en |
 |-----------|----------|-------------|----------|
@@ -93,6 +93,8 @@ app/
 | `QuickQuiz.vue` | Quiz con timer por pregunta | `questions` (con opciones), `timePerQuestion` | WaterQuiz, ConservationQuiz |
 | `SpotDifference.vue` | Encontrar diferencias entre escenas | `differences`, `maxHints`, before/after variants | RoofDifference |
 | `RouteTracer.vue` | Trazar ruta tocando nodos en orden | `nodeData` (con `correctOrder`), `segments` | IrrigationBuilder |
+| `StreakBadge.vue` | Badge animado de racha/combo | `streak`, `label` | Todos los componentes base (transversal) |
+| `GameMascot.vue` | Mini personaje reactivo (44px) que cambia emoción según progreso | `characterId`, `progress`, `lastResult`, `streak` | MinigameShell (opcional via `mascotCharacterId` prop) |
 
 ### Composables de juego
 
@@ -100,7 +102,10 @@ app/
 |-----------|---------|-----------|
 | `useGameFeedback.ts` | Toast de feedback con timer (`showOk`/`showNo`/`clear`) | Todos los componentes base |
 | `useDragDrop.ts` | Pointer handling con RAF, hover detection, dragStyle | Juegos drag-drop |
-| `useGameAnimations.ts` | GSAP: celebrateSuccess, confettiBurst, shakeWrong | Todos |
+| `useGameAnimations.ts` | GSAP: celebrateSuccess, confettiBurst, shakeWrong, popIn, heartbeat | Todos |
+| `useStreakSystem.ts` | Rachas/combos reutilizable: hit/miss, milestones (2/3/5/7/10), streakLabel, isOnFire | MemoryGame, TapDetect, Swipe, Quiz, Sequence |
+| `useSceneProgress.ts` | Progreso 0-100% con milestones (25/50/75/100%), CSS vars reactivas (dirtyOpacity, cleanOpacity) | TapDetect, Memory, Swipe, Sequence |
+| `useMiniCelebrations.ts` | Micro-celebraciones intermedias: confetti escalado, flash pantalla, emoji flotante | Todos los componentes base |
 
 ## Flujo del usuario
 
@@ -347,7 +352,7 @@ Eventos rastreados:
 
 Almacenamiento dual:
 - **Local**: `guardianes-analytics-v1` en localStorage (máx 5000 eventos)
-- **Backend**: POST a `/cercu-backend/api/guardianes/events` (silently fails si no hay backend)
+- **Backend**: POST a `/cercu-backend/api/guardianes/events` → módulo `guardianes` en cercu-backend (Express + TypeORM + MySQL). Entity: `GuardianesEvent`, tabla: `guardianes_events`. Sin auth. Endpoints: `POST /api/guardianes/events`, `GET /api/guardianes/stats`, `GET /api/guardianes/events`.
 
 ## Catálogo dev (`/dev`)
 
@@ -371,8 +376,12 @@ Log en terminal oscuro. Banner amarillo cuando corre. Resumen PASS/FAIL.
 ## Estado actual
 
 - **6 capítulos + 1 bonus, 37 minijuegos** jugables (10 mecánicas diferentes)
-- **8 componentes reutilizables** (MemoryGame, TapDetectGame, SequenceGame, SwipeClassifier, LineMatchGame, QuickQuiz, SpotDifference, RouteTracer)
-- **3 composables de juego** (useGameFeedback, useDragDrop, useGameAnimations)
+- **8 componentes base + 2 UI transversales** (MemoryGame, TapDetectGame, SequenceGame, SwipeClassifier, LineMatchGame, QuickQuiz, SpotDifference, RouteTracer + StreakBadge, GameMascot)
+- **6 composables de juego** (useGameFeedback, useDragDrop, useGameAnimations, useStreakSystem, useSceneProgress, useMiniCelebrations)
+- **Sistema de rachas** transversal: badge animado en 5 juegos base, milestones en 2/3/5/7/10 aciertos consecutivos
+- **Micro-celebraciones** intermedias: confetti escalado + flash pantalla en milestones de progreso (50%, 75%) y rachas (x3, x5, x7)
+- **GameMascot** reactivo: mini CharacterFace en MinigameShell que cambia emoción (thinking→neutral→happy→excited→proud), shake en error, bounce en racha
+- **Transformación visual progresiva**: overlay dirty→clean que se desvanece con el avance (TapDetect)
 - **Edades 6-12 + modo 12+** (solo misiones difíciles, timer ×0.6)
 - **Dificultad adaptativa**: `difficulty: 1|2|3` por misión, `shouldSkipMission()` por edad
 - **Registro**: nombre + edad (6-12, 12+) + avatar = personaje existente
@@ -381,7 +390,7 @@ Log en terminal oscuro. Banner amarillo cuando corre. Resumen PASS/FAIL.
 - **Admin dashboard** con 15 secciones de estadísticas (local + backend)
 - **Acceso secreto** a admin via gesto (3 taps x 4 esquinas en 6s) + login con password
 - **Analytics** rastrean: registro, sesiones, capítulos, misiones (localStorage + /cercu-backend)
-- **Dev tools** con autobots (verificar, UI/mobile, stress, correr, completar) + captura console
+- **Dev tools** con autobots (verificar, UI/mobile, stress, correr, simular, completar) + captura console
 - **Mobile-first**: 2 cols memorama, flex-shrink paneles, overflow hidden, touch-action
 - **Exploración**: scroll horizontal con loop (2 paneles duplicados)
 - **Siluetas de monumentos mexicanos**: 20 landmarks regionales por capítulo (opacity 0.35)

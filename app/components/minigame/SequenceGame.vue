@@ -69,6 +69,16 @@
       </div>
     </div>
 
+    <!-- Streak badge -->
+    <div class="seq-streak">
+      <StreakBadge :streak="streakState.streak.value" :label="streakState.streakLabel.value" />
+    </div>
+
+    <!-- Celebration flash -->
+    <Transition name="fade">
+      <div v-if="celebrations.showFlash.value" class="celebration-flash" />
+    </Transition>
+
     <!-- Feedback -->
     <Transition name="fade">
       <div v-if="feedback" class="game-feedback" :class="feedback.ok ? 'game-feedback--ok' : 'game-feedback--no'">
@@ -81,6 +91,9 @@
 <script setup lang="ts">
 import { useGameAnimations } from '~/composables/useGameAnimations'
 import { useGameFeedback } from '~/composables/useGameFeedback'
+import { useStreakSystem } from '~/composables/useStreakSystem'
+import { useSceneProgress } from '~/composables/useSceneProgress'
+import { useMiniCelebrations } from '~/composables/useMiniCelebrations'
 
 export interface SequenceStep {
   id: string
@@ -115,6 +128,15 @@ const emit = defineEmits<{
 const { celebrateSuccess, confettiBurst, shakeWrong } = useGameAnimations()
 const { feedback, showOk, showNo, clear: clearFeedback } = useGameFeedback()
 
+// Streak + celebrations
+const celebrations = useMiniCelebrations(() => document.querySelector('.sequence-game') as HTMLElement)
+const streakState = useStreakSystem((milestone) => {
+  celebrations.onStreakMilestone(milestone.streak)
+})
+const sceneState = useSceneProgress((pct) => {
+  celebrations.onProgressMilestone(pct)
+})
+
 interface PlacedItem extends SequenceStep { placed: boolean }
 interface Slot { item: PlacedItem | null; correct: boolean; wrong: boolean }
 
@@ -138,6 +160,8 @@ function start() {
   items.value = props.steps.map(s => ({ ...s, placed: false }))
   slots.value = props.steps.map(() => ({ item: null, correct: false, wrong: false }))
   selectedItem.value = null
+  streakState.reset()
+  sceneState.reset(props.steps.length)
   clearFeedback()
   emit('update', 0, props.steps.length)
 }
@@ -160,6 +184,8 @@ function placeInSlot(slotIndex: number) {
     slot.correct = true
     item.placed = true
     selectedItem.value = null
+    streakState.hit()
+    sceneState.increment()
     showOk(item.successMessage || '¡Correcto! Ese paso va ahí.')
 
     nextTick(() => {
@@ -177,6 +203,7 @@ function placeInSlot(slotIndex: number) {
   } else {
     // Wrong placement
     slot.wrong = true
+    streakState.miss()
     showNo(props.errorMessage)
     const el = document.querySelectorAll('.seq-slot')[slotIndex]
     if (el) shakeWrong(el)
@@ -345,6 +372,27 @@ defineExpose({ start, reset, correctCount, isComplete })
 @keyframes scaleIn {
   from { transform: scale(0); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+.seq-streak {
+  position: absolute;
+  top: 8px;
+  right: 80px;
+  z-index: 20;
+}
+
+.celebration-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.2), transparent 70%);
+  pointer-events: none;
+  z-index: 30;
+  animation: flashPulse 0.4s ease-out forwards;
+}
+
+@keyframes flashPulse {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
