@@ -46,7 +46,7 @@ export function useSecretAccess() {
     // Start/reset the 6s window on first corner tap
     if (cornerTaps.tl + cornerTaps.tr + cornerTaps.bl + cornerTaps.br === 0) {
       if (resetTimer) clearTimeout(resetTimer)
-      resetTimer = setTimeout(resetTaps, 6000)
+      resetTimer = setTimeout(resetTaps, 8000)
     }
 
     cornerTaps[corner]++
